@@ -1,0 +1,36 @@
+services:
+  - type: web
+    name: laboratory-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm install
+    startCommand: node src/index.js
+    plan: free
+    envVars:
+      - key: SPREADSHEET_ID
+        value: 17bQxuQT6N8Jrb7QrY78-lr_g3GZFnqwUsjbucse43Jw
+      - key: ADMIN_SECRET
+        value: lab-secret-2024
+      - key: OWNER_PIN
+        value: "1234"
+      - key: PORT
+        value: "8000"
+      - key: GOOGLE_CREDENTIALS_JSON
+        sync: false
+
+  - type: worker
+    name: laboratory-bot
+    runtime: python
+    rootDir: bot
+    buildCommand: pip install -r requirements.txt
+    startCommand: python main.py
+    plan: free
+    envVars:
+      - key: BOT_TOKEN
+        value: 8414524315:AAErYNwkwWV-_891Ov3sVutDE8Hg9Pr-GyQ
+      - key: ADMIN_IDS
+        value: "961116530"
+      - key: ADMIN_SECRET
+        value: lab-secret-2024
+      - key: BACKEND_URL
+        sync: false
