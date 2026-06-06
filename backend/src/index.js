@@ -29,7 +29,9 @@ app.use((err, _req, res, _next) => {
 
 const PORT = process.env.PORT || 8000
 
-app.listen(PORT, async () => {
-  console.log(`🎛  Лаборатория CRM API → http://localhost:${PORT}`)
-  await ensureHeaders()
+app.listen(PORT, () => {
+  console.log(`CRM API running on port ${PORT}`)
+  ensureHeaders().catch(err =>
+    console.warn('ensureHeaders failed (non-fatal):', err.message)
+  )
 })
