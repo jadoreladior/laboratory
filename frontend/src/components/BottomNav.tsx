@@ -30,8 +30,8 @@ export function BottomNav() {
   if (hidden) return null
 
   return (
-    <nav className="fixed bottom-0 left-0 right-0 bottom-nav-height z-50 border-t
-      dark:bg-[#111] dark:border-white/10 bg-white border-black/10
+    <nav className="fixed bottom-0 left-0 right-0 bottom-nav-height z-50
+      bg-[#0E0E0E] border-t border-[#2A2A2A]
       flex items-start pt-2">
       {tabs.map(({ to, icon: Icon, label }) => (
         <NavLink
@@ -39,27 +39,26 @@ export function BottomNav() {
           to={to}
           end={to === '/'}
           className={({ isActive }) =>
-            `flex-1 flex flex-col items-center gap-1 py-1 transition-colors
-            ${isActive
-              ? 'text-white'
-              : 'dark:text-white/40 text-black/40 hover:dark:text-white/70 hover:text-black/70'
-            }`
+            `flex-1 flex flex-col items-center gap-1 py-1 transition-all duration-200
+            ${isActive ? 'text-[#C17BFF]' : 'text-white/35 hover:text-white/60'}`
           }
         >
           {({ isActive }) => (
             <>
               <div className="relative">
+                {isActive && (
+                  <span className="absolute inset-0 rounded-full blur-md bg-[#C17BFF]/30 scale-150" />
+                )}
                 <Icon size={22} />
                 {to === '/admin' && pendingCount > 0 && (
-                  <span className={`absolute -top-1 -right-1.5 min-w-[16px] h-4 px-0.5
-                    rounded-full bg-red-500 text-white text-[9px] font-bold
-                    flex items-center justify-center leading-none
-                    ${isActive ? '' : ''}`}>
+                  <span className="absolute -top-1 -right-1.5 min-w-[16px] h-4 px-0.5
+                    rounded-full bg-[#FF4B4B] text-white text-[9px] font-bold
+                    flex items-center justify-center leading-none">
                     {pendingCount > 9 ? '9+' : pendingCount}
                   </span>
                 )}
               </div>
-              <span className="text-[10px] font-medium">{label}</span>
+              <span className={`text-[10px] font-medium ${isActive ? 'opacity-100' : 'opacity-60'}`}>{label}</span>
             </>
           )}
         </NavLink>

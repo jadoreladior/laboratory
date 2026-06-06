@@ -16,6 +16,9 @@ app.use('/api/clients',   require('./routes/clients'))
 app.use('/api/employees', require('./routes/employees'))
 app.use('/api/stats',     require('./routes/stats'))
 app.use('/api/slots',     require('./routes/slots'))
+app.use('/api/blocked',   require('./routes/blocked'))
+app.use('/api/calendar',  require('./routes/calendar'))
+app.use('/api/role',      require('./routes/role'))
 
 app.get('/health', (_, res) => res.json({ status: 'ok', service: 'laboratoriya-crm' }))
 

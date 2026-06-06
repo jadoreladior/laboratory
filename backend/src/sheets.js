@@ -7,9 +7,10 @@ const SCOPES = ['https://www.googleapis.com/auth/spreadsheets']
 
 // Column definitions — order matters for row writes
 const SHEET_COLUMNS = {
-  Leads:     ['id','client_name','telegram_id','username','service','booking_date','booking_time','duration_hours','total_price','prepay_amount','status','notes','created_at'],
-  Clients:   ['id','name','telegram_id','username','phone','email','notes','created_at'],
-  Employees: ['id','name','telegram_id','role','hourly_rate','revenue_percent','created_at'],
+  Leads:        ['id','client_name','telegram_id','username','service','booking_date','booking_time','duration_hours','total_price','prepay_amount','status','notes','created_at'],
+  Clients:      ['id','name','telegram_id','username','phone','email','notes','created_at'],
+  Employees:    ['id','name','telegram_id','role','hourly_rate','revenue_percent','created_at'],
+  BlockedSlots: ['id','date','time','reason','created_at'],
 }
 
 let _client = null

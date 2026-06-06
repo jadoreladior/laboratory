@@ -104,6 +104,61 @@ export async function getAvailableSlots(_studioId: string, date: string) {
   return data.slots as { time: string; available: boolean }[]
 }
 
+// ─── Calendar ─────────────────────────────────────────────────────────────────
+
+export interface CalendarDay {
+  date: string
+  count: number
+  revenue: number
+  booked_slots: number
+  blocked_slots: number
+  total_slots: number
+  fill_percent: number
+}
+
+export interface DaySlot {
+  time: string
+  status: 'free' | 'booked' | 'blocked'
+  booking: Lead | null
+  blocked: BlockedSlot | null
+}
+
+export interface DayData {
+  date: string
+  slots: DaySlot[]
+  booked_count: number
+  blocked_count: number
+  free_count: number
+  revenue: number
+}
+
+export interface BlockedSlot {
+  id: string
+  date: string
+  time: string
+  reason: string
+  created_at: string
+}
+
+export async function getCalendarMonth(year: number, month: number) {
+  const { data } = await api.get(`/api/calendar/month/${year}/${month}`)
+  return data as { year: number; month: number; total_slots: number; days: CalendarDay[] }
+}
+
+export async function getCalendarDay(date: string) {
+  const { data } = await api.get(`/api/calendar/day/${date}`)
+  return data as DayData
+}
+
+export async function blockSlot(date: string, time: string, reason: string) {
+  const { data } = await api.post('/api/blocked', { date, time, reason })
+  return data as BlockedSlot
+}
+
+export async function unblockSlot(id: string) {
+  await api.delete(`/api/blocked/${id}`)
+}
+
 // ─── Admin / PIN ─────────────────────────────────────────────────────────────
 
 export async function verifyOwnerPin(pin: string) {

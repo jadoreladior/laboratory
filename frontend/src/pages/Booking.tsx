@@ -44,7 +44,6 @@ export function Booking() {
   const filteredServices = SERVICES.filter(s => s.category === activeCategory)
   const dates = getDates()
 
-  // Load available slots when studio + date change
   useEffect(() => {
     if (!store.selectedStudio || step !== 'datetime') return
     setLoadingSlots(true)
@@ -110,7 +109,6 @@ export function Booking() {
           createdAt: booking.created_at,
         })
       } else {
-        // offline fallback
         store.addBooking({
           id: Math.random().toString(36).slice(2),
           studioId: store.selectedStudio,
@@ -124,7 +122,7 @@ export function Booking() {
         })
       }
     } catch {
-      // still show success to user, retry logic can be added later
+      // show success regardless
     }
 
     store.resetBooking()
@@ -137,52 +135,64 @@ export function Booking() {
   }
 
   return (
-    <div className="pb-nav animate-fade-in">
+    <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
+
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
-        <button onClick={back} className="w-9 h-9 rounded-full dark:bg-white/10 bg-black/10 flex items-center justify-center">
-          <svg className="w-4 h-4 dark:text-white text-gray-900" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+        <button
+          onClick={back}
+          className="w-9 h-9 rounded-full bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-center"
+        >
+          <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M15 18l-6-6 6-6" />
           </svg>
         </button>
         <div className="flex-1">
-          <div className="text-xs dark:text-white/40 text-gray-400 mb-1">Шаг {stepIndex + 1} из {STEPS.length}</div>
-          <h1 className="text-lg font-bold dark:text-white text-gray-900">{STEP_LABELS[stepIndex]}</h1>
+          <div className="text-[11px] text-white/30 uppercase tracking-widest mb-0.5">
+            Шаг {stepIndex + 1} из {STEPS.length}
+          </div>
+          <h1 className="text-lg font-bold text-white">{STEP_LABELS[stepIndex]}</h1>
         </div>
       </div>
 
-      {/* Progress */}
-      <div className="flex gap-1 px-4 mb-5">
+      {/* Progress bar */}
+      <div className="flex gap-1.5 px-4 mb-6">
         {STEPS.map((s, i) => (
-          <div key={s} className={`h-1 flex-1 rounded-full transition-colors ${i <= stepIndex ? 'bg-white' : 'dark:bg-white/15 bg-black/10'}`} />
+          <div
+            key={s}
+            className={`h-0.5 flex-1 rounded-full transition-all duration-500
+              ${i <= stepIndex ? 'bg-[#C17BFF]' : 'bg-[#2A2A2A]'}`}
+          />
         ))}
       </div>
 
-      {/* Step: Service */}
+      {/* ── Step: Service ── */}
       {step === 'service' && (
         <div className="animate-fade-in pb-28">
-          <div className="flex gap-2 px-4 mb-4 overflow-x-auto pb-1">
+          {/* Category tabs */}
+          <div className="flex gap-2 px-4 mb-4 overflow-x-auto pb-1 no-scrollbar">
             {SERVICE_CATEGORIES.map(cat => (
               <button
                 key={cat.id}
                 onClick={() => { haptic?.selectionChanged(); setActiveCategory(cat.id as ServiceCategory) }}
-                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-colors
+                className={`flex-shrink-0 flex items-center gap-1.5 px-3 py-2 rounded-xl text-sm font-medium transition-all
                   ${activeCategory === cat.id
-                    ? 'bg-white text-black'
-                    : 'dark:bg-white/10 bg-black/10 dark:text-white/70 text-gray-600'}`}
+                    ? 'bg-[#C17BFF]/15 text-[#C17BFF] border border-[#C17BFF]/30'
+                    : 'bg-[#1A1A1A] text-white/50 border border-[#2A2A2A]'}`}
               >
                 <span className="flex items-center">
-                  {cat.id === 'record'  && <Mic2 size={14} strokeWidth={2} />}
-                  {cat.id === 'studio'  && <Sliders size={14} strokeWidth={2} />}
-                  {cat.id === 'voice'   && <Wind size={14} strokeWidth={2} />}
-                  {cat.id === 'rent'    && <Key size={14} strokeWidth={2} />}
-                  {cat.id === 'package' && <Package size={14} strokeWidth={2} />}
+                  {cat.id === 'record'  && <Mic2 size={13} strokeWidth={2} />}
+                  {cat.id === 'studio'  && <Sliders size={13} strokeWidth={2} />}
+                  {cat.id === 'voice'   && <Wind size={13} strokeWidth={2} />}
+                  {cat.id === 'rent'    && <Key size={13} strokeWidth={2} />}
+                  {cat.id === 'package' && <Package size={13} strokeWidth={2} />}
                 </span>
                 <span>{cat.label}</span>
               </button>
             ))}
           </div>
-          <div className="px-4 space-y-3">
+
+          <div className="px-4 space-y-2.5">
             {filteredServices.map(service => (
               <ServiceCard
                 key={service.id}
@@ -195,27 +205,29 @@ export function Booking() {
         </div>
       )}
 
-      {/* Step: Studio */}
+      {/* ── Step: Studio ── */}
       {step === 'studio' && (
         <div className="px-4 space-y-3 animate-fade-in pb-28">
           {STUDIOS.map(studio => (
             <button
               key={studio.id}
               onClick={() => { haptic?.selectionChanged(); store.setStudio(studio.id as StudioId) }}
-              className="w-full text-left rounded-2xl overflow-hidden transition-all active:scale-[0.98]"
-              style={store.selectedStudio === studio.id ? { boxShadow: '0 0 0 2px rgba(255,255,255,0.8)' } : {}}
+              className={`w-full text-left rounded-2xl overflow-hidden transition-all active:scale-[0.98]
+                ${store.selectedStudio === studio.id
+                  ? 'ring-1 ring-[#C17BFF]/60'
+                  : 'ring-1 ring-[#2A2A2A]'}`}
             >
-              <div className={`rounded-2xl overflow-hidden dark:bg-white/5 bg-black/5`}>
+              <div className="bg-[#1A1A1A] rounded-2xl overflow-hidden">
                 <div className="relative h-32">
-                  <img src={studio.images[0]} alt={studio.name} className="w-full h-full object-cover" />
-                  <div className="absolute inset-0 bg-gradient-to-r from-black/60 to-transparent" />
+                  <img src={studio.images[0]} alt={studio.name} className="w-full h-full object-cover opacity-80" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/70 to-transparent" />
                   <div className="absolute left-4 bottom-4">
-                    <div className="text-white font-bold">{studio.name}</div>
-                    <div className="text-white/70 text-xs">{studio.tagline}</div>
+                    <div className="text-white font-bold text-sm">{studio.name}</div>
+                    <div className="text-white/60 text-xs mt-0.5">{studio.tagline}</div>
                   </div>
                   {store.selectedStudio === studio.id && (
-                    <div className="absolute right-4 top-4 w-6 h-6 rounded-full bg-white flex items-center justify-center">
-                      <svg className="w-3.5 h-3.5 text-black" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+                    <div className="absolute right-4 top-4 w-6 h-6 rounded-full bg-[#C17BFF] flex items-center justify-center">
+                      <svg className="w-3.5 h-3.5 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
                         <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
                       </svg>
                     </div>
@@ -227,12 +239,13 @@ export function Booking() {
         </div>
       )}
 
-      {/* Step: DateTime */}
+      {/* ── Step: DateTime ── */}
       {step === 'datetime' && (
         <div className="animate-fade-in">
-          <div className="px-4 mb-5">
-            <p className="text-xs font-semibold dark:text-white/40 text-gray-400 uppercase tracking-wider mb-3">Выберите дату</p>
-            <div className="flex gap-2 overflow-x-auto pb-1">
+          {/* Date picker */}
+          <div className="px-4 mb-6">
+            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Выберите дату</p>
+            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
               {dates.map(date => {
                 const isSelected = isSameDay(date, localDate)
                 const isToday = isSameDay(date, new Date())
@@ -240,10 +253,12 @@ export function Booking() {
                   <button
                     key={date.toISOString()}
                     onClick={() => { haptic?.selectionChanged(); setLocalDate(date) }}
-                    className={`flex-shrink-0 flex flex-col items-center px-3 py-2 rounded-xl transition-colors min-w-[52px]
-                      ${isSelected ? 'bg-white text-black' : 'dark:bg-white/10 bg-black/10 dark:text-white text-gray-900'}`}
+                    className={`flex-shrink-0 flex flex-col items-center px-3 py-2.5 rounded-xl transition-all min-w-[52px]
+                      ${isSelected
+                        ? 'bg-[#C17BFF] text-white'
+                        : 'bg-[#1A1A1A] border border-[#2A2A2A] text-white'}`}
                   >
-                    <span className="text-[10px] font-medium uppercase opacity-70">
+                    <span className={`text-[10px] font-medium uppercase ${isSelected ? 'opacity-80' : 'opacity-40'}`}>
                       {isToday ? 'сег' : format(date, 'EEE', { locale: ru }).slice(0, 3)}
                     </span>
                     <span className="text-lg font-bold leading-tight">{format(date, 'd')}</span>
@@ -253,10 +268,11 @@ export function Booking() {
             </div>
           </div>
 
+          {/* Time picker */}
           <div className="px-4">
-            <p className="text-xs font-semibold dark:text-white/40 text-gray-400 uppercase tracking-wider mb-3">Время начала</p>
+            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Время начала</p>
             {loadingSlots ? (
-              <div className="text-center py-6 dark:text-white/40 text-gray-400 text-sm">Загружаем слоты...</div>
+              <div className="text-center py-8 text-white/30 text-sm">Загружаем слоты...</div>
             ) : slots.length > 0 ? (
               <div className="grid grid-cols-4 gap-2">
                 {slots.map(slot => (
@@ -264,25 +280,27 @@ export function Booking() {
                     key={slot.time}
                     onClick={() => slot.available && (haptic?.selectionChanged(), setLocalTime(slot.time))}
                     disabled={!slot.available}
-                    className={`py-2.5 rounded-xl text-sm font-semibold transition-colors
-                      ${!slot.available ? 'opacity-30 cursor-not-allowed dark:bg-white/5 bg-black/5 dark:text-white text-gray-900' :
-                        localTime === slot.time
-                          ? 'bg-white text-black'
-                          : 'dark:bg-white/10 bg-black/10 dark:text-white text-gray-900'}`}
+                    className={`py-2.5 rounded-xl text-sm font-semibold transition-all
+                      ${!slot.available
+                        ? 'opacity-25 cursor-not-allowed bg-[#1A1A1A] text-white border border-[#2A2A2A]'
+                        : localTime === slot.time
+                          ? 'bg-[#C17BFF] text-white'
+                          : 'bg-[#1A1A1A] border border-[#2A2A2A] text-white hover:border-[#C17BFF]/30'}`}
                   >
                     {slot.time}
                   </button>
                 ))}
               </div>
             ) : (
-              /* Fallback static slots if API not yet connected */
               <div className="grid grid-cols-4 gap-2">
                 {['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00'].map(t => (
                   <button
                     key={t}
                     onClick={() => { haptic?.selectionChanged(); setLocalTime(t) }}
-                    className={`py-2.5 rounded-xl text-sm font-semibold transition-colors
-                      ${localTime === t ? 'bg-white text-black' : 'dark:bg-white/10 bg-black/10 dark:text-white text-gray-900'}`}
+                    className={`py-2.5 rounded-xl text-sm font-semibold transition-all
+                      ${localTime === t
+                        ? 'bg-[#C17BFF] text-white'
+                        : 'bg-[#1A1A1A] border border-[#2A2A2A] text-white hover:border-[#C17BFF]/30'}`}
                   >
                     {t}
                   </button>
@@ -293,27 +311,33 @@ export function Booking() {
         </div>
       )}
 
-      {/* Step: Confirm */}
+      {/* ── Step: Confirm ── */}
       {step === 'confirm' && store.selectedService && store.selectedStudio && (
         <div className="px-4 animate-fade-in">
-          <div className="dark:bg-white/5 bg-black/5 rounded-3xl overflow-hidden mb-4">
+          <div className="card-lab overflow-hidden mb-4">
+            {/* Studio preview */}
             <div className="relative h-40">
               <img
-                src={STUDIOS.find(s => s.id === store.selectedStudio)!.images[1]}
+                src={STUDIOS.find(s => s.id === store.selectedStudio)!.images[1] ?? STUDIOS.find(s => s.id === store.selectedStudio)!.images[0]}
                 alt="Studio"
-                className="w-full h-full object-cover"
+                className="w-full h-full object-cover opacity-70"
               />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
-              <div className="absolute bottom-3 left-4 text-white">
-                <div className="font-bold">Студия {store.selectedStudio}</div>
-                <div className="text-white/70 text-sm">Гороховая 70</div>
+              <div className="absolute inset-0 bg-gradient-to-t from-[#1A1A1A] via-[#1A1A1A]/30 to-transparent" />
+              <div className="absolute bottom-3 left-4">
+                <div className="text-white font-bold text-sm">Студия {store.selectedStudio}</div>
+                <div className="text-white/50 text-xs mt-0.5">Гороховая 70</div>
               </div>
+              {/* Lilac glow accent */}
+              <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#C17BFF]"
+                style={{ boxShadow: '0 0 12px rgba(193,123,255,0.8)' }} />
             </div>
+
+            {/* Details */}
             <div className="p-4 space-y-3">
               <ConfirmRow label="Услуга" value={`${store.selectedService.title} · ${store.selectedService.duration}ч`} />
               <ConfirmRow label="Дата" value={format(localDate, 'd MMMM yyyy', { locale: ru })} />
               <ConfirmRow label="Время" value={`${localTime}`} />
-              <div className="pt-2 border-t dark:border-white/10 border-black/10">
+              <div className="pt-3 mt-1 border-t border-[#2A2A2A] space-y-3">
                 <ConfirmRow label="Итого" value={`${store.selectedService.price.toLocaleString()} ₽`} bold />
                 <ConfirmRow
                   label="Предоплата 50%"
@@ -324,27 +348,29 @@ export function Booking() {
             </div>
           </div>
 
-          <p className="text-xs dark:text-white/40 text-gray-400 text-center mb-4">
+          <p className="text-[11px] text-white/30 text-center mb-5 px-4">
             После подтверждения с тобой свяжется администратор для оплаты предоплаты
           </p>
 
           <button
             onClick={confirm}
             disabled={submitting}
-            className={`w-full py-4 rounded-2xl font-bold text-base transition-all
-              ${submitting ? 'opacity-60 bg-white/20 text-white/40' : 'bg-white text-black active:scale-95 shadow-lg shadow-white/20'}`}
+            className={`btn-lily w-full py-4 rounded-2xl font-bold text-base transition-all
+              ${submitting ? 'opacity-50' : ''}`}
           >
-            {submitting ? 'Отправляем...' : 'Подтвердить запись'}
+            <span className="relative z-10">
+              {submitting ? 'Отправляем...' : 'Подтвердить запись'}
+            </span>
           </button>
         </div>
       )}
 
-      {/* Bottom CTA */}
+      {/* Bottom CTA — "Далее" */}
       {step !== 'confirm' && canProceed() && (
-        <div className="fixed bottom-[72px] left-0 right-0 px-4 pb-3">
+        <div className="fixed bottom-[72px] left-0 right-0 px-4 pb-3 z-30">
           <button
             onClick={next}
-            className="w-full py-4 rounded-2xl font-bold text-base transition-all bg-white text-black active:scale-95 shadow-lg shadow-white/20"
+            className="btn-lily w-full py-4 rounded-2xl font-bold text-base"
           >
             Далее
           </button>
@@ -359,24 +385,28 @@ function ServiceCard({ service, selected, onSelect }: { service: Service; select
     <button
       onClick={onSelect}
       className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98]
-        ${selected ? 'bg-white/10 ring-1 ring-white/40' : 'dark:bg-white/5 bg-black/5'}`}
+        ${selected
+          ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/30'
+          : 'bg-[#1A1A1A] border border-[#2A2A2A] hover:border-[#C17BFF]/20'}`}
     >
-      <div className="flex items-center justify-between">
-        <div className="flex-1">
-          <div className="font-semibold dark:text-white text-gray-900 text-sm">
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex-1 min-w-0">
+          <div className="font-semibold text-white text-sm">
             {service.title} · {service.duration}ч
           </div>
-          <div className="text-xs dark:text-white/50 text-gray-500 mt-0.5 line-clamp-1">
+          <div className="text-xs text-white/40 mt-0.5 line-clamp-1">
             {service.description}
           </div>
         </div>
-        <div className="text-right ml-3">
-          <div className="font-bold dark:text-white text-gray-900 text-sm">{service.price.toLocaleString()} ₽</div>
-          <div className="text-[10px] dark:text-white/40 text-gray-400">50% предоплата</div>
+        <div className="text-right flex-shrink-0">
+          <div className={`font-bold text-sm ${selected ? 'text-[#C17BFF]' : 'text-white'}`}>
+            {service.price.toLocaleString()} ₽
+          </div>
+          <div className="text-[10px] text-white/30">50% предоплата</div>
         </div>
         {selected && (
-          <div className="ml-3 w-5 h-5 rounded-full bg-white flex items-center justify-center flex-shrink-0">
-            <svg className="w-3 h-3 text-black" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
+          <div className="w-5 h-5 rounded-full bg-[#C17BFF] flex items-center justify-center flex-shrink-0">
+            <svg className="w-3 h-3 text-white" fill="none" stroke="currentColor" strokeWidth={3} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
@@ -389,8 +419,8 @@ function ServiceCard({ service, selected, onSelect }: { service: Service; select
 function ConfirmRow({ label, value, bold, accent }: { label: string; value: string; bold?: boolean; accent?: boolean }) {
   return (
     <div className="flex items-center justify-between">
-      <span className="text-sm dark:text-white/50 text-gray-500">{label}</span>
-      <span className={`text-sm ${bold ? 'font-bold dark:text-white text-gray-900' : accent ? 'font-semibold dark:text-white text-gray-900' : 'dark:text-white text-gray-900'}`}>
+      <span className="text-sm text-white/40">{label}</span>
+      <span className={`text-sm font-medium ${accent ? 'text-[#C17BFF] font-semibold' : bold ? 'text-white font-bold' : 'text-white'}`}>
         {value}
       </span>
     </div>
@@ -408,42 +438,54 @@ function SuccessScreen({ onDone, onHome }: { onDone: () => void; onHome: () => v
   }, [])
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center px-6 text-center animate-fade-in">
-      {/* Glow ring + check */}
+    <div className="min-h-screen bg-[#0E0E0E] flex flex-col items-center justify-center px-6 text-center animate-fade-in">
+      {/* Ring + check */}
       <div className="relative mb-8">
-        <div ref={ringRef} className="success-ring w-28 h-28 rounded-full border-2 border-white/20 flex items-center justify-center">
-          <div className="w-20 h-20 rounded-full bg-white/5 flex items-center justify-center"
-            style={{ boxShadow: '0 0 40px rgba(255,255,255,0.15), 0 0 80px rgba(255,255,255,0.08)' }}>
-            <svg className="w-9 h-9 text-white success-check" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+        <div
+          ref={ringRef}
+          className="success-ring w-28 h-28 rounded-full border-2 border-[#C17BFF]/20 flex items-center justify-center"
+        >
+          <div
+            className="w-20 h-20 rounded-full bg-[#C17BFF]/5 flex items-center justify-center"
+            style={{ boxShadow: '0 0 40px rgba(193,123,255,0.15), 0 0 80px rgba(193,123,255,0.08)' }}
+          >
+            <svg
+              className="w-9 h-9 text-[#C17BFF] success-check"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              viewBox="0 0 24 24"
+            >
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
         {/* Orbiting dot */}
         <div className="absolute inset-0 success-orbit">
-          <div className="w-2 h-2 rounded-full bg-white absolute -top-1 left-1/2 -translate-x-1/2"
-            style={{ boxShadow: '0 0 8px rgba(255,255,255,0.8)' }} />
+          <div
+            className="w-2 h-2 rounded-full bg-[#C17BFF] absolute -top-1 left-1/2 -translate-x-1/2"
+            style={{ boxShadow: '0 0 8px rgba(193,123,255,0.9)' }}
+          />
         </div>
       </div>
 
-      <h2 className="text-2xl font-black dark:text-white text-gray-900 mb-2 tracking-tight">
+      <h2 className="font-display text-2xl font-black text-white mb-2 tracking-tight">
         Запись создана
       </h2>
-      <p className="text-sm dark:text-white/50 text-gray-500 mb-10 max-w-xs">
+      <p className="text-sm text-white/40 mb-10 max-w-xs leading-relaxed">
         Мы уже знаем о тебе. Напомним за день до сессии — просто приходи и твори.
       </p>
 
       <div className="w-full max-w-xs space-y-3">
         <button
           onClick={onDone}
-          className="w-full py-4 rounded-2xl font-bold text-black bg-white active:scale-95 transition-transform"
-          style={{ boxShadow: '0 0 30px rgba(255,255,255,0.2)' }}
+          className="btn-lily w-full py-4 rounded-2xl font-bold text-white"
         >
           Мои записи
         </button>
         <button
           onClick={onHome}
-          className="w-full py-3.5 rounded-2xl font-medium dark:text-white/60 text-gray-500 dark:bg-white/5 bg-black/5 active:scale-95 transition-transform"
+          className="w-full py-3.5 rounded-2xl font-medium text-white/50 bg-[#1A1A1A] border border-[#2A2A2A] active:scale-95 transition-transform"
         >
           На главную
         </button>
