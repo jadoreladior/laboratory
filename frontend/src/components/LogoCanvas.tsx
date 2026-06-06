@@ -21,7 +21,7 @@ function ButterflyMesh() {
 
   useEffect(() => {
     const img = new Image()
-    img.src = '/assets/logo.jpg'
+    img.src = '/assets/logo-laba.png'
     img.onload = () => {
       const canvas = document.createElement('canvas')
       canvas.width = img.width
@@ -60,7 +60,7 @@ function ButterflyMesh() {
 
 const StaticFallback = () => (
   <div className="logo-float">
-    <img src="/assets/logo.jpg" alt="Лаборатория" className="w-24 h-24 rounded-full object-cover"
+    <img src="/assets/logo-laba.png" alt="Лаборатория" className="w-24 h-24 rounded-full object-cover"
       style={{ boxShadow: '0 0 40px rgba(255,255,255,0.3), 0 0 80px rgba(255,255,255,0.1)' }} />
   </div>
 )

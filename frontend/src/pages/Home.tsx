@@ -11,7 +11,7 @@ export function Home() {
   const [heroIndex, setHeroIndex] = useState(0)
   const featuredArticle = useMemo(() => ARTICLES[Math.floor(Math.random() * ARTICLES.length)], [])
 
-  const heroImages = ['/assets/studio-a-1.jpg', '/assets/studio-a-2.jpg']
+  const heroImages = ['/assets/laba-1.jpg', '/assets/laba-2.jpg', '/assets/laba-5.jpg']
 
   useEffect(() => {
     const t = setInterval(() => setHeroIndex(i => (i + 1) % heroImages.length), 4000)
@@ -46,9 +46,8 @@ export function Home() {
         {/* Логотип + название */}
         <div className="absolute inset-0 flex flex-col items-center justify-center z-10 px-6">
           <div className="logo-float mb-4">
-            <img src="/assets/logo.jpg" alt="Лаборатория"
-              className="w-20 h-20 rounded-full object-cover"
-              style={{ boxShadow: '0 0 40px rgba(193,123,255,0.5), 0 0 80px rgba(193,123,255,0.2)' }}
+            <img src="/assets/logo-laba.png" alt="Лаборатория"
+              className="w-20 h-20 object-contain drop-shadow-[0_0_20px_rgba(193,123,255,0.7)]"
             />
           </div>
           <h1 className="font-display font-black text-2xl text-white tracking-tight text-center uppercase">
