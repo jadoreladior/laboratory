@@ -1,7 +1,6 @@
 import asyncio
 import logging
 import os
-from aiohttp import web
 from aiogram import Bot, Dispatcher
 from aiogram.client.default import DefaultBotProperties
 from aiogram.enums import ParseMode
@@ -16,32 +15,28 @@ PORT = int(os.getenv("PORT", "8080"))
 logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
 
 
-async def health(request):
-    return web.Response(text="ok")
-
-
-async def run_health_server():
-    app = web.Application()
-    app.router.add_get("/", health)
-    app.router.add_get("/health", health)
-    runner = web.AppRunner(app)
-    await runner.setup()
-    site = web.TCPSite(runner, "0.0.0.0", PORT)
-    await site.start()
-    logging.info(f"Health server on port {PORT}")
+async def handle_health(reader, writer):
+    await reader.read(1024)
+    writer.write(b"HTTP/1.1 200 OK\r\nContent-Length: 2\r\n\r\nok")
+    await writer.drain()
+    writer.close()
 
 
 async def main():
+    # Health server — required for Render web_service
+    server = await asyncio.start_server(handle_health, "0.0.0.0", PORT)
+    logging.info(f"Health server on port {PORT}")
+
     bot = Bot(token=BOT_TOKEN, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
     dp = Dispatcher(storage=MemoryStorage())
 
     dp.include_router(start.router)
     dp.include_router(admin.router)
 
-    await run_health_server()
-
     logging.info("🎛 Лаборатория CRM бот запущен")
-    await dp.start_polling(bot, skip_updates=True)
+
+    async with server:
+        await dp.start_polling(bot, skip_updates=True)
 
 
 if __name__ == "__main__":
