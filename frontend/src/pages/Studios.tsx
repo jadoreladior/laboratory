@@ -198,17 +198,33 @@ export function Studios() {
                 paddingBottom: 'calc(80px + env(safe-area-inset-bottom))',
               } as React.CSSProperties}
             >
-              <div className="flex items-center gap-2.5 mb-2">
+                      <div className="flex items-center gap-2.5 mb-1">
                 <h2 className="font-display text-xl font-black text-white">{selected.name}</h2>
                 <div
                   className="w-2 h-2 rounded-full flex-shrink-0"
                   style={{ backgroundColor: selected.color, boxShadow: `0 0 8px ${selected.color}` }}
                 />
               </div>
+
+              {/* Address */}
+              <a
+                href="https://yandex.ru/maps/-/CHrJBP8T"
+                target="_blank"
+                rel="noreferrer"
+                className="flex items-center gap-1.5 text-[#C17BFF]/70 text-xs mb-3 active:opacity-70"
+              >
+                <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
+                  <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
+                </svg>
+                Большой Сампсониевский 60Н · м. Выборгская
+              </a>
+
               <p className="text-sm text-white/50 leading-relaxed mb-4">
                 {selected.description}
               </p>
 
+              {/* Equipment chips */}
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-2">Оборудование</p>
               <div className="flex flex-wrap gap-1.5 mb-6">
                 {selected.features.map(f => (
                   <span
@@ -229,7 +245,7 @@ export function Studios() {
                 onClick={() => { if (selected) setStudio(selected.id); close(); navigate('/booking') }}
                 className="btn-lily w-full py-4 rounded-2xl font-bold text-white text-base active:scale-95 transition-transform"
               >
-                Записаться в {selected.name}
+                Записаться
               </button>
             </div>
           </div>
