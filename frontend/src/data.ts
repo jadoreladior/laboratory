@@ -22,39 +22,103 @@ export const STUDIOS: Studio[] = [
 ]
 
 export const SERVICES: Service[] = [
-  // Запись со звукорежиссёром
-  { id: 'rec-1', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 1, price: 1765, prepayPercent: 50 },
-  { id: 'rec-2', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 2, price: 3530, prepayPercent: 50 },
-  { id: 'rec-3', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 3, price: 5295, prepayPercent: 50 },
-  { id: 'rec-4', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 4, price: 7060, prepayPercent: 50 },
+  // Запись со звукорежиссёром — 1 690 ₽/час
+  { id: 'rec-1', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 1, price: 1690, prepayPercent: 50 },
+  { id: 'rec-2', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 2, price: 3380, prepayPercent: 50 },
+  { id: 'rec-3', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 3, price: 5070, prepayPercent: 50 },
+  { id: 'rec-4', category: 'record', title: 'Запись', description: 'Запись со звукорежиссёром + готовое демо после сессии', duration: 4, price: 6760, prepayPercent: 50 },
 
-  // Сведение и мастеринг
-  { id: 'mix-1', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 1, price: 2425, prepayPercent: 50 },
-  { id: 'mix-2', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 2, price: 4850, prepayPercent: 50 },
-  { id: 'mix-3', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 3, price: 7275, prepayPercent: 50 },
-  { id: 'mix-4', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 4, price: 9700, prepayPercent: 50 },
+  // Готовый трек — запись + сведение на месте
+  { id: 'gt-3',  category: 'package', title: 'Готовый трек', description: 'Запись и сведение на месте — уходишь с финальной версией', duration: 3,  price: 7970,  prepayPercent: 50 },
+  { id: 'gt-5',  category: 'package', title: 'Готовый трек', description: 'Запись и сведение на месте — уходишь с финальной версией', duration: 5,  price: 11970, prepayPercent: 50 },
+  { id: 'gt-6',  category: 'package', title: 'Готовый трек', description: 'Запись и сведение на месте — уходишь с финальной версией', duration: 6,  price: 13970, prepayPercent: 50 },
 
-  // Аренда без звукорежиссёра
-  { id: 'rent-1', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 1, price: 1215, prepayPercent: 50 },
-  { id: 'rent-2', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 2, price: 2430, prepayPercent: 50 },
-  { id: 'rent-3', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 3, price: 3645, prepayPercent: 50 },
-  { id: 'rent-4', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 4, price: 4860, prepayPercent: 50 },
+  // Сведение почасовое — 2 690 ₽/час
+  { id: 'mix-1', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 1, price: 2690, prepayPercent: 50 },
+  { id: 'mix-2', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 2, price: 5380, prepayPercent: 50 },
+  { id: 'mix-3', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 3, price: 8070, prepayPercent: 50 },
+  { id: 'mix-4', category: 'studio', title: 'Сведение', description: 'Почасовое сведение: баланс, частоты, пространство, стриминговые стандарты', duration: 4, price: 10760, prepayPercent: 50 },
 
-  // Пакеты
-  { id: 'pkg-6',  category: 'package', title: 'Пакет 6 часов',  description: '6 часов аренды по выгодной цене',  duration: 6,  price: 6600,  prepayPercent: 50 },
-  { id: 'pkg-10', category: 'package', title: 'Пакет 10 часов', description: '10 часов аренды по выгодной цене', duration: 10, price: 9900,  prepayPercent: 50 },
-  { id: 'pkg-15', category: 'package', title: 'Пакет 15 часов', description: '15 часов аренды по выгодной цене', duration: 15, price: 13200, prepayPercent: 50 },
-  { id: 'pkg-20', category: 'package', title: 'Пакет 20 часов', description: 'Максимальный пакет — 20 часов аренды', duration: 20, price: 15400, prepayPercent: 50 },
+  // Сведение дистанционное — фиксированная цена
+  { id: 'mix-dist', category: 'studio', title: 'Сведение дистанционно', description: 'Присылаешь исходники — мы сводим. 3 раунда правок включены', duration: 0, price: 9990, prepayPercent: 50 },
+
+  // Аренда без звукорежиссёра — 1 360 ₽/час
+  { id: 'rent-1', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 1, price: 1360, prepayPercent: 50 },
+  { id: 'rent-2', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 2, price: 2720, prepayPercent: 50 },
+  { id: 'rent-3', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 3, price: 4080, prepayPercent: 50 },
+  { id: 'rent-4', category: 'rent', title: 'Аренда студии', description: 'Самостоятельная работа — без звукорежиссёра', duration: 4, price: 5440, prepayPercent: 50 },
 ]
 
 export const SERVICE_CATEGORIES = [
   { id: 'record',  label: 'Запись' },
   { id: 'studio',  label: 'Сведение' },
   { id: 'rent',    label: 'Аренда' },
-  { id: 'package', label: 'Пакеты' },
+  { id: 'package', label: 'Готовый трек' },
 ] as const
 
 export const ARTICLES: Article[] = [
+  {
+    id: 'ustav',
+    title: 'Устав Лаборатории',
+    subtitle: 'Правила, которые делают студию комфортной для всех',
+    cover: '/assets/studio-a-2.jpg',
+    date: '2025-11-04',
+    readTime: 3,
+    tag: 'О студии',
+    blocks: [
+      {
+        type: 'heading',
+        text: 'Предоплата 50%',
+      },
+      {
+        type: 'paragraph',
+        text: 'Когда вы бронируете время в Лаборатории, мы просим внести 50% предоплаты, чтобы вы подтвердили свои намерения. Предоплату можно вернуть при отмене заблаговременно.',
+      },
+      {
+        type: 'heading',
+        text: 'Курение и алкоголь',
+      },
+      {
+        type: 'qa',
+        question: 'Что можно, а что нельзя',
+        answer: 'Сигареты, Айкосы, кальяны, бонги и трубки — только за пределами студии. Электронки можно парить внутри. Алкоголь не запрещён, если это помогает творчеству. Но если вы теряете берега — звукорежиссёр может прервать запись. В двух шагах: «Ароматный Мир», «Красное&Белое», «Дикси».',
+      },
+      {
+        type: 'heading',
+        text: 'Хамство и угрозы',
+      },
+      {
+        type: 'paragraph',
+        text: 'Если вы грубо обращаетесь с имуществом, хамите, угрожаете дракой или богатым папой — мы прекратим работу и попросим уйти, даже если вы очень известный.',
+      },
+      {
+        type: 'heading',
+        text: 'Имущество',
+      },
+      {
+        type: 'qa',
+        question: 'Признаёте вину',
+        answer: 'Прикинем ущерб и предложим возместить на месте. Если денег нет — долговая расписка с ИП.',
+      },
+      {
+        type: 'qa',
+        question: 'Не признаёте вину',
+        answer: 'В Лаборатории работают камеры. Мы вряд ли оставим это просто так.',
+      },
+      {
+        type: 'heading',
+        text: 'Правки сведения',
+      },
+      {
+        type: 'paragraph',
+        text: 'У вас всегда есть 3 раунда правок — они входят в стоимость. Собираете все правки в один список → звукорежиссёр вносит → присылает новую версию. Так до трёх раундов.',
+      },
+      {
+        type: 'quote',
+        text: 'Если вам плохо — мы не оставим в беде. Помогут все, кто есть в Лабе и рядом.',
+      },
+    ],
+  },
   {
     id: 'services-record',
     title: 'Услуга: Запись',
