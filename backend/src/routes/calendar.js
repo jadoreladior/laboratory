@@ -26,11 +26,16 @@ router.get('/day/:date', async (req, res, next) => {
     const dayLeads   = allLeads.filter(l => l.booking_date === date)
     const dayBlocked = allBlocked.filter(b => b.date === date)
 
-    // Первый активный заказ на каждый слот
+    // Заполняем каждый слот диапазона (start + duration_hours)
     const bookedMap = {}
     for (const l of dayLeads) {
-      if (['pending', 'confirmed', 'completed'].includes(l.status)) {
-        if (!bookedMap[l.booking_time]) bookedMap[l.booking_time] = l
+      if (!['pending', 'confirmed', 'completed'].includes(l.status)) continue
+      const startH   = parseInt(l.booking_time?.split(':')[0] ?? '0', 10)
+      const duration = Math.max(1, parseInt(l.duration_hours ?? '1', 10))
+      for (let i = 0; i < duration; i++) {
+        const h    = (startH + i) % 24
+        const slot = `${String(h).padStart(2, '0')}:00`
+        if (!bookedMap[slot]) bookedMap[slot] = l
       }
     }
 
@@ -88,7 +93,12 @@ router.get('/month/:year/:month', async (req, res, next) => {
       if (!dayMap[l.booking_date]) {
         dayMap[l.booking_date] = { date: l.booking_date, booked_times: new Set(), revenue: 0, count: 0 }
       }
-      dayMap[l.booking_date].booked_times.add(l.booking_time)
+      const startH   = parseInt(l.booking_time?.split(':')[0] ?? '0', 10)
+      const duration = Math.max(1, parseInt(l.duration_hours ?? '1', 10))
+      for (let i = 0; i < duration; i++) {
+        const h = (startH + i) % 24
+        dayMap[l.booking_date].booked_times.add(`${String(h).padStart(2, '0')}:00`)
+      }
       dayMap[l.booking_date].revenue += Number(l.total_price) || 0
       dayMap[l.booking_date].count++
     }

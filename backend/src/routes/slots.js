@@ -15,11 +15,17 @@ router.get('/:date', async (req, res, next) => {
     const { date } = req.params
     const leads = await readSheet('Leads')
 
-    const booked = new Set(
-      leads
-        .filter(l => l.booking_date === date && ['pending', 'confirmed'].includes(l.status))
-        .map(l => l.booking_time)
-    )
+    const booked = new Set()
+    for (const l of leads) {
+      if (l.booking_date !== date) continue
+      if (!['pending', 'confirmed'].includes(l.status)) continue
+      const startH   = parseInt(l.booking_time?.split(':')[0] ?? '0', 10)
+      const duration = Math.max(1, parseInt(l.duration_hours ?? '1', 10))
+      for (let i = 0; i < duration; i++) {
+        const h = (startH + i) % 24
+        booked.add(`${String(h).padStart(2, '0')}:00`)
+      }
+    }
 
     res.json({
       date,

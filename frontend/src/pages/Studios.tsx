@@ -529,13 +529,19 @@ export function Studios() {
                   style={{ backgroundColor: selected.color, boxShadow: `0 0 8px ${selected.color}` }} />
               </div>
 
-              <a href="https://yandex.ru/maps/-/CHrJBP8T" target="_blank" rel="noreferrer"
+              <button
+                onClick={() => {
+                  const url = 'https://yandex.ru/maps/?ll=30.329416,59.964355&z=17&pt=30.329416,59.964355,pm2rdm'
+                  const tg = (window as any).Telegram?.WebApp
+                  if (tg?.openLink) tg.openLink(url)
+                  else window.open(url, '_blank')
+                }}
                 className="flex items-center gap-1.5 text-[#C17BFF]/70 text-xs mb-3 active:opacity-70">
                 <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
                 Большой Сампсониевский 60Н · м. Выборгская
-              </a>
+              </button>
 
               <p className="text-sm text-white/50 leading-relaxed mb-4">{selected.description}</p>
 
