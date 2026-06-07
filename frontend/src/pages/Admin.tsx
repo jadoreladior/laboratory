@@ -8,9 +8,9 @@ import {
   getAdminBookings, confirmBooking, cancelBooking, updateLeadStatus,
   getClients, addClient, verifyOwnerPin, createBooking,
   getCalendarMonth, getCalendarDay, blockSlot, unblockSlot,
-  getAdminStats, getSettings, saveSettings,
+  getAdminStats, getSettings, saveSettings, getClientProfile,
 } from '../api'
-import type { Lead, Client, DayData, DaySlot, CalendarDay, Partner } from '../api'
+import type { Lead, Client, DayData, DaySlot, CalendarDay, ClientProfile } from '../api'
 import { SERVICES } from '../data'
 import { useAppContext } from '../App'
 import { OwnerDashboard } from './OwnerDashboard'
@@ -1259,6 +1259,9 @@ function ClientsView({ clients, setClients, onBack }: {
   const [form, setForm] = useState({ name: '', phone: '', username: '', notes: '' })
   const [saving, setSaving] = useState(false)
   const [search, setSearch] = useState('')
+  const [selectedClient, setSelectedClient] = useState<Client | null>(null)
+  const [profile, setProfile] = useState<ClientProfile | null>(null)
+  const [profileLoading, setProfileLoading] = useState(false)
 
   const handleAdd = async () => {
     if (!form.name.trim()) return
@@ -1269,6 +1272,16 @@ function ClientsView({ clients, setClients, onBack }: {
       setForm({ name: '', phone: '', username: '', notes: '' })
       setShowForm(false)
     } catch {} finally { setSaving(false) }
+  }
+
+  const openProfile = (c: Client) => {
+    setSelectedClient(c)
+    setProfile(null)
+    setProfileLoading(true)
+    getClientProfile(c.id)
+      .then(setProfile)
+      .catch(() => {})
+      .finally(() => setProfileLoading(false))
   }
 
   const filtered = clients.filter(c =>
@@ -1336,7 +1349,11 @@ function ClientsView({ clients, setClients, onBack }: {
             {search ? 'Не найдено' : 'Клиентов пока нет'}
           </div>
         ) : filtered.map(c => (
-          <div key={c.id} className="card-lab p-4">
+          <button
+            key={c.id}
+            onClick={() => openProfile(c)}
+            className="w-full card-lab p-4 text-left active:scale-[0.98] transition-transform"
+          >
             <div className="flex items-center gap-3">
               <div className="w-10 h-10 rounded-full bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
                 <span className="text-[#C17BFF] font-bold text-sm">{c.name[0]}</span>
@@ -1349,10 +1366,170 @@ function ClientsView({ clients, setClients, onBack }: {
                 </div>
                 {c.notes && <div className="text-xs text-white/25 mt-0.5 italic">{c.notes}</div>}
               </div>
+              <ChevronRight size={14} className="text-white/20 flex-shrink-0" />
             </div>
-          </div>
+          </button>
         ))}
       </div>
+
+      {/* Profile modal */}
+      {selectedClient && (
+        <>
+          <div
+            className="fixed inset-0 z-40"
+            style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', backgroundColor: 'rgba(0,0,0,0.7)' }}
+            onClick={() => setSelectedClient(null)}
+          />
+          <div
+            className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+          >
+            <div
+              className="animate-scale-in pointer-events-auto w-full"
+              style={{
+                maxWidth: 480,
+                maxHeight: '90svh',
+                overflowY: 'auto',
+                background: '#161616',
+                border: '1px solid #2A2A2A',
+                borderRadius: '24px 24px 0 0',
+              }}
+            >
+              {/* Drag handle */}
+              <div className="w-10 h-1 bg-white/15 rounded-full mx-auto mt-3 mb-2" />
+
+              <div className="px-5 pb-10">
+                {/* Header */}
+                <div className="flex items-center justify-between mb-5">
+                  <div className="flex items-center gap-3">
+                    <div className="w-12 h-12 rounded-full bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#C17BFF] font-black text-lg">{selectedClient.name[0]}</span>
+                    </div>
+                    <div>
+                      <h3 className="font-display font-black text-white text-lg leading-tight">{selectedClient.name}</h3>
+                      <div className="flex flex-wrap gap-x-3 mt-0.5">
+                        {selectedClient.username && (
+                          <a
+                            href={`https://t.me/${selectedClient.username}`}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="text-xs text-[#C17BFF]"
+                          >
+                            @{selectedClient.username}
+                          </a>
+                        )}
+                        {selectedClient.phone && (
+                          <a href={`tel:${selectedClient.phone}`} className="text-xs text-white/40">
+                            {selectedClient.phone}
+                          </a>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <button
+                    onClick={() => setSelectedClient(null)}
+                    className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0"
+                  >
+                    <X size={14} className="text-white/40" />
+                  </button>
+                </div>
+
+                {profileLoading && (
+                  <div className="text-center py-10 text-white/30 text-sm">Загружаем профиль...</div>
+                )}
+
+                {profile && !profileLoading && (
+                  <>
+                    {/* Stats row */}
+                    <div className="grid grid-cols-3 gap-2 mb-4">
+                      <div className="card-lab p-3 text-center">
+                        <div className="text-xl font-black text-white">{profile.total_bookings}</div>
+                        <div className="text-[10px] text-white/30 mt-0.5 leading-tight">визитов</div>
+                      </div>
+                      <div className="card-lab p-3 text-center">
+                        <div className="text-xl font-black text-white">{profile.completed_bookings}</div>
+                        <div className="text-[10px] text-white/30 mt-0.5 leading-tight">завершено</div>
+                      </div>
+                      <div className="card-lab p-3 text-center">
+                        <div className="text-xl font-black text-[#C17BFF]">
+                          {profile.total_spent >= 1000
+                            ? `${(profile.total_spent / 1000).toFixed(0)}к`
+                            : `${profile.total_spent}`}
+                        </div>
+                        <div className="text-[10px] text-white/30 mt-0.5 leading-tight">потрачено ₽</div>
+                      </div>
+                    </div>
+
+                    {/* Extra info */}
+                    {(profile.preferred_service || profile.last_visit || profile.first_visit) && (
+                      <div className="card-lab p-4 space-y-2.5 mb-4">
+                        {profile.preferred_service && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-white/40">Любимая услуга</span>
+                            <span className="text-xs font-semibold text-[#C17BFF] text-right max-w-[60%] leading-snug">
+                              {profile.preferred_service}
+                            </span>
+                          </div>
+                        )}
+                        {profile.first_visit && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-white/40">Первый визит</span>
+                            <span className="text-xs font-medium text-white">{profile.first_visit}</span>
+                          </div>
+                        )}
+                        {profile.last_visit && (
+                          <div className="flex items-center justify-between">
+                            <span className="text-xs text-white/40">Последний визит</span>
+                            <span className="text-xs font-medium text-white">{profile.last_visit}</span>
+                          </div>
+                        )}
+                      </div>
+                    )}
+
+                    {/* Booking history */}
+                    {profile.history.length > 0 ? (
+                      <div>
+                        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-2">
+                          История записей
+                        </p>
+                        <div className="space-y-2">
+                          {profile.history.map(b => {
+                            const st = SL[b.status] ?? SL.pending
+                            return (
+                              <div key={b.id} className="card-lab p-3">
+                                <div className="flex items-start justify-between gap-2">
+                                  <div className="flex-1 min-w-0">
+                                    <div className="text-sm font-medium text-white leading-snug truncate">
+                                      {b.service}
+                                    </div>
+                                    <div className="text-xs text-white/30 mt-0.5">
+                                      {b.booking_date} · {b.booking_time}
+                                    </div>
+                                  </div>
+                                  <div className="flex flex-col items-end gap-1 flex-shrink-0">
+                                    <span className={`text-[10px] font-semibold px-2 py-0.5 rounded-full ${st.color} ${st.bg}`}>
+                                      {st.label}
+                                    </span>
+                                    <span className="text-xs text-white/50">
+                                      {Number(b.total_price).toLocaleString()} ₽
+                                    </span>
+                                  </div>
+                                </div>
+                              </div>
+                            )
+                          })}
+                        </div>
+                      </div>
+                    ) : (
+                      <div className="text-center py-6 text-white/20 text-sm">Записей пока нет</div>
+                    )}
+                  </>
+                )}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
     </div>
   )
 }

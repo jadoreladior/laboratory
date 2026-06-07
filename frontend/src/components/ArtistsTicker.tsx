@@ -5,9 +5,8 @@ const DEFAULT_NAMES = [
   'Mnogoznaal', 'SKY RAE', 'Yanix', 'Lizer', 'OG Buda', 'MAYOT',
 ]
 
-interface Props {
-  names?: string[]
-}
+// eslint-disable-next-line @typescript-eslint/no-empty-interface
+interface Props {}
 
 function TickerRow({ artists, reverse }: { artists: string[]; reverse?: boolean }) {
   // Дублируем минимум до 16 элементов чтобы лента была бесконечной
@@ -35,9 +34,9 @@ function TickerRow({ artists, reverse }: { artists: string[]; reverse?: boolean 
   )
 }
 
-export function ArtistsTicker({ names }: Props) {
-  // Если переданы имена из API — используем их, иначе дефолт
-  const list = (names && names.length > 0) ? names : DEFAULT_NAMES
+export function ArtistsTicker(_props: Props) {
+  // Всегда используем захардкоженный список
+  const list = DEFAULT_NAMES
 
   // Делим на две строки примерно пополам
   const mid = Math.ceil(list.length / 2)

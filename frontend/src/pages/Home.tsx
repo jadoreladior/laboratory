@@ -4,8 +4,6 @@ import { useTelegram } from '../hooks/useTelegram'
 import { SERVICE_CATEGORIES } from '../data'
 import { Mic2, Sliders, Key, Package, ChevronRight } from 'lucide-react'
 import { ArtistsTicker } from '../components/ArtistsTicker'
-import { getPartners } from '../api'
-import type { Partner } from '../api'
 
 const HERO_IMAGES = [
   '/photos/studio/main.jpg',
@@ -45,11 +43,6 @@ export function Home() {
   const { user, haptic } = useTelegram()
   const navigate = useNavigate()
   const [heroIndex, setHeroIndex] = useState(0)
-  const [partners, setPartners] = useState<Partner[]>([])
-
-  useEffect(() => {
-    getPartners().then(setPartners).catch(() => {})
-  }, [])
 
   useEffect(() => {
     const t = setInterval(() => {
@@ -129,7 +122,7 @@ export function Home() {
       <div className="px-4 space-y-8">
 
         {/* ── АРТИСТЫ ── */}
-        <ArtistsTicker names={partners.map(p => p.name)} />
+        <ArtistsTicker />
 
         {/* ── УСЛУГИ ── */}
         <div>
@@ -251,21 +244,6 @@ export function Home() {
             </p>
           </div>
         </div>
-
-        {/* ── РАБОТАЛИ С НАМИ ── */}
-        {partners.length > 0 && (
-          <div>
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Работали с нами</p>
-            <div className="flex flex-wrap gap-2">
-              {partners.map(p => (
-                <div key={p.id} className="px-3 py-2 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A]">
-                  <div className="text-sm font-semibold text-white">{p.name}</div>
-                  {p.role && <div className="text-[10px] text-white/35 mt-0.5">{p.role}</div>}
-                </div>
-              ))}
-            </div>
-          </div>
-        )}
 
         {/* ── ЯНДЕКС КАРТА ── */}
         <div>

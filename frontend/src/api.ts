@@ -55,6 +55,23 @@ export async function addClient(client: Omit<Client, 'id' | 'created_at'>) {
   return data as Client
 }
 
+export interface ClientProfile {
+  client: Client
+  total_bookings: number
+  completed_bookings: number
+  total_spent: number
+  preferred_service: string | null
+  last_visit: string | null
+  first_visit: string | null
+  is_first_visit: boolean
+  history: Lead[]
+}
+
+export async function getClientProfile(id: string): Promise<ClientProfile> {
+  const { data } = await api.get(`/api/clients/${id}/profile`)
+  return data
+}
+
 // upsertUser → addClient (для совместимости с App.tsx)
 export async function upsertUser(user: {
   telegram_id: number
