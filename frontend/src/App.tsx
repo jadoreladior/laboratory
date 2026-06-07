@@ -1,4 +1,5 @@
-import { useEffect, createContext, useContext, useState } from 'react'
+import { useEffect, createContext, useContext, useState, useRef } from 'react'
+import { initMotionBlur } from './utils/motionBlur'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useTelegram } from './hooks/useTelegram'
 import { BottomNav } from './components/BottomNav'
@@ -41,6 +42,7 @@ export function App() {
   const [role, setRole] = useState<UserRole>('user')
   const [pendingCount, setPendingCount] = useState(0)
   const [showSplash, setShowSplash] = useState(true)
+  const mbCleanup = useRef<(() => void) | null>(null)
 
   const isOwner = role === 'owner'
   const isAdmin = role === 'owner' || role === 'staff'
@@ -55,6 +57,14 @@ export function App() {
   useEffect(() => {
     document.documentElement.classList.add('dark')
   }, [])
+
+  // Init motion blur after splash hides
+  useEffect(() => {
+    if (showSplash) return
+    const cleanup = initMotionBlur()
+    mbCleanup.current = cleanup
+    return cleanup
+  }, [showSplash])
 
   useEffect(() => {
     if (!user) return
@@ -91,7 +101,10 @@ export function App() {
           transition: 'opacity 0.4s ease',
         }}
       >
-        <AnimatedRoutes isAdmin={isAdmin} />
+        {/* page-content is the motion-blur target — BottomNav stays outside so it's never blurred */}
+        <div id="page-content" style={{ willChange: 'filter, transform' }}>
+          <AnimatedRoutes isAdmin={isAdmin} />
+        </div>
         <BottomNav />
       </div>
     </AppContext.Provider>

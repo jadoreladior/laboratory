@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 const SPLASH_VIDEO = '/assets/splash.mp4'
-const SPLASH_LOGO  = '/assets/logo.png'
+const SPLASH_LOGO  = '/assets/logo.jpg'
 
 /** Equalizer bars — audio studio branding */
 function EqBars() {
