@@ -19,6 +19,7 @@ app.use('/api/slots',     require('./routes/slots'))
 app.use('/api/blocked',   require('./routes/blocked'))
 app.use('/api/calendar',  require('./routes/calendar'))
 app.use('/api/role',      require('./routes/role'))
+app.use('/api/admin/owner', require('./routes/owner'))
 
 app.get('/health', (_, res) => res.json({ status: 'ok', service: 'laboratoriya-crm' }))
 
