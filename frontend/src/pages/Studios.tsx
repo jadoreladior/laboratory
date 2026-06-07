@@ -330,8 +330,7 @@ export function Studios() {
               </div>
               <div className="p-3">
                 <div className="font-bold text-white text-xs leading-tight">{member.name}</div>
-                <div className="text-[10px] text-[#C17BFF] mt-0.5">{member.role}</div>
-                <div className="text-[10px] text-white/35 mt-1 leading-snug">{member.specialization}</div>
+                <div className="text-[10px] text-[#C17BFF] font-semibold mt-0.5">{member.role}</div>
               </div>
             </button>
           ))}
@@ -605,13 +604,26 @@ export function Studios() {
               </button>
               <div className="absolute bottom-4 left-5">
                 <div className="font-display font-black text-white text-lg leading-tight">{selectedMember.name}</div>
-                <div className="text-[#C17BFF] text-xs mt-0.5">{selectedMember.specialization}</div>
+                <div className="text-[#C17BFF] text-xs mt-1 font-semibold">{selectedMember.role}</div>
+                <div className="text-white/40 text-[10px] mt-0.5">{selectedMember.specialization}</div>
               </div>
             </div>
 
             {/* Info + tracks */}
             <div className="flex-1 min-h-0 overflow-y-auto p-5">
-              <p className="text-sm text-white/55 leading-relaxed mb-5">{selectedMember.bio}</p>
+              <p className="text-sm text-white/55 leading-relaxed mb-4">{selectedMember.bio}</p>
+
+              {/* Facts / achievements */}
+              {(selectedMember as any).facts?.length > 0 && (
+                <div className="space-y-2 mb-5">
+                  {(selectedMember as any).facts.map((fact: string, i: number) => (
+                    <div key={i} className="flex items-center gap-2.5">
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#C17BFF] flex-shrink-0" />
+                      <span className="text-xs text-white/60 leading-snug">{fact}</span>
+                    </div>
+                  ))}
+                </div>
+              )}
 
               {selectedMember.tracks && selectedMember.tracks.length > 0 && (
                 <>
