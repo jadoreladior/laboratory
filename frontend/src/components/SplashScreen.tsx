@@ -95,6 +95,22 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
           animation: 'fadeUp 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both',
         }}
       >
+        {/* Sticker */}
+        <div
+          style={{
+            width: 160,
+            height: 160,
+            marginBottom: 16,
+            animation: 'float 3.5s ease-in-out infinite',
+          }}
+        >
+          <img
+            src="/assets/sticker.webp"
+            alt=""
+            style={{ width: '100%', height: '100%', objectFit: 'contain' }}
+          />
+        </div>
+
         {/* Equalizer bars */}
         <div style={{ animation: 'fadeIn 0.4s ease 0.25s both', opacity: 0, marginBottom: 24 }}>
           <EqBars />
