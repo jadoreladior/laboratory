@@ -2,6 +2,7 @@ import { useEffect, createContext, useContext, useState } from 'react'
 import { Routes, Route, Navigate, useLocation } from 'react-router-dom'
 import { useTelegram } from './hooks/useTelegram'
 import { BottomNav } from './components/BottomNav'
+import { SplashScreen } from './components/SplashScreen'
 import { Home } from './pages/Home'
 import { Studios } from './pages/Studios'
 import { Booking } from './pages/Booking'
@@ -39,6 +40,7 @@ export function App() {
   const [telegramId, setTelegramId] = useState<number | null>(null)
   const [role, setRole] = useState<UserRole>('user')
   const [pendingCount, setPendingCount] = useState(0)
+  const [showSplash, setShowSplash] = useState(true)
 
   const isOwner = role === 'owner'
   const isAdmin = role === 'owner' || role === 'staff'
@@ -81,7 +83,14 @@ export function App() {
 
   return (
     <AppContext.Provider value={{ telegramId, role, isAdmin, isOwner, pendingCount, refreshPending }}>
-      <div className="min-h-screen dark:bg-[#0d0d0d] bg-[#f5f5f5] dark:text-white text-gray-900 transition-colors">
+      {showSplash && <SplashScreen onDone={() => setShowSplash(false)} />}
+      <div
+        className="min-h-screen dark:bg-[#0d0d0d] bg-[#f5f5f5] dark:text-white text-gray-900 transition-colors"
+        style={{
+          opacity: showSplash ? 0 : 1,
+          transition: 'opacity 0.4s ease',
+        }}
+      >
         <AnimatedRoutes isAdmin={isAdmin} />
         <BottomNav />
       </div>

@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTelegram } from '../hooks/useTelegram'
 import { SERVICE_CATEGORIES } from '../data'
@@ -198,53 +198,50 @@ export function Home() {
           <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">О студии</p>
 
           {/* Статы: 4 плитки */}
-          <div className="grid grid-cols-2 gap-2 mb-3">
-            {[
-              {
-                icon: (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
-                  </svg>
-                ),
-                value: '140 м²',
-                label: 'Площадь студии',
-              },
-              {
-                icon: (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                ),
-                value: 'Круглосуточно',
-                label: 'Ежедневно',
-              },
-              {
-                icon: (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
-                  </svg>
-                ),
-                value: '1 500 000 ₽',
-                label: 'Парк оборудования',
-              },
-              {
-                icon: (
-                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  </svg>
-                ),
-                value: 'Предоплата 50%',
-                label: 'Возврат при отмене',
-              },
-            ].map(({ icon, value, label }) => (
-              <div key={label} className="card-lab p-4 rounded-2xl">
-                <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
-                  {icon}
-                </div>
-                <div className="text-sm font-bold text-white leading-tight">{value}</div>
-                <div className="text-[11px] text-white/40 mt-1 leading-snug">{label}</div>
+          <div className="grid grid-cols-2 gap-2 mb-3 stagger">
+            <div className="card-lab p-4 rounded-2xl">
+              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                </svg>
               </div>
-            ))}
+              <div className="text-sm font-bold text-white leading-tight">
+                <CountUp to={140} suffix=" м²" />
+              </div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">Площадь студии</div>
+            </div>
+
+            <div className="card-lab p-4 rounded-2xl">
+              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-sm font-bold text-white leading-tight">Круглосуточно</div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">Ежедневно</div>
+            </div>
+
+            <div className="card-lab p-4 rounded-2xl">
+              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                </svg>
+              </div>
+              <div className="text-sm font-bold text-white leading-tight">
+                <CountUp to={1500000} suffix=" ₽" duration={1400} />
+              </div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">Парк оборудования</div>
+            </div>
+
+            <div className="card-lab p-4 rounded-2xl">
+              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                </svg>
+              </div>
+              <div className="text-sm font-bold text-white leading-tight">Предоплата 50%</div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">Возврат при отмене</div>
+            </div>
           </div>
 
           {/* Текстовая плашка */}
@@ -331,4 +328,36 @@ export function Home() {
       <div className="h-2" />
     </div>
   )
+}
+
+/** Counts up from 0 → target when the element scrolls into view */
+function CountUp({ to, suffix = '', duration = 1100 }: { to: number; suffix?: string; duration?: number }) {
+  const [count, setCount] = useState(0)
+  const ref = useRef<HTMLSpanElement>(null)
+  const started = useRef(false)
+
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting && !started.current) {
+          started.current = true
+          const startTime = performance.now()
+          const step = (now: number) => {
+            const t = Math.min((now - startTime) / duration, 1)
+            const eased = 1 - Math.pow(1 - t, 3)
+            setCount(Math.floor(eased * to))
+            if (t < 1) requestAnimationFrame(step)
+          }
+          requestAnimationFrame(step)
+        }
+      },
+      { threshold: 0.5 }
+    )
+    observer.observe(el)
+    return () => observer.disconnect()
+  }, [to, duration])
+
+  return <span ref={ref}>{count.toLocaleString('ru-RU')}{suffix}</span>
 }

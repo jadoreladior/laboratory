@@ -260,7 +260,7 @@ export function Booking() {
 
       {/* ── Step: Service ── */}
       {step === 'service' && (
-        <div className="px-4 space-y-3 animate-fade-in pb-28">
+        <div className="px-4 animate-fade-in pb-28">
           {lastCategory && (
             <div className="flex items-center gap-2 mb-1">
               <div className="w-1.5 h-1.5 rounded-full bg-[#C17BFF]" />
@@ -269,6 +269,7 @@ export function Booking() {
               </span>
             </div>
           )}
+          <div className="stagger space-y-3">
           {Object.entries(CAT_CONFIG).map(([id, cfg]) => {
             const isSelected = category === id
             const isLast = lastCategory === id
@@ -308,6 +309,7 @@ export function Booking() {
               </button>
             )
           })}
+          </div>
         </div>
       )}
 
