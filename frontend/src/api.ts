@@ -174,6 +174,41 @@ export function getExportUrl(type: 'bookings' | 'financial') {
   return `${BASE_URL}/api/admin/export/${type}`
 }
 
+// ─── Settings (prices) ───────────────────────────────────────────────────────
+
+export async function getSettings(): Promise<Record<string, string>> {
+  const { data } = await api.get('/api/admin/settings')
+  return data
+}
+
+export async function saveSettings(settings: Record<string, string | number>) {
+  const { data } = await api.post('/api/admin/settings', settings)
+  return data as Record<string, string>
+}
+
+// ─── Partners (работали с нами) ──────────────────────────────────────────────
+
+export interface Partner {
+  id: string
+  name: string
+  role: string
+  created_at: string
+}
+
+export async function getPartners(): Promise<Partner[]> {
+  const { data } = await api.get('/api/admin/partners')
+  return data
+}
+
+export async function addPartner(name: string, role: string): Promise<Partner> {
+  const { data } = await api.post('/api/admin/partners', { name, role })
+  return data
+}
+
+export async function deletePartner(id: string): Promise<void> {
+  await api.delete(`/api/admin/partners/${id}`)
+}
+
 // ─── Types ───────────────────────────────────────────────────────────────────
 
 export type LeadStatus = 'pending' | 'confirmed' | 'completed' | 'cancelled'

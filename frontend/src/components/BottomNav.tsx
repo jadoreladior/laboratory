@@ -4,9 +4,7 @@ import { useState, useEffect } from 'react'
 
 const baseTabs = [
   { to: '/', icon: HomeIcon, label: 'Главная' },
-  { to: '/studios', icon: StudiosIcon, label: 'Залы' },
-  { to: '/booking', icon: BookIcon, label: 'Запись' },
-  { to: '/media', icon: MediaIcon, label: 'Медиа' },
+  { to: '/studios', icon: StudiosIcon, label: 'Студия' },
   { to: '/profile', icon: ProfileIcon, label: 'Профиль' },
 ]
 

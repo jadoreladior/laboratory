@@ -1,11 +1,12 @@
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTelegram } from '../hooks/useTelegram'
-import { ARTICLES, SERVICE_CATEGORIES } from '../data'
+import { SERVICE_CATEGORIES } from '../data'
 import { Mic2, Sliders, Key, Package, ChevronRight } from 'lucide-react'
 import { ArtistsTicker } from '../components/ArtistsTicker'
+import { getPartners } from '../api'
+import type { Partner } from '../api'
 
-// Новые фото из /photos/studio/
 const HERO_IMAGES = [
   '/photos/studio/main.jpg',
   '/photos/studio/2.jpg',
@@ -30,22 +31,28 @@ const CAT_RATES: Record<string, string> = {
   package: 'от 7 970 ₽',
 }
 const CAT_DESC: Record<string, string> = {
-  record:  'С звукорежиссёром',
-  studio:  'Почасово / дистанционно',
-  rent:    'Без инженера',
-  package: 'Запись + сведение',
+  record:  'Вокал · речитатив · живые инструменты',
+  studio:  'На месте или дистанционно по исходникам',
+  rent:    'Самостоятельная работа без инженера',
+  package: 'Уходишь с готовым финальным треком',
 }
+
+// Координаты: Большой Сампсониевский пр., 60Н
+const MAP_URL = 'https://yandex.ru/map-widget/v1/?ll=30.329416%2C59.964355&z=16&pt=30.329416%2C59.964355%2Cpm2rdm&l=map&lang=ru_RU'
+const MAPS_OPEN = 'https://yandex.ru/maps/-/CHrJBP8T'
 
 export function Home() {
   const { user, haptic } = useTelegram()
   const navigate = useNavigate()
   const [heroIndex, setHeroIndex] = useState(0)
-  const [prevIndex, setPrevIndex] = useState<number | null>(null)
-  const featuredArticle = useMemo(() => ARTICLES[Math.floor(Math.random() * ARTICLES.length)], [])
+  const [partners, setPartners] = useState<Partner[]>([])
+
+  useEffect(() => {
+    getPartners().then(setPartners).catch(() => {})
+  }, [])
 
   useEffect(() => {
     const t = setInterval(() => {
-      setPrevIndex(i => i)
       setHeroIndex(i => (i + 1) % HERO_IMAGES.length)
     }, 4000)
     return () => clearInterval(t)
@@ -59,10 +66,8 @@ export function Home() {
   return (
     <div className="pb-nav bg-[#0E0E0E] min-h-screen">
 
-      {/* ── HERO: чистые фотографии ── */}
+      {/* ── HERO ── */}
       <div className="relative overflow-hidden" style={{ height: '88vw', maxHeight: 480 }}>
-
-        {/* Все кадры */}
         {HERO_IMAGES.map((src, i) => (
           <img
             key={src}
@@ -77,28 +82,29 @@ export function Home() {
           />
         ))}
 
-        {/* Градиент: темнее сверху и снизу */}
         <div className="absolute inset-0 z-10"
           style={{ background: 'linear-gradient(to bottom, rgba(14,14,14,0.55) 0%, transparent 35%, transparent 55%, rgba(14,14,14,0.95) 100%)' }} />
 
-        {/* Шапка: логотип */}
+        {/* Логотип + имя */}
         <div className="absolute top-0 left-0 right-0 z-20 px-4 pt-5 flex items-center justify-between">
           <img src="/assets/logo-laba.png" alt="Лаборатория" className="w-9 h-9 object-contain" />
           {user && (
-            <span className="text-[11px] text-white/40">
-              {user.first_name}
-            </span>
+            <span className="text-[11px] text-white/40">{user.first_name}</span>
           )}
         </div>
 
-        {/* Нижняя часть героя: название + тэглайн */}
-        <div className="absolute bottom-0 left-0 right-0 z-20 px-4 pb-6">
+        {/* Заголовок + CTA */}
+        <div className="absolute bottom-0 left-0 right-0 z-20 px-4 pb-5">
           <h1 className="font-display font-black text-3xl text-white leading-none tracking-tight mb-1">
             ЛАБОРАТОРИЯ
           </h1>
-          <p className="text-white/50 text-sm tracking-widest uppercase">
-            Санкт-Петербург
-          </p>
+          <p className="text-white/50 text-sm tracking-widest uppercase mb-4">Санкт-Петербург</p>
+          <button
+            onClick={() => go()}
+            className="btn-lily px-6 py-3 rounded-2xl font-bold text-white text-sm"
+          >
+            Записаться в студию
+          </button>
         </div>
 
         {/* Dots */}
@@ -123,9 +129,9 @@ export function Home() {
       <div className="px-4 space-y-8">
 
         {/* ── АРТИСТЫ ── */}
-        <ArtistsTicker />
+        <ArtistsTicker names={partners.map(p => p.name)} />
 
-        {/* ── УСЛУГИ: горизонтальный скролл ── */}
+        {/* ── УСЛУГИ ── */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Услуги</p>
@@ -139,20 +145,20 @@ export function Home() {
                 key={cat.id}
                 onClick={() => go(cat.id)}
                 className="flex-shrink-0 card-lab p-4 rounded-2xl text-left active:scale-95 transition-transform"
-                style={{ minWidth: 148 }}
+                style={{ minWidth: 156 }}
               >
                 <div className="w-9 h-9 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
                   {CAT_ICONS[cat.id]}
                 </div>
-                <div className="font-bold text-white text-sm mb-0.5">{cat.label}</div>
-                <div className="text-[10px] text-white/35 mb-2.5 leading-snug">{CAT_DESC[cat.id]}</div>
+                <div className="font-bold text-white text-sm mb-1">{cat.label}</div>
+                <div className="text-[10px] text-white/35 mb-3 leading-snug">{CAT_DESC[cat.id]}</div>
                 <div className="font-bold text-[#C17BFF] text-sm">{CAT_RATES[cat.id]}</div>
               </button>
             ))}
           </div>
         </div>
 
-        {/* ── ФОТО-ГАЛЕРЕЯ (2 строки) ── */}
+        {/* ── ФОТО-ГАЛЕРЕЯ ── */}
         <div>
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Студия</p>
@@ -160,8 +166,6 @@ export function Home() {
               Все фото <ChevronRight size={12} />
             </button>
           </div>
-
-          {/* Мозаика: большое фото слева + 2 маленьких справа */}
           <div className="flex gap-2" style={{ height: 180 }}>
             <button
               onClick={() => navigate('/studios')}
@@ -189,68 +193,142 @@ export function Home() {
           </div>
         </div>
 
-        {/* ── СТАТЬЯ ── */}
-        <div>
-          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Читать</p>
-          <button
-            onClick={() => { haptic?.impactOccurred('light'); navigate(`/media/${featuredArticle.id}`) }}
-            className="w-full relative rounded-2xl overflow-hidden active:scale-[0.98] transition-all card-lab border border-[#2A2A2A]"
-            style={{ height: 110 }}
-          >
-            <img src={featuredArticle.cover} alt=""
-              className="absolute inset-0 w-full h-full object-cover opacity-50" />
-            <div className="absolute inset-0 bg-gradient-to-r from-[#111]/95 via-[#111]/70 to-transparent" />
-            <div className="absolute inset-0 p-4 flex flex-col justify-between">
-              <span className="text-[10px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full
-                bg-[#C17BFF]/15 text-[#C17BFF] border border-[#C17BFF]/25 self-start">
-                {featuredArticle.tag}
-              </span>
-              <div>
-                <p className="text-sm font-semibold text-white leading-snug">{featuredArticle.title}</p>
-                <p className="text-[10px] text-white/30 mt-1">{featuredArticle.readTime} мин</p>
-              </div>
-            </div>
-          </button>
-        </div>
-
-        {/* ── ИНФО СЕТКА ── */}
+        {/* ── О СТУДИИ ── */}
         <div>
           <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">О студии</p>
-          <div className="grid grid-cols-2 gap-2">
+
+          {/* Статы: 4 плитки */}
+          <div className="grid grid-cols-2 gap-2 mb-3">
             {[
-              { emoji: '📍', title: 'Адрес', sub: 'Бол. Сампсониевский 60Н\nм. Выборгская' },
-              { emoji: '🕐', title: 'Работаем', sub: '0:00 — 24:00\nЕжедневно' },
-              { emoji: '⚡', title: 'Предоплата', sub: '50% при записи\nВозврат при отмене' },
-              { emoji: '🎙️', title: 'Парк микрофонов', sub: 'Manley · Neumann\nна 1 500 000 ₽' },
-            ].map(({ emoji, title, sub }) => (
-              <div key={title} className="p-4 rounded-2xl card-lab">
-                <div className="text-xl mb-2">{emoji}</div>
-                <div className="text-xs font-bold text-white mb-1">{title}</div>
-                <div className="text-[11px] text-white/40 leading-snug whitespace-pre-line">{sub}</div>
+              {
+                icon: (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
+                  </svg>
+                ),
+                value: '140 м²',
+                label: 'Площадь студии',
+              },
+              {
+                icon: (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ),
+                value: 'Круглосуточно',
+                label: 'Ежедневно',
+              },
+              {
+                icon: (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
+                  </svg>
+                ),
+                value: '1 500 000 ₽',
+                label: 'Парк оборудования',
+              },
+              {
+                icon: (
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                  </svg>
+                ),
+                value: 'Предоплата 50%',
+                label: 'Возврат при отмене',
+              },
+            ].map(({ icon, value, label }) => (
+              <div key={label} className="card-lab p-4 rounded-2xl">
+                <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+                  {icon}
+                </div>
+                <div className="text-sm font-bold text-white leading-tight">{value}</div>
+                <div className="text-[11px] text-white/40 mt-1 leading-snug">{label}</div>
               </div>
             ))}
           </div>
+
+          {/* Текстовая плашка */}
+          <div className="px-4 py-3.5 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A]">
+            <p className="text-sm text-white/60 leading-relaxed">
+              Студия с оборудованием, запрещённым к поставке санкциями. Инженеры со звукорежиссёрским образованием. LED-освещение, приточная вентиляция — без духоты и суеты.
+            </p>
+          </div>
         </div>
 
-        {/* ── СОЦИАЛЬНОЕ ДОКАЗАТЕЛЬСТВО ── */}
-        <div className="card-lab rounded-2xl p-4 border border-[#C17BFF]/10">
-          <div className="flex items-start gap-3">
-            <div className="text-2xl flex-shrink-0">💬</div>
-            <div>
-              <p className="text-sm text-white/70 leading-relaxed italic mb-2">
-                «Единственная студия в городе, где к тебе относятся как к артисту, а не как к клиенту»
-              </p>
-              <p className="text-[10px] text-white/30 font-semibold uppercase tracking-widest">
-                Один из наших артистов
-              </p>
+        {/* ── РАБОТАЛИ С НАМИ ── */}
+        {partners.length > 0 && (
+          <div>
+            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Работали с нами</p>
+            <div className="flex flex-wrap gap-2">
+              {partners.map(p => (
+                <div key={p.id} className="px-3 py-2 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A]">
+                  <div className="text-sm font-semibold text-white">{p.name}</div>
+                  {p.role && <div className="text-[10px] text-white/35 mt-0.5">{p.role}</div>}
+                </div>
+              ))}
             </div>
           </div>
+        )}
+
+        {/* ── ЯНДЕКС КАРТА ── */}
+        <div>
+          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Как добраться</p>
+
+          {/* Карта */}
+          <div className="rounded-2xl overflow-hidden" style={{ height: 200 }}>
+            <iframe
+              src={MAP_URL}
+              width="100%"
+              height="100%"
+              frameBorder="0"
+              allowFullScreen
+              title="Лаборатория на карте"
+              style={{ border: 'none', display: 'block' }}
+            />
+          </div>
+
+          {/* Адрес + ссылка */}
+          <a
+            href={MAPS_OPEN}
+            target="_blank"
+            rel="noreferrer"
+            className="mt-3 flex items-center justify-between px-4 py-3.5 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] active:scale-[0.98] transition-transform"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] flex-shrink-0">
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                </svg>
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-white">Большой Сампсониевский, 60Н</div>
+                <div className="text-[11px] text-white/40 mt-0.5">м. Выборгская · Круглосуточно</div>
+              </div>
+            </div>
+            <svg className="w-4 h-4 text-white/25 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7"/>
+            </svg>
+          </a>
         </div>
 
       </div>
 
-      {/* bottom padding extra */}
-      <div className="h-4" />
+      {/* ── CTA ВНИЗУ ── */}
+      <div className="px-4 mt-8 mb-2">
+        <button
+          onClick={() => { haptic?.impactOccurred('medium'); navigate('/studios') }}
+          className="w-full btn-lily py-4 rounded-2xl font-bold text-white text-base flex items-center justify-center gap-2"
+          style={{ boxShadow: '0 8px 32px rgba(193,123,255,0.4), 0 2px 8px rgba(0,0,0,0.5)' }}
+        >
+          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
+          </svg>
+          Записаться в студию
+        </button>
+      </div>
+
+      <div className="h-2" />
     </div>
   )
 }

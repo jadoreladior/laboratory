@@ -73,15 +73,116 @@ export const ADDONS = [
   { id: 'photoshoot',  label: 'Фотосессия в студии',   description: 'Контент для соцсетей',                 price: 2000, priceLabel: '2 000 ₽' },
 ]
 
-export const EQUIPMENT_BRANDS = [
-  { name: 'Manley', logo: null },
-  { name: 'Neumann', logo: null },
-  { name: 'PMC', logo: null },
-  { name: 'Universal Audio', logo: null },
-  { name: 'Rupert Neve', logo: null },
-  { name: 'Avid', logo: null },
-  { name: 'Audeze', logo: null },
-  { name: 'SSL', logo: null },
+export const STUDIO_RULES = [
+  { icon: 'payment',  text: '**Предоплата 50%** при записи — возвращаем при отмене **за 24 ч**' },
+  { icon: 'smoke',    text: 'Курение, кальяны и айкосы — **только за пределами** студии' },
+  { icon: 'drink',    text: 'Алкоголь не запрещён, если помогает творчеству — но **без потери берегов**' },
+  { icon: 'edit',     text: '**3 раунда правок** входят в стоимость сведения' },
+  { icon: 'camera',   text: 'В студии **работают камеры** — за порчу оборудования несёте ответственность' },
+  { icon: 'ban',      text: '**Хамство и угрозы** — мы вправе прекратить сессию в любой момент' },
+]
+
+export const EQUIPMENT_ITEMS = [
+  // Микрофоны
+  {
+    id: 'manley-silver',
+    name: 'Manley Reference Silver',
+    category: 'Микрофоны',
+    tag: 'Конденсаторный · Ламповый',
+    description: 'В такой записывался Drake. Шёлковый верх, правильная глубина тембра. Ручная американская работа — один из лучших вокальных микрофонов в мире.',
+    photo: '/photos/equipment/manley-reference-silver.jpg',
+  },
+  {
+    id: 'manley-cardioid',
+    name: 'Manley Reference Cardioid',
+    category: 'Микрофоны',
+    tag: 'Конденсаторный · Ламповый',
+    description: 'В такой записывали часть «Despacito». Яркий, собранный верх — идеален для современного попа и речитатива.',
+    photo: '/photos/equipment/manley-reference-cardioid.jpg',
+  },
+  {
+    id: 'neumann-tlm67',
+    name: 'Neumann TLM 67',
+    category: 'Микрофоны',
+    tag: 'Конденсаторный · Студийный',
+    description: 'Лауреат TEC Award 2009. Тёплый звук из 60-х: бархатная середина, лёгкий винтажный характер. Идеален для олдскул рэпа и рока.',
+    photo: '/photos/equipment/neumann-tlm67.jpg',
+  },
+  {
+    id: 'shure-sm7b',
+    name: 'Shure SM7B',
+    category: 'Микрофоны',
+    tag: 'Динамический',
+    description: 'Индустриальный стандарт теле- и радиоиндустрии. Хорош для громких и экспрессивных голосов — убирает лишнее, оставляет мощь.',
+    photo: '/photos/equipment/shure-sm7b.jpg',
+  },
+  // Мониторы
+  {
+    id: 'pmc-ib1s',
+    name: 'PMC IB1S-AIII',
+    category: 'Мониторы',
+    tag: 'Активный · Среднее поле',
+    description: 'Гордость Лаборатории. Мониторы среднего поля из Англии — одна колонка весит, как половина взрослого человека. Референсный звук без прикрас.',
+    photo: '/photos/equipment/pmc-ib1s.jpg',
+  },
+  {
+    id: 'yamaha-ns10',
+    name: 'Yamaha NS-10',
+    category: 'Мониторы',
+    tag: 'Пассивный · Ближнее поле',
+    description: 'Культовый монитор, обязательный в любой профессиональной студии. Если звучит хорошо на NS-10 — будет звучать везде.',
+    photo: '/photos/equipment/yamaha-ns10.jpg',
+  },
+  {
+    id: 'audeze-lcd-xc',
+    name: 'Audeze LCD-XC Carbon',
+    category: 'Мониторы',
+    tag: 'Наушники · Планарные',
+    description: 'Несведённая песня звучит, как готовая. Планарные драйверы дают настоящий бас, открытый верх и широкую сцену — слышишь всё.',
+    photo: '/photos/equipment/audeze-lcd-xc.jpg',
+  },
+  // Обработка
+  {
+    id: 'manley-voxbox',
+    name: 'Manley VOXBOX',
+    category: 'Обработка',
+    tag: 'Channel Strip · Ламповый',
+    description: 'Усилитель + компрессор + де-эссер + EQ в одном корпусе. Channel strip как в каждой профессиональной студии мира. Голос становится ближе и читается в миксе.',
+    photo: '/photos/equipment/manley-voxbox.jpg',
+  },
+  {
+    id: 'neve-511-535',
+    name: 'Rupert Neve 511 + 535',
+    category: 'Обработка',
+    tag: '500-серия · Аналог',
+    description: 'Легендарный преамп и компрессор Neve в формате 500-серии. Тот самый «Neve-sound» — тёплый, музыкальный, с характером.',
+    photo: '/photos/equipment/neve-511-535.jpg',
+  },
+  {
+    id: 'ssl-fusion',
+    name: 'SSL Fusion',
+    category: 'Обработка',
+    tag: 'Мастер-процессор · Аналог',
+    description: 'Аналоговый мастер-процессор SSL. Добавляет клей, присущий профессиональным релизам — звук становится единым и читаемым.',
+    photo: '/photos/equipment/ssl-fusion.jpg',
+  },
+  // Цифровое
+  {
+    id: 'ua-apollo-x6',
+    name: 'UA Apollo x6',
+    category: 'Цифровое',
+    tag: 'Звуковая карта · DSP',
+    description: 'Звуковая карта с DSP-процессором от Universal Audio. Проекты любого размера без зависаний — и весь каталог UAD-плагинов в реальном времени.',
+    photo: '/photos/equipment/ua-apollo-x6.jpg',
+  },
+  {
+    id: 'avid-protools',
+    name: 'Avid Pro Tools',
+    category: 'Цифровое',
+    tag: 'DAW · Лицензионный',
+    description: 'Отраслевой стандарт для записи и постпродакшна. Используется в 90% профессиональных студий мира. Лицензионная версия с полным набором плагинов.',
+    photo: '/photos/equipment/avid-protools.jpg',
+  },
 ]
 
 export const TEAM = [
@@ -91,7 +192,12 @@ export const TEAM = [
     role: 'Звукорежиссёр',
     specialization: 'Запись · Сведение',
     photo: '/photos/team/anna-hlebnikova.jpg',
-    bio: '',
+    photoPosition: 'center 20%',
+    bio: 'Профессиональный звукорежиссёр с консерваторским образованием. Специализируется на работе с вокалом — создаёт атмосферный, живой звук. Работала с исполнителями в жанрах R&B, поп и инди.',
+    tracks: [
+      { title: 'Работа 1', url: '/audio/anna/track1.mp3' },
+      { title: 'Работа 2', url: '/audio/anna/track2.mp3' },
+    ],
   },
   {
     id: 'dioniz',
@@ -99,7 +205,12 @@ export const TEAM = [
     role: 'Звукорежиссёр',
     specialization: 'Запись · Мастеринг',
     photo: '/photos/team/dioniz-karokozidi.jpg',
-    bio: '',
+    photoPosition: 'center top',
+    bio: 'Многолетний опыт в записи и мастеринге. Тонко чувствует динамику и пространство. Предпочитает хип-хоп, рэп и электронную музыку. Знает, как сделать так, чтобы трек звучал громко и чётко на любых колонках.',
+    tracks: [
+      { title: 'Работа 1', url: '/audio/dioniz/track1.mp3' },
+      { title: 'Работа 2', url: '/audio/dioniz/track2.mp3' },
+    ],
   },
   {
     id: 'semen',
@@ -107,7 +218,12 @@ export const TEAM = [
     role: 'Звукорежиссёр',
     specialization: 'Запись · Сведение · Аранжировка',
     photo: '/photos/team/semen-efimenko.jpg',
-    bio: '',
+    photoPosition: 'center top',
+    bio: 'Мультиинструменталист и аранжировщик. Помогает выстроить аккомпанемент прямо на сессии. Работает в рок, поп и авторской песне. Если нужен живой звук с характером — это к Семёну.',
+    tracks: [
+      { title: 'Работа 1', url: '/audio/semen/track1.mp3' },
+      { title: 'Работа 2', url: '/audio/semen/track2.mp3' },
+    ],
   },
 ]
 

@@ -504,7 +504,7 @@ function EmployeeForm({ value, onChange, onSave, onCancel, saving }: {
   onCancel: () => void
   saving: boolean
 }) {
-  const inp = 'w-full px-3 py-2.5 rounded-xl bg-white/10 text-white text-sm placeholder-white/30 outline-none focus:ring-1 focus:ring-white/30'
+  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#C17BFF]/40 border border-[#2A2A2A]'
   const canSave = !!value.name.trim() && !!value.telegram_id
 
   return (
@@ -532,7 +532,7 @@ function EmployeeForm({ value, onChange, onSave, onCancel, saving }: {
       </div>
       <div className="flex gap-2 pt-1">
         <button onClick={onSave} disabled={saving || !canSave}
-          className="flex-1 py-2.5 rounded-xl bg-white text-black text-sm font-semibold flex items-center justify-center gap-1 disabled:opacity-40">
+          className="flex-1 py-2.5 rounded-xl btn-lily text-sm font-semibold flex items-center justify-center gap-1 disabled:opacity-40">
           <Check size={14} /> {saving ? 'Сохраняем...' : 'Сохранить'}
         </button>
         <button onClick={onCancel}

@@ -1,40 +1,112 @@
-import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { STUDIOS, TEAM } from '../data'
+import { STUDIOS, TEAM, STUDIO_RULES, EQUIPMENT_ITEMS } from '../data'
 import { useTelegram } from '../hooks/useTelegram'
 import { useBookingStore } from '../store/bookingStore'
 import type { Studio } from '../types'
 
-const EQUIPMENT_GROUPS = [
-  {
-    label: 'Микрофоны',
-    items: ['Manley Reference Silver', 'Neumann TLM 67', 'Neumann U87', 'sE Electronics'],
-  },
-  {
-    label: 'Мониторы',
-    items: ['PMC IB1S-AIII', 'Yamaha NS-10', 'Audeze LCD-XC'],
-  },
-  {
-    label: 'Обработка',
-    items: ['Manley VOXBOX', 'Rupert Neve 511/535', 'UA Apollo x6', 'SSL Fusion'],
-  },
-  {
-    label: 'Цифровое',
-    items: ['Avid Pro Tools', 'iZotope RX', 'UAD plug-ins'],
-  },
-]
+type TeamMember = typeof TEAM[number]
+type EquipmentItem = typeof EQUIPMENT_ITEMS[number]
 
-const BRANDS = ['Manley', 'Neumann', 'PMC', 'UA', 'Rupert Neve', 'Avid', 'Audeze', 'SSL']
+/** Рендерит текст с **акцентом** — выделяет фиолетовым жирным */
+function RichText({ text, className = '' }: { text: string; className?: string }) {
+  const parts = text.split(/\*\*(.+?)\*\*/g)
+  return (
+    <span className={className}>
+      {parts.map((part, i) =>
+        i % 2 === 1
+          ? <span key={i} className="text-[#C17BFF] font-semibold">{part}</span>
+          : <span key={i}>{part}</span>
+      )}
+    </span>
+  )
+}
+
+const RULE_ICONS: Record<string, React.ReactNode> = {
+  payment: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+      <rect x="2" y="5" width="20" height="14" rx="2"/>
+      <path d="M2 10h20"/>
+    </svg>
+  ),
+  smoke: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+      <path d="M18 12h2a1 1 0 0 1 1 1v2a1 1 0 0 1-1 1H3"/>
+      <path d="M18 8c0-2.5-2-2.5-2-5"/>
+      <path d="M14 8c0-2.5-2-2.5-2-5"/>
+      <line x1="3" y1="1" x2="21" y2="23" strokeDasharray="0"/>
+    </svg>
+  ),
+  drink: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+      <path d="M8 22h8M12 11v11M5 3l2 7h10l2-7H5z"/>
+    </svg>
+  ),
+  edit: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+      <path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/>
+      <path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/>
+    </svg>
+  ),
+  camera: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+      <path d="M23 19a2 2 0 0 1-2 2H3a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4l2-3h6l2 3h4a2 2 0 0 1 2 2z"/>
+      <circle cx="12" cy="13" r="4"/>
+    </svg>
+  ),
+  ban: (
+    <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
+      <circle cx="12" cy="12" r="10"/>
+      <line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/>
+    </svg>
+  ),
+}
+
+function EquipmentPhoto({ src, alt }: { src: string; alt: string }) {
+  const [failed, setFailed] = useState(false)
+  return failed ? (
+    <div className="absolute inset-0 flex items-center justify-center">
+      <div className="w-16 h-16 rounded-2xl bg-[#C17BFF]/10 border border-[#C17BFF]/20 flex items-center justify-center">
+        <svg className="w-7 h-7 text-[#C17BFF]/40" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
+          <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
+        </svg>
+      </div>
+      <p className="absolute bottom-4 text-[11px] text-white/20">Фото появится позже</p>
+    </div>
+  ) : (
+    <img
+      src={src}
+      alt={alt}
+      className="absolute inset-0 w-full h-full object-cover"
+      onError={() => setFailed(true)}
+    />
+  )
+}
 
 export function Studios() {
   const [selected, setSelected] = useState<Studio | null>(null)
   const [photoIndex, setPhotoIndex] = useState(0)
   const [activeGroup, setActiveGroup] = useState(0)
+  const [lightbox, setLightbox] = useState<{ images: string[]; index: number } | null>(null)
+  const [selectedMember, setSelectedMember] = useState<TeamMember | null>(null)
+  const [selectedEquipment, setSelectedEquipment] = useState<EquipmentItem | null>(null)
+  const [playingTrack, setPlayingTrack] = useState<string | null>(null)
+  const audioRef = useRef<HTMLAudioElement | null>(null)
   const navigate = useNavigate()
   const { haptic } = useTelegram()
   const { setStudio } = useBookingStore()
   const touchStartX = useRef<number>(0)
   const intervalRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  // Group equipment by category
+  const equipmentGroups = useMemo(() => {
+    const cats = [...new Set(EQUIPMENT_ITEMS.map(i => i.category))]
+    return cats.map(cat => ({
+      label: cat,
+      items: EQUIPMENT_ITEMS.filter(i => i.category === cat),
+    }))
+  }, [])
 
   useEffect(() => {
     document.body.style.overflow = selected ? 'hidden' : ''
@@ -81,8 +153,42 @@ export function Studios() {
     }
   }
 
+  const lbTouchStart = (e: React.TouchEvent) => { touchStartX.current = e.touches[0].clientX }
+  const lbTouchEnd = (e: React.TouchEvent) => {
+    if (!lightbox) return
+    const diff = touchStartX.current - e.changedTouches[0].clientX
+    if (Math.abs(diff) > 40) {
+      if (diff > 0) setLightbox(lb => lb ? { ...lb, index: (lb.index + 1) % lb.images.length } : lb)
+      else setLightbox(lb => lb ? { ...lb, index: (lb.index - 1 + lb.images.length) % lb.images.length } : lb)
+    }
+  }
+
+  const playTrack = (url: string) => {
+    if (audioRef.current) {
+      audioRef.current.pause()
+      audioRef.current = null
+    }
+    if (playingTrack === url) { setPlayingTrack(null); return }
+    const audio = new Audio(url)
+    audio.play().catch(() => {})
+    audio.onended = () => setPlayingTrack(null)
+    audioRef.current = audio
+    setPlayingTrack(url)
+  }
+
+  const closeMember = () => {
+    if (audioRef.current) { audioRef.current.pause(); audioRef.current = null }
+    setPlayingTrack(null)
+    setSelectedMember(null)
+  }
+
   return (
-    <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
+    <div
+      className="animate-fade-in bg-[#0E0E0E] flex flex-col"
+      style={{ height: '100vh', overflow: 'hidden' }}
+    >
+    {/* Scrollable content */}
+    <div className="flex-1 overflow-y-auto" style={{ WebkitOverflowScrolling: 'touch' }}>
 
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
@@ -94,7 +200,7 @@ export function Studios() {
       {/* Hero studio card */}
       <div className="px-4 mb-6">
         <button
-          onClick={() => openStudio(STUDIOS[0])}
+          onClick={() => { haptic?.impactOccurred('light'); setLightbox({ images: STUDIOS[0].images, index: 0 }) }}
           className="w-full text-left rounded-3xl overflow-hidden active:scale-[0.98] transition-transform relative"
           style={{ height: 220 }}
         >
@@ -126,14 +232,18 @@ export function Studios() {
         </button>
       </div>
 
-      {/* Equipment brands */}
+      {/* Rules */}
       <div className="px-4 mb-6">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Бренды</p>
-        <div className="flex flex-wrap gap-2">
-          {BRANDS.map(brand => (
-            <div key={brand}
-              className="px-3.5 py-2 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A] text-sm font-semibold text-white/70">
-              {brand}
+        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Правила</p>
+        <div className="card-lab overflow-hidden">
+          {STUDIO_RULES.map((rule, i) => (
+            <div
+              key={i}
+              className={`flex items-start gap-3 px-4 py-3.5
+                ${i < STUDIO_RULES.length - 1 ? 'border-b border-[#2A2A2A]' : ''}`}
+            >
+              <span className="flex-shrink-0 text-[#C17BFF]/70 mt-0.5">{RULE_ICONS[rule.icon]}</span>
+              <RichText text={rule.text} className="text-sm text-white/75 leading-snug" />
             </div>
           ))}
         </div>
@@ -145,7 +255,7 @@ export function Studios() {
 
         {/* Category tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar mb-4">
-          {EQUIPMENT_GROUPS.map((g, i) => (
+          {equipmentGroups.map((g, i) => (
             <button
               key={g.label}
               onClick={() => { haptic?.selectionChanged(); setActiveGroup(i) }}
@@ -159,14 +269,24 @@ export function Studios() {
           ))}
         </div>
 
-        {/* Items */}
+        {/* Items — clickable */}
         <div className="card-lab overflow-hidden">
-          {EQUIPMENT_GROUPS[activeGroup].items.map((item, i) => (
-            <div key={item} className={`flex items-center gap-3 px-4 py-3.5
-              ${i < EQUIPMENT_GROUPS[activeGroup].items.length - 1 ? 'border-b border-[#2A2A2A]' : ''}`}>
+          {equipmentGroups[activeGroup]?.items.map((item, i, arr) => (
+            <button
+              key={item.id}
+              onClick={() => { haptic?.impactOccurred('light'); setSelectedEquipment(item) }}
+              className={`w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-white/5 transition-colors
+                ${i < arr.length - 1 ? 'border-b border-[#2A2A2A]' : ''}`}
+            >
               <div className="w-1.5 h-1.5 rounded-full bg-[#C17BFF] flex-shrink-0" />
-              <span className="text-sm text-white">{item}</span>
-            </div>
+              <div className="flex-1 min-w-0">
+                <div className="text-sm text-white">{item.name}</div>
+                <div className="text-[10px] text-white/30 mt-0.5">{item.tag}</div>
+              </div>
+              <svg className="w-4 h-4 text-white/20 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+              </svg>
+            </button>
           ))}
         </div>
       </div>
@@ -178,7 +298,7 @@ export function Studios() {
           {STUDIOS[0].images.map((src, i) => (
             <button
               key={src}
-              onClick={() => openStudio(STUDIOS[0])}
+              onClick={() => { haptic?.impactOccurred('light'); setLightbox({ images: STUDIOS[0].images, index: i }) }}
               className="flex-shrink-0 rounded-2xl overflow-hidden active:scale-95 transition-transform"
               style={{ width: 120, height: 90 }}
             >
@@ -193,47 +313,185 @@ export function Studios() {
         <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Команда</p>
         <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4">
           {TEAM.map(member => (
-            <div key={member.id} className="flex-shrink-0 card-lab rounded-2xl overflow-hidden" style={{ width: 140 }}>
+            <button
+              key={member.id}
+              onClick={() => { haptic?.impactOccurred('light'); setSelectedMember(member) }}
+              className="flex-shrink-0 card-lab rounded-2xl overflow-hidden active:scale-95 transition-transform text-left"
+              style={{ width: 140 }}
+            >
               <div className="relative" style={{ height: 160 }}>
-                <img src={member.photo} alt={member.name} className="w-full h-full object-cover object-top" />
+                <img src={member.photo} alt={member.name} className="w-full h-full object-cover" style={{ objectPosition: member.photoPosition ?? 'center top' }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+                <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-[#C17BFF]/20 border border-[#C17BFF]/40 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </div>
               </div>
               <div className="p-3">
                 <div className="font-bold text-white text-xs leading-tight">{member.name}</div>
                 <div className="text-[10px] text-[#C17BFF] mt-0.5">{member.role}</div>
                 <div className="text-[10px] text-white/35 mt-1 leading-snug">{member.specialization}</div>
               </div>
-            </div>
+            </button>
           ))}
         </div>
       </div>
 
-      {/* CTA */}
-      <div className="px-4 mt-2">
-        <button
-          onClick={() => { haptic?.impactOccurred('medium'); setStudio('A'); navigate('/booking') }}
-          className="btn-lily w-full py-4 rounded-2xl font-bold text-white text-base"
-        >
-          Записаться в студию
-        </button>
-      </div>
+      {/* bottom padding inside scroll area */}
+      <div style={{ height: 16 }} />
+    </div>{/* end scrollable */}
 
-      {/* ── Bottom sheet ── */}
+    {/* ── Pinned CTA (flex child, always visible above nav) ── */}
+    <div
+      className="flex-shrink-0 px-4 bg-[#0E0E0E]"
+      style={{
+        paddingTop: 10,
+        paddingBottom: 'calc(64px + env(safe-area-inset-bottom, 0px) + 10px)',
+        borderTop: '1px solid #1A1A1A',
+      }}
+    >
+      <button
+        onClick={() => { haptic?.impactOccurred('medium'); setStudio('A'); navigate('/booking') }}
+        className="btn-lily w-full py-4 rounded-2xl font-bold text-white text-base"
+        style={{ boxShadow: '0 8px 32px rgba(193,123,255,0.45), 0 2px 8px rgba(0,0,0,0.5)' }}
+      >
+        Записаться в студию
+      </button>
+    </div>
+
+      {/* ── Lightbox ── */}
+      {lightbox && (
+        <>
+          {/* Blurred backdrop — tap to close */}
+          <div
+            className="fixed inset-0 z-50"
+            style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)', backgroundColor: 'rgba(0,0,0,0.65)' }}
+            onClick={() => setLightbox(null)}
+          />
+
+          {/* Flex centering wrapper — pointer-events-none so taps pass to backdrop */}
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            style={{
+              paddingLeft: 16, paddingRight: 16,
+              paddingTop: 'env(safe-area-inset-top, 16px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+            }}
+          >
+            {/* Modal card — re-enable pointer events */}
+            <div
+              className="animate-scale-in w-full flex flex-col pointer-events-auto"
+              style={{ maxWidth: 480 }}
+              onTouchStart={lbTouchStart}
+              onTouchEnd={lbTouchEnd}
+              onTouchMove={e => e.stopPropagation()}
+            >
+              {/* Image container */}
+              <div
+                className="relative rounded-3xl overflow-hidden w-full"
+                style={{ height: 'min(72vw, 52svh)', minHeight: 200, background: '#111' }}
+              >
+                {lightbox.images.map((src, i) => (
+                  <img
+                    key={src}
+                    src={src}
+                    alt={`Студия ${i + 1}`}
+                    className="absolute inset-0 w-full h-full object-cover transition-opacity duration-300"
+                    style={{ opacity: i === lightbox.index ? 1 : 0 }}
+                  />
+                ))}
+
+                {/* Close */}
+                <button
+                  onClick={() => setLightbox(null)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center z-10 active:scale-90 transition-transform"
+                  style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+
+                {/* Counter */}
+                <div
+                  className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-white/80 text-xs font-medium"
+                  style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)' }}
+                >
+                  {lightbox.index + 1} / {lightbox.images.length}
+                </div>
+
+                {/* Prev / Next */}
+                <button
+                  onClick={() => setLightbox(lb => lb ? { ...lb, index: (lb.index - 1 + lb.images.length) % lb.images.length } : lb)}
+                  className="absolute left-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+                  style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M15 19l-7-7 7-7" />
+                  </svg>
+                </button>
+                <button
+                  onClick={() => setLightbox(lb => lb ? { ...lb, index: (lb.index + 1) % lb.images.length } : lb)}
+                  className="absolute right-3 top-1/2 -translate-y-1/2 w-8 h-8 rounded-full flex items-center justify-center active:scale-90 transition-transform"
+                  style={{ background: 'rgba(0,0,0,0.45)', backdropFilter: 'blur(6px)', border: '1px solid rgba(255,255,255,0.12)' }}
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
+                  </svg>
+                </button>
+              </div>
+
+              {/* Dots below image */}
+              <div className="flex justify-center gap-1.5 mt-3">
+                {lightbox.images.map((_, i) => (
+                  <button
+                    key={i}
+                    onClick={() => setLightbox(lb => lb ? { ...lb, index: i } : lb)}
+                    className={`transition-all duration-300 rounded-full ${i === lightbox.index ? 'w-4 h-1.5 bg-[#C17BFF]' : 'w-1.5 h-1.5 bg-white/30'}`}
+                  />
+                ))}
+              </div>
+            </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Studio detail modal ── */}
       {selected && (
         <>
+          {/* Blurred backdrop */}
           <div
-            className="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm backdrop-enter"
+            className="fixed inset-0 z-40"
+            style={{ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', backgroundColor: 'rgba(0,0,0,0.65)' }}
             onClick={close}
-            onTouchMove={e => e.preventDefault()}
           />
+
+          {/* Flex centering wrapper */}
           <div
-            className="fixed left-0 right-0 bottom-0 z-40 bg-[#111111] border-t border-[#2A2A2A] rounded-t-3xl flex flex-col sheet-enter"
-            style={{ maxHeight: '90vh' }}
+            className="fixed inset-0 z-40 flex items-center justify-center pointer-events-none"
+            style={{
+              paddingLeft: 16, paddingRight: 16,
+              paddingTop: 'env(safe-area-inset-top, 16px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+            }}
           >
-            {/* Photo gallery */}
+          {/* Modal card */}
+          <div
+            className="animate-scale-in flex flex-col pointer-events-auto w-full"
+            style={{
+              maxWidth: 440,
+              maxHeight: 'calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
+              background: '#161616',
+              border: '1px solid #2A2A2A',
+              borderRadius: 24,
+              overflow: 'hidden',
+            }}
+          >
+            {/* Photo strip */}
             <div
-              className="relative flex-shrink-0 rounded-t-3xl overflow-hidden"
-              style={{ height: '52vw', minHeight: 180, maxHeight: 240 }}
+              className="relative flex-shrink-0 overflow-hidden"
+              style={{ height: 200 }}
               onTouchStart={onTouchStart}
               onTouchEnd={onTouchEnd}
             >
@@ -241,13 +499,18 @@ export function Studios() {
                 <img key={src} src={src} alt={selected.name}
                   className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ${i === photoIndex ? 'opacity-100' : 'opacity-0'}`} />
               ))}
-              <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/70 to-transparent" />
+
+              {/* Close */}
               <button onClick={close}
-                className="absolute top-4 right-4 w-8 h-8 rounded-full bg-black/50 border border-white/10 flex items-center justify-center z-10">
+                className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center z-10"
+                style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}>
                 <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
                 </svg>
               </button>
+
+              {/* Dots */}
               {selected.images.length > 1 && (
                 <div className="absolute bottom-3 left-0 right-0 flex justify-center gap-1.5">
                   {selected.images.map((_, i) => (
@@ -259,15 +522,8 @@ export function Studios() {
               )}
             </div>
 
-            {/* Scrollable info */}
-            <div
-              className="flex-1 min-h-0 overflow-y-auto p-5"
-              style={{
-                overscrollBehavior: 'contain',
-                WebkitOverflowScrolling: 'touch',
-                paddingBottom: 'calc(80px + env(safe-area-inset-bottom))',
-              } as React.CSSProperties}
-            >
+            {/* Info — scrollable */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-5" style={{ overscrollBehavior: 'contain' }}>
               <div className="flex items-center gap-2.5 mb-1">
                 <h2 className="font-display text-xl font-black text-white">{selected.name}</h2>
                 <div className="w-2 h-2 rounded-full flex-shrink-0"
@@ -285,7 +541,7 @@ export function Studios() {
               <p className="text-sm text-white/50 leading-relaxed mb-4">{selected.description}</p>
 
               <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-2">Оборудование</p>
-              <div className="flex flex-wrap gap-1.5 mb-6">
+              <div className="flex flex-wrap gap-1.5 mb-5">
                 {selected.features.map(f => (
                   <span key={f} className="text-xs px-2.5 py-1 rounded-full font-medium border"
                     style={{ backgroundColor: selected.color + '18', color: selected.color, borderColor: selected.color + '40' }}>
@@ -300,6 +556,178 @@ export function Studios() {
               >
                 Записаться
               </button>
+            </div>
+          </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Engineer modal ── */}
+      {selectedMember && (
+        <>
+          <div
+            className="fixed inset-0 z-50"
+            style={{ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', backgroundColor: 'rgba(0,0,0,0.65)' }}
+            onClick={closeMember}
+          />
+          {/* Flex centering wrapper */}
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            style={{
+              paddingLeft: 16, paddingRight: 16,
+              paddingTop: 'env(safe-area-inset-top, 16px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+            }}
+          >
+          <div
+            className="animate-scale-in flex flex-col pointer-events-auto w-full"
+            style={{
+              maxWidth: 420,
+              maxHeight: 'calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
+              background: '#161616',
+              border: '1px solid #2A2A2A',
+              borderRadius: 24,
+              overflow: 'hidden',
+            }}
+          >
+            {/* Photo */}
+            <div className="relative flex-shrink-0" style={{ height: 200 }}>
+              <img src={selectedMember.photo} alt={selectedMember.name}
+                className="w-full h-full object-cover"
+                style={{ objectPosition: selectedMember.photoPosition ?? 'center top' }} />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#161616] via-black/20 to-transparent" />
+              <button onClick={closeMember}
+                className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center z-10"
+                style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}>
+                <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                </svg>
+              </button>
+              <div className="absolute bottom-4 left-5">
+                <div className="font-display font-black text-white text-lg leading-tight">{selectedMember.name}</div>
+                <div className="text-[#C17BFF] text-xs mt-0.5">{selectedMember.specialization}</div>
+              </div>
+            </div>
+
+            {/* Info + tracks */}
+            <div className="flex-1 min-h-0 overflow-y-auto p-5">
+              <p className="text-sm text-white/55 leading-relaxed mb-5">{selectedMember.bio}</p>
+
+              {selectedMember.tracks && selectedMember.tracks.length > 0 && (
+                <>
+                  <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Работы</p>
+                  <div className="space-y-2 mb-5">
+                    {selectedMember.tracks.map((track, i) => {
+                      const isPlaying = playingTrack === track.url
+                      return (
+                        <button
+                          key={i}
+                          onClick={() => playTrack(track.url)}
+                          className={`w-full flex items-center gap-3 p-3.5 rounded-2xl transition-all active:scale-[0.98]
+                            ${isPlaying ? 'bg-[#C17BFF]/15 border border-[#C17BFF]/30' : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
+                        >
+                          <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
+                            ${isPlaying ? 'bg-[#C17BFF]' : 'bg-[#2A2A2A]'}`}>
+                            {isPlaying ? (
+                              <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
+                                <rect x="6" y="4" width="4" height="16" rx="1"/>
+                                <rect x="14" y="4" width="4" height="16" rx="1"/>
+                              </svg>
+                            ) : (
+                              <svg className="w-4 h-4 text-white/60" fill="currentColor" viewBox="0 0 24 24">
+                                <path d="M8 5v14l11-7z"/>
+                              </svg>
+                            )}
+                          </div>
+                          <div className="flex-1 text-left">
+                            <div className={`text-sm font-medium ${isPlaying ? 'text-[#C17BFF]' : 'text-white'}`}>
+                              {track.title}
+                            </div>
+                            {isPlaying && (
+                              <div className="flex gap-0.5 mt-1">
+                                {[1,2,3,4,5].map(b => (
+                                  <div key={b} className="w-0.5 rounded-full bg-[#C17BFF]"
+                                    style={{ height: Math.random() * 12 + 4, animation: `pulse-ring ${0.4 + b * 0.1}s ease infinite alternate` }} />
+                                ))}
+                              </div>
+                            )}
+                          </div>
+                        </button>
+                      )
+                    })}
+                  </div>
+                </>
+              )}
+
+              <button
+                onClick={() => { closeMember(); setStudio('A'); navigate('/booking', { state: { engineer: selectedMember.id } }) }}
+                className="btn-lily w-full py-3.5 rounded-2xl font-bold text-white text-sm"
+              >
+                Записаться к {selectedMember.name.split(' ')[0]}
+              </button>
+            </div>
+          </div>
+          </div>
+        </>
+      )}
+
+      {/* ── Equipment detail modal ── */}
+      {selectedEquipment && (
+        <>
+          <div
+            className="fixed inset-0 z-50"
+            style={{ backdropFilter: 'blur(18px)', WebkitBackdropFilter: 'blur(18px)', backgroundColor: 'rgba(0,0,0,0.65)' }}
+            onClick={() => setSelectedEquipment(null)}
+          />
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
+            style={{
+              paddingLeft: 16, paddingRight: 16,
+              paddingTop: 'env(safe-area-inset-top, 16px)',
+              paddingBottom: 'env(safe-area-inset-bottom, 16px)',
+            }}
+          >
+            <div
+              className="animate-scale-in flex flex-col pointer-events-auto w-full"
+              style={{
+                maxWidth: 420,
+                maxHeight: 'calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
+                background: '#161616',
+                border: '1px solid #2A2A2A',
+                borderRadius: 24,
+                overflow: 'hidden',
+              }}
+            >
+              {/* Photo */}
+              <div className="relative flex-shrink-0 bg-[#111]" style={{ height: 220 }}>
+                <EquipmentPhoto src={selectedEquipment.photo} alt={selectedEquipment.name} />
+                <div className="absolute inset-0 bg-gradient-to-t from-[#161616] via-transparent to-transparent pointer-events-none" />
+                {/* Close */}
+                <button
+                  onClick={() => setSelectedEquipment(null)}
+                  className="absolute top-3 right-3 w-8 h-8 rounded-full flex items-center justify-center z-10"
+                  style={{ background: 'rgba(0,0,0,0.5)', backdropFilter: 'blur(8px)', border: '1px solid rgba(255,255,255,0.15)' }}
+                >
+                  <svg className="w-4 h-4 text-white" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                  </svg>
+                </button>
+                {/* Category badge */}
+                <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold"
+                  style={{ background: 'rgba(193,123,255,0.2)', color: '#C17BFF', border: '1px solid rgba(193,123,255,0.35)', backdropFilter: 'blur(8px)' }}>
+                  {selectedEquipment.category}
+                </div>
+              </div>
+
+              {/* Info */}
+              <div className="p-5 flex-1 min-h-0 overflow-y-auto">
+                <div className="mb-1">
+                  <h2 className="font-display font-black text-white text-lg leading-tight">{selectedEquipment.name}</h2>
+                  <p className="text-[11px] text-[#C17BFF]/70 mt-1">{selectedEquipment.tag}</p>
+                </div>
+                <div className="w-8 h-px bg-[#2A2A2A] my-3" />
+                <p className="text-sm text-white/60 leading-relaxed">{selectedEquipment.description}</p>
+              </div>
             </div>
           </div>
         </>

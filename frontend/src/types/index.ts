@@ -33,6 +33,8 @@ export interface Booking {
   serviceId: string
   date: string
   time: string
+  duration?: number        // длительность в часах
+  engineer?: string        // имя инженера или 'any'
   totalPrice: number
   prepayAmount: number
   status: 'pending' | 'confirmed' | 'completed' | 'cancelled'

@@ -5,7 +5,7 @@ import { useTelegram } from '../hooks/useTelegram'
 import { useBookingStore } from '../store/bookingStore'
 import { useAppContext } from '../App'
 import { getUserBookings, cancelBooking } from '../api'
-import { SERVICES, STUDIOS } from '../data'
+import { SERVICES } from '../data'
 import type { Booking } from '../types'
 
 const STATUS_LABELS: Record<Booking['status'], { label: string; color: string; dot: string }> = {
@@ -158,36 +158,35 @@ export function Profile() {
         )}
       </div>
 
-      {/* Studio info */}
-      <div className="px-4 mb-6">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Студия</p>
-        <div className="card-lab overflow-hidden divide-y divide-[#2A2A2A]">
-          <InfoRow emoji="📍" label="Адрес" value="Бол. Сампсониевский 60Н" />
-          <InfoRow emoji="🕐" label="Работаем" value="Круглосуточно, 0:00 – 24:00" />
-          <InfoRow emoji="💬" label="Telegram" value="@laboratoriya_spb" />
-        </div>
-      </div>
-
     </div>
   )
 }
 
+function calcEndTime(start: string, durationHours: number): string {
+  const [h, m] = start.split(':').map(Number)
+  const endH = (h + durationHours) % 24
+  return `${String(endH).padStart(2, '0')}:${String(m || 0).padStart(2, '0')}`
+}
+
 function BookingCard({ booking, onCancel }: { booking: Booking; onCancel?: (id: string) => void }) {
-  const service = SERVICES.find(s => s.id === booking.serviceId)
-  const studio  = STUDIOS.find(s => s.id === booking.studioId)
-  const status  = STATUS_LABELS[booking.status] ?? STATUS_LABELS.pending
+  const service  = SERVICES.find(s => s.id === booking.serviceId)
+  const status   = STATUS_LABELS[booking.status] ?? STATUS_LABELS.pending
   const isActive = booking.status === 'pending' || booking.status === 'confirmed'
+
+  // Длительность: из booking напрямую или из найденного сервиса
+  const duration = booking.duration ?? service?.duration
+  const isRent = service?.category === 'rent'
+  const endTime = duration && booking.time ? calcEndTime(booking.time, duration) : null
 
   return (
     <div className={`card-lab p-4 ${isActive ? 'border-[#C17BFF]/15' : ''}`}>
+      {/* Заголовок: услуга + статус */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0 pr-3">
           <div className="font-semibold text-white text-sm leading-tight">
-            {service?.title ?? booking.serviceId ?? 'Запись'}{service?.duration ? ` · ${service.duration}ч` : ''}
+            {service?.title ?? booking.serviceId ?? 'Запись'}{duration ? ` · ${duration}ч` : ''}
           </div>
-          <div className="text-xs text-white/40 mt-0.5">
-            {studio?.name ?? 'Лаборатория'}
-          </div>
+          <div className="text-xs text-white/40 mt-0.5">Лаборатория</div>
         </div>
         <div className="flex items-center gap-1.5">
           <div className={`w-1.5 h-1.5 rounded-full ${status.dot}`} />
@@ -195,7 +194,8 @@ function BookingCard({ booking, onCancel }: { booking: Booking; onCancel?: (id: 
         </div>
       </div>
 
-      <div className="flex items-center gap-4 text-xs text-white/40">
+      {/* Дата + время */}
+      <div className="flex items-center gap-4 text-xs text-white/40 mb-0">
         <div className="flex items-center gap-1.5">
           <svg className="w-3 h-3" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <rect x="3" y="4" width="18" height="18" rx="2"/>
@@ -210,12 +210,27 @@ function BookingCard({ booking, onCancel }: { booking: Booking; onCancel?: (id: 
             <circle cx="12" cy="12" r="10"/>
             <polyline points="12 6 12 12 16 14"/>
           </svg>
-          {booking.time}
+          {endTime ? (
+            <span className="text-white/60 font-medium">{booking.time} — {endTime}</span>
+          ) : (
+            booking.time
+          )}
         </div>
         <div className="ml-auto font-bold text-white text-sm">
           {Number(booking.totalPrice).toLocaleString()} ₽
         </div>
       </div>
+
+      {/* Инженер — только для не-аренды и если есть */}
+      {!isRent && booking.engineer && (
+        <div className="mt-2.5 flex items-center gap-2">
+          <svg className="w-3 h-3 text-[#C17BFF]/60 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+            <circle cx="12" cy="7" r="4"/>
+          </svg>
+          <span className="text-xs text-[#C17BFF]/70 font-medium">{booking.engineer}</span>
+        </div>
+      )}
 
       {isActive && (
         <div className="mt-3 pt-3 border-t border-[#2A2A2A] flex items-center justify-between">
@@ -234,14 +249,3 @@ function BookingCard({ booking, onCancel }: { booking: Booking; onCancel?: (id: 
   )
 }
 
-function InfoRow({ emoji, label, value }: { emoji: string; label: string; value: string }) {
-  return (
-    <div className="flex items-center gap-3 px-4 py-3.5">
-      <span className="text-lg flex-shrink-0">{emoji}</span>
-      <div>
-        <div className="text-[10px] text-white/30 uppercase tracking-wider">{label}</div>
-        <div className="text-sm font-medium text-white mt-0.5">{value}</div>
-      </div>
-    </div>
-  )
-}

@@ -11,6 +11,8 @@ const SHEET_COLUMNS = {
   Clients:      ['id','name','telegram_id','username','phone','email','notes','created_at'],
   Employees:    ['id','name','telegram_id','role','hourly_rate','revenue_percent','created_at'],
   BlockedSlots: ['id','date','time','reason','created_at'],
+  Settings:     ['key','value'],
+  Partners:     ['id','name','role','created_at'],
 }
 
 let _client = null

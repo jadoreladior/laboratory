@@ -1,29 +1,32 @@
 import { useState, useEffect, useRef } from 'react'
-import { Mic2, Sliders, Key, Package, Check } from 'lucide-react'
+import { Mic2, Sliders, Key, Package, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
-import { format, addDays, isSameDay } from 'date-fns'
+import { format, addDays, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isToday, isPast } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { STUDIOS, SERVICES, ADDONS } from '../data'
+import { STUDIOS, SERVICES, ADDONS, TEAM } from '../data'
+import { getSettings } from '../api'
 import type { ServiceCategory } from '../types'
 import { useBookingStore } from '../store/bookingStore'
 import { useTelegram } from '../hooks/useTelegram'
 import { useAppContext } from '../App'
 import { createBooking, getAvailableSlots } from '../api'
 
-type Step = 'service' | 'duration' | 'datetime' | 'addons' | 'confirm'
+type Step = 'service' | 'engineer' | 'datetime' | 'addons' | 'confirm'
 
-function getDates(count = 14): Date[] {
-  return Array.from({ length: count }, (_, i) => addDays(new Date(), i))
+// Categories that require engineer selection
+const NEEDS_ENGINEER = ['record', 'studio', 'package']
+
+const DEFAULT_RATES = { record: 1690, studio: 2690, rent: 1360 }
+const DEFAULT_PACKAGES: Record<number, number> = { 3: 7970, 5: 11970, 6: 13970 }
+
+function buildCatConfig(rates: typeof DEFAULT_RATES, pkgs: typeof DEFAULT_PACKAGES) {
+  return {
+    record:  { icon: <Mic2 size={22} strokeWidth={1.5} />, rate: rates.record, label: 'Запись', desc: 'С звукорежиссёром · демо в подарок', durations: [1,2,3,4] },
+    studio:  { icon: <Sliders size={22} strokeWidth={1.5} />, rate: rates.studio, label: 'Сведение', desc: 'Почасово или дистанционно', durations: [1,2,3,4] },
+    rent:    { icon: <Key size={22} strokeWidth={1.5} />, rate: rates.rent, label: 'Аренда', desc: 'Без звукорежиссёра', durations: [1,2,3,4] },
+    package: { icon: <Package size={22} strokeWidth={1.5} />, rate: null as null, label: 'Готовый трек', desc: 'Запись + сведение', durations: [3,5,6] },
+  }
 }
-
-const CAT_CONFIG: Record<string, { icon: React.ReactNode; rate: number | null; label: string; desc: string; durations: number[] }> = {
-  record:  { icon: <Mic2 size={22} strokeWidth={1.5} />, rate: 1690, label: 'Запись', desc: 'С звукорежиссёром · демо в подарок', durations: [1,2,3,4] },
-  studio:  { icon: <Sliders size={22} strokeWidth={1.5} />, rate: 2690, label: 'Сведение', desc: 'Почасово или дистанционно', durations: [1,2,3,4] },
-  rent:    { icon: <Key size={22} strokeWidth={1.5} />, rate: 1360, label: 'Аренда', desc: 'Без звукорежиссёра', durations: [1,2,3,4] },
-  package: { icon: <Package size={22} strokeWidth={1.5} />, rate: null, label: 'Готовый трек', desc: 'Запись + сведение', durations: [3,5,6] },
-}
-
-const PACKAGE_PRICES: Record<number, number> = { 3: 7970, 5: 11970, 6: 13970 }
 
 export function Booking() {
   const navigate = useNavigate()
@@ -36,14 +39,40 @@ export function Booking() {
 
   const [step, setStep] = useState<Step>('service')
   const [category, setCategory] = useState<ServiceCategory | null>(initialCategory ?? null)
-  const [duration, setDuration] = useState<number | null>(null)
+
+  // Last choice memory
+  const [lastCategory, setLastCategory] = useState<ServiceCategory | null>(() => {
+    try { return (localStorage.getItem('lab_last_category') as ServiceCategory) || null } catch { return null }
+  })
   const [localDate, setLocalDate] = useState<Date>(new Date())
-  const [localTime, setLocalTime] = useState<string | null>(null)
+  const [localTime, setLocalTime] = useState<string | null>(null)       // начало
+  const [localTimeEnd, setLocalTimeEnd] = useState<string | null>(null) // конец
   const [selectedAddons, setSelectedAddons] = useState<string[]>([])
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
   const [slots, setSlots] = useState<{ time: string; available: boolean }[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
+  const [selectedEngineer, setSelectedEngineer] = useState<string | null>(
+    (location.state as any)?.engineer ?? null
+  )
+  const [calMonth, setCalMonth] = useState(new Date())
+  const [rates, setRates] = useState(DEFAULT_RATES)
+  const [packagePrices, setPackagePrices] = useState(DEFAULT_PACKAGES)
+
+  useEffect(() => {
+    getSettings().then(s => {
+      setRates({
+        record: Number(s.record_rate) || DEFAULT_RATES.record,
+        studio: Number(s.studio_rate) || DEFAULT_RATES.studio,
+        rent:   Number(s.rent_rate)   || DEFAULT_RATES.rent,
+      })
+      setPackagePrices({
+        3: Number(s.package_3h) || DEFAULT_PACKAGES[3],
+        5: Number(s.package_5h) || DEFAULT_PACKAGES[5],
+        6: Number(s.package_6h) || DEFAULT_PACKAGES[6],
+      })
+    }).catch(() => {})
+  }, [])
 
   // Ensure studio is always set
   useEffect(() => {
@@ -54,6 +83,7 @@ export function Booking() {
     if (step !== 'datetime') return
     setLoadingSlots(true)
     setLocalTime(null)
+    setLocalTimeEnd(null)
     const dateStr = format(localDate, 'yyyy-MM-dd')
     getAvailableSlots('A', dateStr)
       .then(setSlots)
@@ -62,25 +92,36 @@ export function Booking() {
   }, [localDate, step])
 
   // Computed values
+  const CAT_CONFIG = buildCatConfig(rates, packagePrices)
   const catCfg = category ? CAT_CONFIG[category] : null
+
+  // Длительность выводится из выбранного диапазона времени
+  const duration = localTime && localTimeEnd
+    ? (timeToMinutes(localTimeEnd) - timeToMinutes(localTime)) / 60
+    : null
+
   const computedPrice = (): number => {
     if (!category || !duration) return 0
-    if (category === 'package') return PACKAGE_PRICES[duration] ?? 0
+    if (category === 'package') return packagePrices[duration] ?? (catCfg?.rate ?? 0) * duration
     return (catCfg?.rate ?? 0) * duration
   }
 
   const getDerivedService = () => {
     if (!category || !duration) return null
-    return SERVICES.find(s => s.category === category && s.duration === duration) ?? null
+    return SERVICES.find(s => s.category === category && s.duration === duration)
+      ?? SERVICES.find(s => s.category === category) // fallback: любой той же категории
+      ?? null
   }
 
-  const STEPS: Step[] = ['service', 'duration', 'datetime', 'addons', 'confirm']
+  const STEPS: Step[] = category && NEEDS_ENGINEER.includes(category)
+    ? ['service', 'engineer', 'datetime', 'addons', 'confirm']
+    : ['service', 'datetime', 'addons', 'confirm']
   const stepIndex = STEPS.indexOf(step)
 
   const canProceed = () => {
     if (step === 'service') return !!category
-    if (step === 'duration') return !!duration
-    if (step === 'datetime') return !!localTime
+    if (step === 'engineer') return !!selectedEngineer
+    if (step === 'datetime') return !!localTime && !!localTimeEnd
     if (step === 'addons') return true
     return true
   }
@@ -88,6 +129,11 @@ export function Booking() {
   const next = () => {
     if (!canProceed()) return
     haptic?.impactOccurred('light')
+    if (step === 'service' && category) {
+      try { localStorage.setItem('lab_last_category', category) } catch {}
+      setLastCategory(category)
+      if (!NEEDS_ENGINEER.includes(category)) setSelectedEngineer(null)
+    }
     setStep(STEPS[stepIndex + 1])
   }
 
@@ -118,6 +164,10 @@ export function Booking() {
     const prepay = Math.ceil(total * 0.5)
 
     try {
+      const engineerName = selectedEngineer === 'any'
+        ? 'Любой свободный'
+        : TEAM.find(t => t.id === selectedEngineer)?.name ?? undefined
+
       if (telegramId) {
         const booking = await createBooking({
           client_name: clientName,
@@ -136,6 +186,8 @@ export function Booking() {
           serviceId: service.id,
           date: booking.booking_date,
           time: booking.booking_time,
+          duration: service.duration,
+          engineer: engineerName,
           totalPrice: Number(booking.total_price) || total,
           prepayAmount: Number(booking.prepay_amount) || prepay,
           status: booking.status,
@@ -148,6 +200,8 @@ export function Booking() {
           serviceId: service.id,
           date: dateStr,
           time: localTime,
+          duration: service.duration,
+          engineer: engineerName,
           totalPrice: total,
           prepayAmount: prepay,
           status: 'pending',
@@ -170,7 +224,10 @@ export function Booking() {
     />
   }
 
-  const STEP_LABELS = ['Услуга', 'Длительность', 'Дата и время', 'Доп. услуги', 'Подтверждение']
+  const STEP_LABELS: Record<Step, string> = {
+    service: 'Услуга', engineer: 'Инженер',
+    datetime: 'Дата и время', addons: 'Доп. услуги', confirm: 'Подтверждение',
+  }
 
   return (
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
@@ -189,7 +246,7 @@ export function Booking() {
           <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">
             Шаг {stepIndex + 1} из {STEPS.length}
           </div>
-          <h1 className="text-lg font-bold text-white">{STEP_LABELS[stepIndex]}</h1>
+          <h1 className="text-lg font-bold text-white">{STEP_LABELS[step]}</h1>
         </div>
       </div>
 
@@ -204,33 +261,44 @@ export function Booking() {
       {/* ── Step: Service ── */}
       {step === 'service' && (
         <div className="px-4 space-y-3 animate-fade-in pb-28">
+          {lastCategory && (
+            <div className="flex items-center gap-2 mb-1">
+              <div className="w-1.5 h-1.5 rounded-full bg-[#C17BFF]" />
+              <span className="text-xs text-white/30">
+                В прошлый раз: <span className="text-[#C17BFF]/70">{CAT_CONFIG[lastCategory]?.label}</span>
+              </span>
+            </div>
+          )}
           {Object.entries(CAT_CONFIG).map(([id, cfg]) => {
             const isSelected = category === id
+            const isLast = lastCategory === id
             return (
               <button
                 key={id}
-                onClick={() => { haptic?.selectionChanged(); setCategory(id as ServiceCategory); setDuration(null) }}
-                className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98]
+                onClick={() => { haptic?.selectionChanged(); setCategory(id as ServiceCategory) }}
+                className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98] relative
                   ${isSelected
                     ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
                     : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
               >
+                {isLast && !isSelected && (
+                  <span className="absolute top-2.5 right-3 text-[9px] font-semibold text-[#C17BFF]/60 uppercase tracking-widest">
+                    прошлый раз
+                  </span>
+                )}
                 <div className="flex items-center gap-4">
                   <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0
                     ${isSelected ? 'bg-[#C17BFF]/20 text-[#C17BFF]' : 'bg-white/5 text-white/40'}`}>
                     {cfg.icon}
                   </div>
                   <div className="flex-1 min-w-0">
-                    <div className={`font-bold text-base ${isSelected ? 'text-white' : 'text-white'}`}>
-                      {cfg.label}
-                    </div>
+                    <div className="font-bold text-base text-white">{cfg.label}</div>
                     <div className="text-xs text-white/40 mt-0.5">{cfg.desc}</div>
                   </div>
                   <div className="text-right flex-shrink-0">
                     <div className={`font-bold text-sm ${isSelected ? 'text-[#C17BFF]' : 'text-white/60'}`}>
                       {cfg.rate ? `${cfg.rate.toLocaleString()} ₽/ч` : 'от 7 970 ₽'}
                     </div>
-                    {/* Radio indicator */}
                     <div className={`mt-1 w-5 h-5 rounded-full border-2 ml-auto flex items-center justify-center
                       ${isSelected ? 'border-[#C17BFF] bg-[#C17BFF]' : 'border-white/20'}`}>
                       {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
@@ -243,110 +311,312 @@ export function Booking() {
         </div>
       )}
 
-      {/* ── Step: Duration ── */}
-      {step === 'duration' && catCfg && (
-        <div className="px-4 animate-fade-in pb-28">
-          {/* Price hint */}
-          <div className="bg-[#C17BFF]/8 border border-[#C17BFF]/20 rounded-2xl p-4 mb-5">
-            <div className="text-xs text-white/50 mb-1">Базовая ставка</div>
-            <div className="font-display font-black text-xl text-[#C17BFF]">
-              {catCfg.rate ? `${catCfg.rate.toLocaleString()} ₽` : ''}
-              <span className="text-sm font-normal text-white/40 ml-1">{catCfg.rate ? '/ час' : ''}</span>
-            </div>
-          </div>
-
-          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">
-            Выберите длительность
+      {/* ── Step: Engineer ── */}
+      {step === 'engineer' && (
+        <div className="px-4 space-y-3 animate-fade-in pb-28">
+          <p className="text-xs text-white/40 mb-4 leading-relaxed">
+            Выберите звукорежиссёра или оставьте выбор за нами — назначим лучшего свободного на ваше время.
           </p>
 
-          <div className="grid grid-cols-2 gap-3">
-            {catCfg.durations.map(h => {
-              const price = category === 'package' ? PACKAGE_PRICES[h] : (catCfg.rate ?? 0) * h
-              const isSelected = duration === h
-              return (
-                <button
-                  key={h}
-                  onClick={() => { haptic?.selectionChanged(); setDuration(h) }}
-                  className={`p-4 rounded-2xl text-left transition-all active:scale-[0.97]
-                    ${isSelected
-                      ? 'bg-[#C17BFF]/15 border border-[#C17BFF]/50'
-                      : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
-                >
-                  <div className={`font-display font-black text-2xl mb-1 ${isSelected ? 'text-[#C17BFF]' : 'text-white'}`}>
-                    {h}ч
-                  </div>
-                  <div className="text-xs text-white/40 mb-2">
-                    {h === 1 ? '1 час' : h < 5 ? `${h} часа` : `${h} часов`}
-                  </div>
-                  <div className={`font-bold text-base ${isSelected ? 'text-white' : 'text-white/80'}`}>
-                    {price.toLocaleString()} ₽
-                  </div>
-                  {isSelected && (
-                    <div className="mt-2 text-[10px] text-[#C17BFF]/70">
-                      Предоплата {Math.ceil(price * 0.5).toLocaleString()} ₽
-                    </div>
-                  )}
-                </button>
-              )
-            })}
-          </div>
+          {/* Any engineer option */}
+          <button
+            onClick={() => { haptic?.selectionChanged(); setSelectedEngineer('any') }}
+            className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98]
+              ${selectedEngineer === 'any'
+                ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
+                : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
+          >
+            <div className="flex items-center gap-4">
+              <div className={`w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 text-lg
+                ${selectedEngineer === 'any' ? 'bg-[#C17BFF]/20' : 'bg-white/5'}`}>
+                🎲
+              </div>
+              <div className="flex-1">
+                <div className="font-bold text-white text-sm">Любой свободный</div>
+                <div className="text-xs text-white/40 mt-0.5">Назначим лучшего на ваше время</div>
+              </div>
+              <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
+                ${selectedEngineer === 'any' ? 'border-[#C17BFF] bg-[#C17BFF]' : 'border-white/20'}`}>
+                {selectedEngineer === 'any' && <div className="w-2 h-2 rounded-full bg-white" />}
+              </div>
+            </div>
+          </button>
+
+          {/* Individual engineers */}
+          {TEAM.map(member => (
+            <button
+              key={member.id}
+              onClick={() => { haptic?.selectionChanged(); setSelectedEngineer(member.id) }}
+              className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98]
+                ${selectedEngineer === member.id
+                  ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
+                  : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
+            >
+              <div className="flex items-center gap-4">
+                <img src={member.photo} alt={member.name}
+                  className="w-11 h-11 rounded-full object-cover object-top flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="font-bold text-white text-sm">{member.name}</div>
+                  <div className="text-xs text-white/40 mt-0.5">{member.specialization}</div>
+                </div>
+                <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center
+                  ${selectedEngineer === member.id ? 'border-[#C17BFF] bg-[#C17BFF]' : 'border-white/20'}`}>
+                  {selectedEngineer === member.id && <div className="w-2 h-2 rounded-full bg-white" />}
+                </div>
+              </div>
+            </button>
+          ))}
         </div>
       )}
 
       {/* ── Step: DateTime ── */}
       {step === 'datetime' && (
         <div className="animate-fade-in pb-28">
-          {/* Date picker */}
-          <div className="px-4 mb-6">
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Дата</p>
-            <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
-              {getDates().map(date => {
-                const isSelected = isSameDay(date, localDate)
-                const isToday = isSameDay(date, new Date())
-                return (
-                  <button
-                    key={date.toISOString()}
-                    onClick={() => { haptic?.selectionChanged(); setLocalDate(date) }}
-                    className={`flex-shrink-0 flex flex-col items-center px-3.5 py-3 rounded-2xl transition-all min-w-[56px]
-                      ${isSelected
-                        ? 'bg-[#C17BFF] text-white'
-                        : 'bg-[#1A1A1A] border border-[#2A2A2A] text-white'}`}
-                  >
-                    <span className={`text-[10px] font-medium uppercase ${isSelected ? 'opacity-80' : 'opacity-40'}`}>
-                      {isToday ? 'сег' : format(date, 'EEE', { locale: ru }).slice(0, 3)}
-                    </span>
-                    <span className="text-lg font-black leading-tight">{format(date, 'd')}</span>
-                  </button>
-                )
-              })}
+          {/* Month calendar */}
+          <div className="px-4 mb-4">
+            {/* Month header */}
+            <div className="flex items-center justify-between mb-3">
+              <button
+                onClick={() => setCalMonth(m => subMonths(m, 1))}
+                disabled={calMonth.getMonth() === new Date().getMonth() && calMonth.getFullYear() === new Date().getFullYear()}
+                className="w-8 h-8 rounded-full card-lab flex items-center justify-center disabled:opacity-30"
+              >
+                <ChevronLeft size={14} className="text-white" />
+              </button>
+              <p className="text-sm font-bold text-white capitalize">
+                {format(calMonth, 'LLLL yyyy', { locale: ru })}
+              </p>
+              <button
+                onClick={() => setCalMonth(m => addMonths(m, 1))}
+                disabled={calMonth > addMonths(new Date(), 2)}
+                className="w-8 h-8 rounded-full card-lab flex items-center justify-center disabled:opacity-30"
+              >
+                <ChevronRight size={14} className="text-white" />
+              </button>
             </div>
+
+            {/* Weekday headers */}
+            <div className="grid grid-cols-7 mb-1">
+              {['Пн','Вт','Ср','Чт','Пт','Сб','Вс'].map(d => (
+                <div key={d} className="text-center text-[10px] text-white/25 font-medium py-1">{d}</div>
+              ))}
+            </div>
+
+            {/* Days grid */}
+            {(() => {
+              const start = startOfMonth(calMonth)
+              const end = endOfMonth(calMonth)
+              const startDow = (getDay(start) + 6) % 7
+              const prefix = Array.from({ length: startDow }, (_, i) => addDays(start, -(startDow - i)))
+              const monthDays = eachDayOfInterval({ start, end })
+              const total = prefix.length + monthDays.length
+              const suffix = Array.from({ length: total % 7 === 0 ? 0 : 7 - (total % 7) }, (_, i) => addDays(end, i + 1))
+              const maxDate = addDays(new Date(), 60)
+              return (
+                <div className="grid grid-cols-7 gap-1">
+                  {[...prefix, ...monthDays, ...suffix].map((day, idx) => {
+                    const inMonth = day.getMonth() === calMonth.getMonth()
+                    const past = isPast(day) && !isToday(day)
+                    const tooFar = day > maxDate
+                    const disabled = !inMonth || past || tooFar
+                    const sel = isSameDay(day, localDate)
+                    const tod = isToday(day)
+                    return (
+                      <button
+                        key={idx}
+                        disabled={disabled}
+                        onClick={() => { haptic?.selectionChanged(); setLocalDate(day) }}
+                        className={`aspect-square rounded-xl flex items-center justify-center transition-all
+                          ${!inMonth ? 'opacity-0 pointer-events-none' : ''}
+                          ${sel ? 'bg-[#C17BFF]' : tod ? 'bg-[#C17BFF]/15 ring-1 ring-[#C17BFF]/50' : disabled ? '' : 'bg-[#1A1A1A] active:scale-90'}
+                          ${disabled && inMonth ? 'opacity-25' : ''}`}
+                      >
+                        <span className={`text-sm font-bold
+                          ${sel ? 'text-white' : tod ? 'text-[#C17BFF]' : 'text-white'}`}>
+                          {format(day, 'd')}
+                        </span>
+                      </button>
+                    )
+                  })}
+                </div>
+              )
+            })()}
           </div>
 
           {/* Time picker */}
           <div className="px-4">
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Время начала</p>
+            <div className="flex items-center justify-between mb-3">
+              <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">
+                {!localTime ? 'Выберите начало' : !localTimeEnd ? 'Теперь выберите конец' : 'Время выбрано'}
+              </p>
+              {localTime && (
+                <button
+                  onClick={() => { setLocalTime(null); setLocalTimeEnd(null) }}
+                  className="text-xs text-white/30 active:text-white/60 transition-colors"
+                >
+                  Сбросить
+                </button>
+              )}
+            </div>
             {loadingSlots ? (
               <div className="text-center py-8 text-white/30 text-sm">Загружаем слоты...</div>
-            ) : (
-              <div className="grid grid-cols-4 gap-2">
-                {(slots.length > 0 ? slots : [
-                  '10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00',
-                  '18:00','19:00','20:00','21:00','22:00'
-                ].map(t => ({ time: t, available: true }))).map(slot => (
-                  <button
-                    key={slot.time}
-                    onClick={() => slot.available && (haptic?.selectionChanged(), setLocalTime(slot.time))}
-                    disabled={!slot.available}
-                    className={`py-3 rounded-xl text-sm font-semibold transition-all
-                      ${!slot.available
-                        ? 'opacity-20 cursor-not-allowed bg-[#1A1A1A] text-white border border-[#2A2A2A]'
-                        : localTime === slot.time
-                          ? 'bg-[#C17BFF] text-white'
-                          : 'bg-[#1A1A1A] border border-[#2A2A2A] text-white'}`}
-                  >
-                    {slot.time}
-                  </button>
-                ))}
+            ) : (() => {
+              const rawSlots = slots.length > 0 ? slots : [
+                '10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00',
+                '18:00','19:00','20:00','21:00','22:00'
+              ].map(t => ({ time: t, available: true }))
+
+              // Valid durations depend on category
+              const validDurations = category === 'package' ? [3, 5, 6] : null // null = any integer ≥ 1
+
+              type SlotState = 'available' | 'unavailable' | 'start' | 'end' | 'in-range' | 'valid-end' | 'invalid-end'
+
+              const getSlotState = (slot: { time: string; available: boolean }): SlotState => {
+                const slotMin = timeToMinutes(slot.time)
+
+                if (!localTime) {
+                  return slot.available ? 'available' : 'unavailable'
+                }
+
+                const startMin = timeToMinutes(localTime)
+
+                if (localTimeEnd) {
+                  const endMin = timeToMinutes(localTimeEnd)
+                  if (slot.time === localTime) return 'start'
+                  if (slot.time === localTimeEnd) return 'end'
+                  if (slotMin > startMin && slotMin < endMin) return 'in-range'
+                  return slot.available ? 'available' : 'unavailable'
+                }
+
+                // Start set, no end yet
+                if (slot.time === localTime) return 'start'
+                if (slotMin <= startMin) return slot.available ? 'available' : 'unavailable'
+
+                // After start — check if valid end
+                const potentialDuration = (slotMin - startMin) / 60
+                const isDurationValid = validDurations
+                  ? validDurations.includes(potentialDuration)
+                  : Number.isInteger(potentialDuration) && potentialDuration >= 1
+
+                if (!isDurationValid) return 'invalid-end'
+
+                // Check all slots in [start, slot) are available
+                const rangeOk = rawSlots
+                  .filter(s => { const sm = timeToMinutes(s.time); return sm >= startMin && sm < slotMin })
+                  .every(s => s.available)
+
+                if (!rangeOk || !slot.available) return 'invalid-end'
+
+                return 'valid-end'
+              }
+
+              const handleSlotClick = (slot: { time: string; available: boolean }) => {
+                haptic?.selectionChanged()
+                const slotMin = timeToMinutes(slot.time)
+
+                if (!localTime) {
+                  if (!slot.available) return
+                  setLocalTime(slot.time)
+                  setLocalTimeEnd(null)
+                  return
+                }
+
+                if (localTimeEnd) {
+                  // Both set → reset, set clicked as new start
+                  if (!slot.available) return
+                  setLocalTime(slot.time)
+                  setLocalTimeEnd(null)
+                  return
+                }
+
+                const startMin = timeToMinutes(localTime)
+
+                if (slotMin <= startMin) {
+                  // Before/at current start → set as new start
+                  if (!slot.available) return
+                  setLocalTime(slot.time)
+                  setLocalTimeEnd(null)
+                  return
+                }
+
+                const state = getSlotState(slot)
+                if (state === 'valid-end') {
+                  setLocalTimeEnd(slot.time)
+                }
+              }
+
+              return (
+                <div className="grid grid-cols-4 gap-2">
+                  {rawSlots.map(slot => {
+                    const state = getSlotState(slot)
+                    return (
+                      <button
+                        key={slot.time}
+                        onClick={() => handleSlotClick(slot)}
+                        className={`py-3 rounded-xl text-sm font-semibold transition-all
+                          ${state === 'start' || state === 'end'
+                            ? 'bg-[#C17BFF] text-white shadow-lg'
+                            : state === 'in-range'
+                              ? 'bg-[#C17BFF]/20 text-[#C17BFF]/80 border border-[#C17BFF]/30 cursor-not-allowed pointer-events-none'
+                              : state === 'valid-end'
+                                ? 'bg-transparent border-2 border-[#C17BFF]/70 text-[#C17BFF] active:scale-95'
+                                : state === 'invalid-end'
+                                  ? 'opacity-25 cursor-not-allowed bg-[#1A1A1A] text-white border border-[#2A2A2A]'
+                                  : state === 'unavailable'
+                                    ? 'opacity-20 cursor-not-allowed bg-[#1A1A1A] text-white border border-[#2A2A2A]'
+                                    : 'bg-[#1A1A1A] border border-[#2A2A2A] text-white active:scale-95'}`}
+                      >
+                        {slot.time}
+                      </button>
+                    )
+                  })}
+                </div>
+              )
+            })()}
+
+            {/* Hint below grid when start is selected but no end */}
+            {localTime && !localTimeEnd && category === 'package' && (
+              <p className="mt-3 text-[11px] text-white/30 text-center">
+                Для тарифа «Готовый трек» доступны сеансы 3, 5 или 6 часов
+              </p>
+            )}
+
+            {/* Summary: диапазон + инженер — появляется после выбора обоих */}
+            {localTime && localTimeEnd && (
+              <div className="mt-4 p-4 rounded-2xl bg-[#C17BFF]/8 border border-[#C17BFF]/20 animate-fade-in">
+                <div className="flex items-center gap-3 mb-3">
+                  <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                      <circle cx="12" cy="12" r="10"/>
+                      <polyline points="12 6 12 12 16 14"/>
+                    </svg>
+                  </div>
+                  <div>
+                    <div className="text-[10px] text-white/35 uppercase tracking-widest mb-0.5">Вы будете в студии</div>
+                    <div className="text-base font-bold text-white">
+                      {localTime} — {localTimeEnd}
+                      {duration && <span className="text-sm font-normal text-white/40 ml-2">· {duration} ч</span>}
+                    </div>
+                  </div>
+                </div>
+                {selectedEngineer && (
+                  <div className="flex items-center gap-3 pt-3 border-t border-[#C17BFF]/15">
+                    <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                        <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
+                        <circle cx="12" cy="7" r="4"/>
+                      </svg>
+                    </div>
+                    <div>
+                      <div className="text-[10px] text-white/35 uppercase tracking-widest mb-0.5">Звукорежиссёр</div>
+                      <div className="text-sm font-semibold text-white">
+                        {selectedEngineer === 'any'
+                          ? 'Назначим лучшего свободного'
+                          : TEAM.find(t => t.id === selectedEngineer)?.name ?? '—'}
+                      </div>
+                    </div>
+                  </div>
+                )}
               </div>
             )}
           </div>
@@ -410,9 +680,14 @@ export function Booking() {
           {/* Summary card */}
           <div className="card-lab p-4 mb-4 space-y-3">
             <ConfirmRow label="Услуга" value={`${CAT_CONFIG[category].label}`} />
-            <ConfirmRow label="Длительность" value={`${duration} ч`} />
+            {selectedEngineer && selectedEngineer !== 'any' && (
+              <ConfirmRow label="Инженер" value={TEAM.find(t => t.id === selectedEngineer)?.name ?? '—'} />
+            )}
             <ConfirmRow label="Дата" value={format(localDate, 'd MMMM yyyy', { locale: ru })} />
-            <ConfirmRow label="Время" value={localTime ?? '—'} />
+            <ConfirmRow
+              label="Время"
+              value={localTime && localTimeEnd ? `${localTime} — ${localTimeEnd} · ${duration} ч` : localTime ?? '—'}
+            />
             {selectedAddons.length > 0 && (
               <ConfirmRow
                 label="Доп. услуги"
@@ -460,6 +735,18 @@ export function Booking() {
     </div>
   )
 }
+
+function calcEndTime(start: string, durationHours: number): string {
+  const [h, m] = start.split(':').map(Number)
+  const endH = (h + durationHours) % 24
+  return `${String(endH).padStart(2, '0')}:${String(m || 0).padStart(2, '0')}`
+}
+
+function timeToMinutes(t: string): number {
+  const [h, m] = t.split(':').map(Number)
+  return h * 60 + (m || 0)
+}
+
 
 function ConfirmRow({ label, value, bold, accent }: { label: string; value: string; bold?: boolean; accent?: boolean }) {
   return (
