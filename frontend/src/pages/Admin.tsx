@@ -1712,16 +1712,18 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
 // ─── Broadcast view ───────────────────────────────────────────────────────────
 
 function BroadcastView({ onBack }: { onBack: () => void }) {
-  const [message,  setMessage]  = useState('')
-  const [audience, setAudience] = useState<'all' | 'with_bookings'>('all')
-  const [count,    setCount]    = useState<number | null>(null)
-  const [sending,  setSending]  = useState(false)
-  const [result,   setResult]   = useState<{ sent: number; failed: number } | null>(null)
-  const [loadingCount, setLoadingCount] = useState(false)
+  const [message,     setMessage]     = useState('')
+  const [audience,    setAudience]    = useState<'all' | 'with_bookings'>('all')
+  const [count,       setCount]       = useState<number | null>(null)
+  const [sending,     setSending]     = useState(false)
+  const [result,      setResult]      = useState<{ sent: number; failed: number } | null>(null)
+  const [loadingCount,setLoadingCount]= useState(false)
+  const [confirming,  setConfirming]  = useState(false)   // inline confirm instead of window.confirm
 
   useEffect(() => {
     setLoadingCount(true)
     setResult(null)
+    setConfirming(false)
     getBroadcastCount(audience)
       .then(setCount)
       .catch(() => setCount(null))
@@ -1729,23 +1731,23 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
   }, [audience])
 
   const handleSend = async () => {
-    if (!message.trim() || sending) return
-    if (!confirm(`Отправить сообщение ${count ?? '?'} получателям?`)) return
     setSending(true)
+    setConfirming(false)
     setResult(null)
     try {
       const r = await sendBroadcast(message, audience)
       setResult(r)
       if (r.sent > 0) setMessage('')
     } catch {
-      alert('Ошибка при отправке')
+      setResult({ sent: 0, failed: count ?? 0 })
     } finally {
       setSending(false)
     }
   }
 
-  const chars = message.length
-  const tooLong = chars > 4096
+  const chars    = message.length
+  const tooLong  = chars > 4096
+  const canSend  = !!message.trim() && !tooLong && !sending && (count ?? 0) > 0
 
   return (
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
@@ -1757,16 +1759,17 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
       </div>
 
       <div className="px-4 space-y-4">
+        {/* Audience */}
         <div className="card-lab p-4">
           <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Аудитория</p>
           <div className="grid grid-cols-2 gap-2">
             {([
-              { val: 'all',           label: 'Все клиенты',      desc: 'Все в базе' },
-              { val: 'with_bookings', label: 'С бронированием',  desc: 'Кто бронировал' },
+              { val: 'all',           label: 'Все клиенты',     desc: 'Все в базе' },
+              { val: 'with_bookings', label: 'С бронированием', desc: 'Кто бронировал' },
             ] as const).map(opt => (
               <button
                 key={opt.val}
-                onClick={() => setAudience(opt.val)}
+                onClick={() => { setAudience(opt.val); setConfirming(false) }}
                 className={`p-3 rounded-xl text-left transition-all border ${
                   audience === opt.val
                     ? 'bg-[#C17BFF]/10 border-[#C17BFF]/40'
@@ -1779,10 +1782,15 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
             ))}
           </div>
           <div className="mt-3 text-center text-sm text-white/40">
-            {loadingCount ? 'Считаем...' : count !== null ? <><span className="text-white font-semibold">{count}</span> получателей</> : '—'}
+            {loadingCount
+              ? 'Считаем...'
+              : count !== null
+                ? <><span className="text-white font-semibold">{count}</span> получателей</>
+                : '—'}
           </div>
         </div>
 
+        {/* Message */}
         <div className="card-lab p-4">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Текст сообщения</p>
@@ -1790,7 +1798,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
           </div>
           <textarea
             value={message}
-            onChange={e => setMessage(e.target.value)}
+            onChange={e => { setMessage(e.target.value); setConfirming(false) }}
             placeholder="Привет! У нас новые цены и акции..."
             rows={7}
             className="w-full bg-[#111] border border-[#2A2A2A] rounded-xl p-3 text-sm text-white resize-none outline-none focus:border-[#C17BFF]/40 leading-relaxed"
@@ -1800,6 +1808,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
           </p>
         </div>
 
+        {/* Result */}
         {result && (
           <div className={`p-4 rounded-2xl border text-center ${result.failed === 0 ? 'bg-green-500/10 border-green-500/20' : 'bg-yellow-500/10 border-yellow-500/20'}`}>
             <div className="text-lg font-bold text-white">✓ Отправлено: {result.sent}</div>
@@ -1807,14 +1816,39 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
           </div>
         )}
 
-        <button
-          onClick={handleSend}
-          disabled={!message.trim() || tooLong || sending || (count ?? 0) === 0}
-          className="w-full btn-lily py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-40"
-        >
-          <Icon name="send" size={18} />
-          {sending ? 'Отправляем...' : `Отправить${count ? ` · ${count}` : ''}`}
-        </button>
+        {/* Inline confirm step — replaces window.confirm() which is blocked in Telegram */}
+        {confirming ? (
+          <div className="card-lab p-4 border border-[#C17BFF]/30 space-y-3 animate-scale-in">
+            <p className="text-sm text-white/70 text-center leading-relaxed">
+              Отправить сообщение <span className="text-white font-semibold">{count ?? 0}</span> получателям?
+            </p>
+            <div className="flex gap-3">
+              <button
+                onClick={() => setConfirming(false)}
+                className="flex-1 py-3 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A] text-sm text-white/50 font-semibold"
+              >
+                Отмена
+              </button>
+              <button
+                onClick={handleSend}
+                disabled={sending}
+                className="flex-1 py-3 rounded-xl btn-lily text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
+              >
+                <Icon name="send" size={16} />
+                {sending ? 'Отправляем...' : 'Отправить'}
+              </button>
+            </div>
+          </div>
+        ) : (
+          <button
+            onClick={() => canSend && setConfirming(true)}
+            disabled={!canSend}
+            className="w-full btn-lily py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-40"
+          >
+            <Icon name="send" size={18} />
+            {sending ? 'Отправляем...' : `Отправить${count ? ` · ${count}` : ''}`}
+          </button>
+        )}
       </div>
     </div>
   )

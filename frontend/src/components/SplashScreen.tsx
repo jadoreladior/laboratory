@@ -1,7 +1,4 @@
-import { useEffect, useRef, useState } from 'react'
-
-const SPLASH_VIDEO = '/assets/splash.mp4'
-const SPLASH_LOGO  = '/assets/logo.jpg'
+import { useEffect, useState } from 'react'
 
 /** Equalizer bars — audio studio branding */
 function EqBars() {
@@ -43,8 +40,6 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onDone }: SplashScreenProps) {
   const [phase, setPhase] = useState<'enter' | 'hold' | 'exit'>('enter')
-  const [videoOk, setVideoOk] = useState(false)
-  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase('hold'), 300)
@@ -100,65 +95,6 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
           animation: 'fadeUp 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both',
         }}
       >
-        {/* Logo / Video */}
-        <div
-          className="mb-6 relative flex items-center justify-center"
-          style={{
-            width: 180,
-            height: 180,
-            animation: 'float 3.5s ease-in-out infinite',
-            /* Чёрный фон нужен для mix-blend-mode:screen — screen(чёрный,X)=X,
-               поэтому чёрный фон логотипа становится полностью прозрачным */
-            background: '#000',
-            borderRadius: 28,
-          }}
-        >
-          {/* Видео (если есть splash.mp4) */}
-          <video
-            ref={videoRef}
-            src={SPLASH_VIDEO}
-            autoPlay
-            muted
-            playsInline
-            loop
-            onCanPlay={() => setVideoOk(true)}
-            onError={() => setVideoOk(false)}
-            style={{
-              position: 'absolute',
-              width: '100%',
-              height: '100%',
-              objectFit: 'cover',
-              borderRadius: 28,
-              display: videoOk ? 'block' : 'none',
-            }}
-          />
-
-          {/* Логотип: mix-blend-mode:screen на чёрном фоне убирает чёрное без искажения цветов */}
-          {!videoOk && (
-            <img
-              src={SPLASH_LOGO}
-              alt="Лаборатория"
-              style={{
-                width: '100%',
-                height: '100%',
-                objectFit: 'contain',
-                mixBlendMode: 'screen',
-              }}
-            />
-          )}
-
-          {/* Фиолетовый оверлей поверх видео */}
-          {videoOk && (
-            <div
-              className="absolute inset-0 pointer-events-none"
-              style={{
-                borderRadius: 28,
-                background: 'linear-gradient(to bottom, rgba(193,123,255,0.08) 0%, rgba(14,14,14,0.25) 100%)',
-              }}
-            />
-          )}
-        </div>
-
         {/* Equalizer bars */}
         <div style={{ animation: 'fadeIn 0.4s ease 0.25s both', opacity: 0, marginBottom: 24 }}>
           <EqBars />
