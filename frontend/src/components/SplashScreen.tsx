@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from 'react'
 
 const SPLASH_VIDEO = '/assets/splash.mp4'
+const SPLASH_LOGO  = '/assets/logo.png'
 
 /** Equalizer bars — audio studio branding */
 function EqBars() {
@@ -99,19 +100,16 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
           animation: 'fadeUp 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both',
         }}
       >
-        {/* Video (или mic-иконка как fallback) */}
+        {/* Logo / Video */}
         <div
-          className="mb-6 relative"
+          className="mb-6 relative flex items-center justify-center"
           style={{
-            width: 160,
-            height: 160,
-            borderRadius: 28,
-            overflow: 'hidden',
-            boxShadow: '0 0 40px rgba(193,123,255,0.35), 0 0 80px rgba(193,123,255,0.15)',
-            animation: videoOk ? undefined : 'float 3.5s ease-in-out infinite',
+            width: 180,
+            height: 180,
+            animation: 'float 3.5s ease-in-out infinite',
           }}
         >
-          {/* Видео */}
+          {/* Скрытый video — нужен только чтобы детектировать наличие файла */}
           <video
             ref={videoRef}
             src={SPLASH_VIDEO}
@@ -122,27 +120,28 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
             onCanPlay={() => setVideoOk(true)}
             onError={() => setVideoOk(false)}
             style={{
+              position: 'absolute',
               width: '100%',
               height: '100%',
               objectFit: 'cover',
+              borderRadius: 28,
               display: videoOk ? 'block' : 'none',
             }}
           />
 
-          {/* Fallback: mic SVG если видео не загрузилось */}
+          {/* Логотип — показывается если нет видео */}
           {!videoOk && (
-            <div
-              className="w-full h-full flex items-center justify-center bg-[#1A1A1A]"
-              style={{ filter: 'drop-shadow(0 0 20px rgba(193,123,255,0.55))' }}
-            >
-              <svg width={52} height={52} viewBox="0 0 24 24" fill="none"
-                stroke="#C17BFF" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-                <line x1="12" y1="19" x2="12" y2="22"/>
-                <line x1="8" y1="22" x2="16" y2="22"/>
-              </svg>
-            </div>
+            <img
+              src={SPLASH_LOGO}
+              alt="Лаборатория"
+              style={{
+                width: '100%',
+                height: '100%',
+                objectFit: 'contain',
+                mixBlendMode: 'screen',
+                filter: 'drop-shadow(0 0 32px rgba(255,20,147,0.6)) drop-shadow(0 0 80px rgba(255,20,147,0.25))',
+              }}
+            />
           )}
 
           {/* Фиолетовый оверлей поверх видео */}
@@ -150,6 +149,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
             <div
               className="absolute inset-0 pointer-events-none"
               style={{
+                borderRadius: 28,
                 background: 'linear-gradient(to bottom, rgba(193,123,255,0.08) 0%, rgba(14,14,14,0.25) 100%)',
               }}
             />
