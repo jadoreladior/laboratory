@@ -91,7 +91,7 @@ export function OwnerDashboard({ onBack }: { onBack: () => void }) {
         <Tile
           icon={<Building2 size={22} strokeWidth={1.5} />}
           title="Залы & Услуги"
-          sub={`${stats?.by_studio.reduce((s, x) => s + x.count, 0) ?? '—'} записей`}
+          sub={`${stats?.by_studio?.reduce((s, x) => s + x.count, 0) ?? '—'} записей`}
           onClick={() => setSubView('studios')}
         />
         <Tile
@@ -240,8 +240,8 @@ function StudiosView({ stats, onBack }: { stats: Stats | null; onBack: () => voi
             <div>
               <h3 className="text-xs text-white/40 uppercase tracking-widest mb-3">Зал</h3>
               <div className="space-y-2">
-                {stats.by_studio.map(s => {
-                  const maxRev = Math.max(...stats.by_studio.map(x => x.revenue), 1)
+                {(stats.by_studio ?? []).map(s => {
+                  const maxRev = Math.max(...(stats.by_studio ?? []).map(x => x.revenue), 1)
                   const pct = (s.revenue / maxRev) * 100
                   return (
                     <div key={s.id} className="p-4 rounded-2xl bg-white/5">

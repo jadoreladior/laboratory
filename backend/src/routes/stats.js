@@ -67,6 +67,16 @@ router.get('/', async (req, res, next) => {
     // Unique clients
     const total_clients = new Set(leads.map(l => l.telegram_id).filter(Boolean)).size
 
+    // By studio
+    const studioMap = {}
+    for (const l of nonCancelled) {
+      const id = l.studio_id || 'A'
+      if (!studioMap[id]) studioMap[id] = { id, count: 0, revenue: 0 }
+      studioMap[id].count++
+      studioMap[id].revenue += Number(l.total_price) || 0
+    }
+    const by_studio = Object.values(studioMap)
+
     // Employee salaries
     const employees_salaries = employees.map(e => ({
       ...e,
@@ -75,7 +85,7 @@ router.get('/', async (req, res, next) => {
       salary_month: Math.round(revenue.month * (Number(e.revenue_percent) || 0) / 100),
     }))
 
-    res.json({ revenue, statuses, by_service, peak_hours, daily, total_clients, employees_salaries })
+    res.json({ revenue, statuses, by_service, by_studio, peak_hours, daily, total_clients, employees_salaries })
   } catch (err) { next(err) }
 })
 
