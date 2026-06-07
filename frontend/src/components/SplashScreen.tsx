@@ -1,4 +1,6 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+
+const SPLASH_VIDEO = '/assets/splash.mp4'
 
 /** Equalizer bars — audio studio branding */
 function EqBars() {
@@ -40,11 +42,13 @@ interface SplashScreenProps {
 
 export function SplashScreen({ onDone }: SplashScreenProps) {
   const [phase, setPhase] = useState<'enter' | 'hold' | 'exit'>('enter')
+  const [videoOk, setVideoOk] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
 
   useEffect(() => {
     const t1 = setTimeout(() => setPhase('hold'), 300)
-    const t2 = setTimeout(() => setPhase('exit'), 2000)
-    const t3 = setTimeout(onDone, 2500)
+    const t2 = setTimeout(() => setPhase('exit'), 2200)
+    const t3 = setTimeout(onDone, 2700)
     return () => { clearTimeout(t1); clearTimeout(t2); clearTimeout(t3) }
   }, [onDone])
 
@@ -95,21 +99,61 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
           animation: 'fadeUp 0.55s cubic-bezier(0.25,0.46,0.45,0.94) both',
         }}
       >
-        {/* Mic icon */}
+        {/* Video (или mic-иконка как fallback) */}
         <div
-          className="mb-6"
+          className="mb-6 relative"
           style={{
-            filter: 'drop-shadow(0 0 20px rgba(193,123,255,0.55)) drop-shadow(0 0 60px rgba(193,123,255,0.2))',
-            animation: 'float 3.5s ease-in-out infinite',
+            width: 160,
+            height: 160,
+            borderRadius: 28,
+            overflow: 'hidden',
+            boxShadow: '0 0 40px rgba(193,123,255,0.35), 0 0 80px rgba(193,123,255,0.15)',
+            animation: videoOk ? undefined : 'float 3.5s ease-in-out infinite',
           }}
         >
-          <svg width={52} height={52} viewBox="0 0 24 24" fill="none"
-            stroke="#C17BFF" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
-            <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
-            <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
-            <line x1="12" y1="19" x2="12" y2="22"/>
-            <line x1="8" y1="22" x2="16" y2="22"/>
-          </svg>
+          {/* Видео */}
+          <video
+            ref={videoRef}
+            src={SPLASH_VIDEO}
+            autoPlay
+            muted
+            playsInline
+            loop
+            onCanPlay={() => setVideoOk(true)}
+            onError={() => setVideoOk(false)}
+            style={{
+              width: '100%',
+              height: '100%',
+              objectFit: 'cover',
+              display: videoOk ? 'block' : 'none',
+            }}
+          />
+
+          {/* Fallback: mic SVG если видео не загрузилось */}
+          {!videoOk && (
+            <div
+              className="w-full h-full flex items-center justify-center bg-[#1A1A1A]"
+              style={{ filter: 'drop-shadow(0 0 20px rgba(193,123,255,0.55))' }}
+            >
+              <svg width={52} height={52} viewBox="0 0 24 24" fill="none"
+                stroke="#C17BFF" strokeWidth={1.4} strokeLinecap="round" strokeLinejoin="round">
+                <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/>
+                <path d="M19 10v2a7 7 0 0 1-14 0v-2"/>
+                <line x1="12" y1="19" x2="12" y2="22"/>
+                <line x1="8" y1="22" x2="16" y2="22"/>
+              </svg>
+            </div>
+          )}
+
+          {/* Фиолетовый оверлей поверх видео */}
+          {videoOk && (
+            <div
+              className="absolute inset-0 pointer-events-none"
+              style={{
+                background: 'linear-gradient(to bottom, rgba(193,123,255,0.08) 0%, rgba(14,14,14,0.25) 100%)',
+              }}
+            />
+          )}
         </div>
 
         {/* Equalizer bars */}
