@@ -20,7 +20,8 @@ router.get('/:date', async (req, res, next) => {
       if (l.booking_date !== date) continue
       if (!['pending', 'confirmed'].includes(l.status)) continue
       const startH   = parseInt(l.booking_time?.split(':')[0] ?? '0', 10)
-      const duration = Math.max(1, parseInt(l.duration_hours ?? '1', 10))
+      const dh = parseInt(l.duration_hours, 10)
+      const duration = (isNaN(dh) || dh < 1) ? 1 : dh
       for (let i = 0; i < duration; i++) {
         const h = (startH + i) % 24
         booked.add(`${String(h).padStart(2, '0')}:00`)

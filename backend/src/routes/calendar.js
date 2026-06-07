@@ -31,8 +31,9 @@ router.get('/day/:date', async (req, res, next) => {
     for (const l of dayLeads) {
       if (!['pending', 'confirmed', 'completed'].includes(l.status)) continue
       const startH   = parseInt(l.booking_time?.split(':')[0] ?? '0', 10)
-      const duration = Math.max(1, parseInt(l.duration_hours ?? '1', 10))
-      for (let i = 0; i < duration; i++) {
+      const dh1 = parseInt(l.duration_hours, 10)
+      const duration1 = (isNaN(dh1) || dh1 < 1) ? 1 : dh1
+      for (let i = 0; i < duration1; i++) {
         const h    = (startH + i) % 24
         const slot = `${String(h).padStart(2, '0')}:00`
         if (!bookedMap[slot]) bookedMap[slot] = l
@@ -94,8 +95,9 @@ router.get('/month/:year/:month', async (req, res, next) => {
         dayMap[l.booking_date] = { date: l.booking_date, booked_times: new Set(), revenue: 0, count: 0 }
       }
       const startH   = parseInt(l.booking_time?.split(':')[0] ?? '0', 10)
-      const duration = Math.max(1, parseInt(l.duration_hours ?? '1', 10))
-      for (let i = 0; i < duration; i++) {
+      const dh2 = parseInt(l.duration_hours, 10)
+      const duration2 = (isNaN(dh2) || dh2 < 1) ? 1 : dh2
+      for (let i = 0; i < duration2; i++) {
         const h = (startH + i) % 24
         dayMap[l.booking_date].booked_times.add(`${String(h).padStart(2, '0')}:00`)
       }
