@@ -3,19 +3,20 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterv
          getDay, isSameDay, isToday, isPast, parseISO, addDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Mic2, Lock, X, Users, UserPlus, Check, ChevronLeft, ChevronRight,
-         Calendar, BarChart2, Ban, PlusCircle, Tag } from 'lucide-react'
+         Calendar, BarChart2, Ban, PlusCircle, Tag, Send } from 'lucide-react'
 import {
   getAdminBookings, confirmBooking, cancelBooking, updateLeadStatus,
   getClients, addClient, verifyOwnerPin, createBooking,
   getCalendarMonth, getCalendarDay, blockSlot, unblockSlot,
   getAdminStats, getSettings, saveSettings, getClientProfile,
+  sendBroadcast, getBroadcastCount,
 } from '../api'
 import type { Lead, Client, DayData, DaySlot, CalendarDay, ClientProfile } from '../api'
 import { SERVICES } from '../data'
 import { useAppContext } from '../App'
 import { OwnerDashboard } from './OwnerDashboard'
 
-type View = 'dashboard' | 'calendar' | 'day' | 'bookings' | 'clients' | 'pin' | 'owner' | 'prices'
+type View = 'dashboard' | 'calendar' | 'day' | 'bookings' | 'clients' | 'pin' | 'owner' | 'prices' | 'broadcast'
 type FilterStatus = 'pending' | 'confirmed' | 'cancelled'
 type SheetType = null | 'detail' | 'book-form' | 'block-form'
 
@@ -161,7 +162,8 @@ export function Admin() {
   // ── VIEWS ──────────────────────────────────────────────────────────────────
 
   if (view === 'owner') return <OwnerDashboard onBack={() => setView('dashboard')} />
-  if (view === 'prices') return <PricesView onBack={() => setView('dashboard')} />
+  if (view === 'prices')     return <PricesView     onBack={() => setView('dashboard')} />
+  if (view === 'broadcast')  return <BroadcastView  onBack={() => setView('dashboard')} />
   if (view === 'clients') return (
     <ClientsView clients={clients} setClients={setClients} onBack={() => setView('dashboard')} />
   )
@@ -368,6 +370,16 @@ export function Admin() {
           <div className="mb-3"><Tag size={22} className="text-white/50" strokeWidth={1.5} /></div>
           <div className="font-bold text-white text-sm">Цены</div>
           <div className="text-xs text-white/40 mt-0.5">Ставки и пакеты</div>
+        </button>
+
+        {/* Broadcast */}
+        <button
+          onClick={() => setView('broadcast')}
+          className="card-lab p-5 text-left active:scale-95 transition-transform"
+        >
+          <div className="mb-3"><Send size={22} className="text-white/50" strokeWidth={1.5} /></div>
+          <div className="font-bold text-white text-sm">Рассылка</div>
+          <div className="text-xs text-white/40 mt-0.5">Сообщение клиентам</div>
         </button>
 
         {/* Owner mode */}
@@ -1691,6 +1703,117 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
             </button>
           )
         })}
+      </div>
+    </div>
+  )
+}
+
+// ─── Broadcast view ───────────────────────────────────────────────────────────
+
+function BroadcastView({ onBack }: { onBack: () => void }) {
+  const [message,  setMessage]  = useState('')
+  const [audience, setAudience] = useState<'all' | 'with_bookings'>('all')
+  const [count,    setCount]    = useState<number | null>(null)
+  const [sending,  setSending]  = useState(false)
+  const [result,   setResult]   = useState<{ sent: number; failed: number } | null>(null)
+  const [loadingCount, setLoadingCount] = useState(false)
+
+  useEffect(() => {
+    setLoadingCount(true)
+    setResult(null)
+    getBroadcastCount(audience)
+      .then(setCount)
+      .catch(() => setCount(null))
+      .finally(() => setLoadingCount(false))
+  }, [audience])
+
+  const handleSend = async () => {
+    if (!message.trim() || sending) return
+    if (!confirm(`Отправить сообщение ${count ?? '?'} получателям?`)) return
+    setSending(true)
+    setResult(null)
+    try {
+      const r = await sendBroadcast(message, audience)
+      setResult(r)
+      if (r.sent > 0) setMessage('')
+    } catch {
+      alert('Ошибка при отправке')
+    } finally {
+      setSending(false)
+    }
+  }
+
+  const chars = message.length
+  const tooLong = chars > 4096
+
+  return (
+    <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
+      <div className="flex items-center gap-3 px-4 pt-6 pb-5">
+        <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
+          <ChevronLeft size={18} className="text-white" />
+        </button>
+        <h1 className="font-display font-black text-white text-xl flex-1">Рассылка</h1>
+      </div>
+
+      <div className="px-4 space-y-4">
+        <div className="card-lab p-4">
+          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Аудитория</p>
+          <div className="grid grid-cols-2 gap-2">
+            {([
+              { val: 'all',           label: 'Все клиенты',      desc: 'Все в базе' },
+              { val: 'with_bookings', label: 'С бронированием',  desc: 'Кто бронировал' },
+            ] as const).map(opt => (
+              <button
+                key={opt.val}
+                onClick={() => setAudience(opt.val)}
+                className={`p-3 rounded-xl text-left transition-all border ${
+                  audience === opt.val
+                    ? 'bg-[#C17BFF]/10 border-[#C17BFF]/40'
+                    : 'bg-[#1A1A1A] border-[#2A2A2A]'
+                }`}
+              >
+                <div className={`text-sm font-semibold ${audience === opt.val ? 'text-[#C17BFF]' : 'text-white'}`}>{opt.label}</div>
+                <div className="text-[11px] text-white/30 mt-0.5">{opt.desc}</div>
+              </button>
+            ))}
+          </div>
+          <div className="mt-3 text-center text-sm text-white/40">
+            {loadingCount ? 'Считаем...' : count !== null ? <><span className="text-white font-semibold">{count}</span> получателей</> : '—'}
+          </div>
+        </div>
+
+        <div className="card-lab p-4">
+          <div className="flex items-center justify-between mb-3">
+            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Текст сообщения</p>
+            <span className={`text-[11px] ${tooLong ? 'text-red-400' : 'text-white/25'}`}>{chars}/4096</span>
+          </div>
+          <textarea
+            value={message}
+            onChange={e => setMessage(e.target.value)}
+            placeholder="Привет! У нас новые цены и акции..."
+            rows={7}
+            className="w-full bg-[#111] border border-[#2A2A2A] rounded-xl p-3 text-sm text-white resize-none outline-none focus:border-[#C17BFF]/40 leading-relaxed"
+          />
+          <p className="text-[10px] text-white/20 mt-2">
+            Поддерживается HTML: &lt;b&gt;жирный&lt;/b&gt;, &lt;i&gt;курсив&lt;/i&gt;, &lt;a href="..."&gt;ссылка&lt;/a&gt;
+          </p>
+        </div>
+
+        {result && (
+          <div className={`p-4 rounded-2xl border text-center ${result.failed === 0 ? 'bg-green-500/10 border-green-500/20' : 'bg-yellow-500/10 border-yellow-500/20'}`}>
+            <div className="text-lg font-bold text-white">✓ Отправлено: {result.sent}</div>
+            {result.failed > 0 && <div className="text-sm text-yellow-400 mt-1">Не доставлено: {result.failed}</div>}
+          </div>
+        )}
+
+        <button
+          onClick={handleSend}
+          disabled={!message.trim() || tooLong || sending || (count ?? 0) === 0}
+          className="w-full btn-lily py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-40"
+        >
+          <Send size={18} />
+          {sending ? 'Отправляем...' : `Отправить${count ? ` · ${count}` : ''}`}
+        </button>
       </div>
     </div>
   )

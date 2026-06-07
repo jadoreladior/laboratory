@@ -129,7 +129,9 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
             }}
           />
 
-          {/* Логотип — показывается если нет видео */}
+          {/* Логотип — показывается если нет видео.
+              brightness(4) + contrast(2): делает чёрный фон абсолютно чёрным (JPEG-артефакты
+              исчезают), затем mix-blend-mode:screen убирает чёрное → остаётся только логотип */}
           {!videoOk && (
             <img
               src={SPLASH_LOGO}
@@ -139,7 +141,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
                 height: '100%',
                 objectFit: 'contain',
                 mixBlendMode: 'screen',
-                filter: 'drop-shadow(0 0 32px rgba(255,20,147,0.6)) drop-shadow(0 0 80px rgba(255,20,147,0.25))',
+                filter: 'brightness(4) contrast(2) drop-shadow(0 0 24px rgba(255,20,147,0.7))',
               }}
             />
           )}

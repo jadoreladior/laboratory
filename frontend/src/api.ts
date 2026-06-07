@@ -208,6 +208,18 @@ export async function saveSettings(settings: Record<string, string | number>) {
   return data as Record<string, string>
 }
 
+// ─── Broadcast ────────────────────────────────────────────────────────────────
+
+export async function getBroadcastCount(audience: 'all' | 'with_bookings'): Promise<number> {
+  const { data } = await api.get('/api/admin/broadcast/count', { params: { audience } })
+  return data.count as number
+}
+
+export async function sendBroadcast(message: string, audience: 'all' | 'with_bookings') {
+  const { data } = await api.post('/api/admin/broadcast', { message, audience })
+  return data as { sent: number; failed: number; total: number }
+}
+
 // ─── Partners (работали с нами) ──────────────────────────────────────────────
 
 export interface Partner {

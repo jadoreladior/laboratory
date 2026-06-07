@@ -9,15 +9,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Unbounded:wght@700;900&display=swap" rel="stylesheet" />
   </head>
   <body>
-    <!-- Motion blur SVG filter — vertical-only (realistic scroll blur) -->
-    <svg id="mb-svg" style="position:absolute;width:0;height:0;overflow:hidden;pointer-events:none" xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <filter id="mb-y" x="0" y="-40%" width="100%" height="180%">
-          <feGaussianBlur in="SourceGraphic" stdDeviation="0 0" color-interpolation-filters="linearRGB"/>
-        </filter>
-      </defs>
-    </svg>
-    <div id="root"></div>
+<div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>

@@ -1,5 +1,6 @@
 const express = require('express')
 const { readSheet, updateField, findRow } = require('../sheets')
+const { notifyStatusChange } = require('../notify')
 
 const router = express.Router()
 
@@ -34,9 +35,19 @@ router.patch('/:id', async (req, res, next) => {
     const found = await findRow('Leads', 'id', req.params.id)
     if (!found) return res.status(404).json({ error: 'Заявка не найдена' })
 
+    const prevStatus = found.row.status
     await updateField('Leads', found.rowNumber, 'status', status)
 
-    res.json({ ...found.row, status })
+    const updated = { ...found.row, status }
+
+    // Авто-уведомление клиенту при смене статуса (confirmed / cancelled)
+    if (status !== prevStatus && ['confirmed', 'cancelled'].includes(status)) {
+      notifyStatusChange(updated, status).catch(err =>
+        console.warn('[leads] notifyStatusChange failed:', err.message)
+      )
+    }
+
+    res.json(updated)
   } catch (err) { next(err) }
 })
 

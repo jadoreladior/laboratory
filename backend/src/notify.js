@@ -147,4 +147,42 @@ async function sendReminder(booking) {
   await tgSend(booking.telegram_id, text)
 }
 
-module.exports = { tgSend, notifyAdmins, notifyClient, sendReminder }
+/**
+ * Уведомление клиенту при изменении статуса админом
+ */
+async function notifyStatusChange(booking, newStatus) {
+  if (!booking.telegram_id) return
+
+  const dur = Number(booking.duration_hours) || 1
+  const endTime = calcEnd(booking.booking_time, dur)
+  const timeRange = endTime
+    ? `${booking.booking_time} — ${endTime}`
+    : booking.booking_time
+  const dateStr = formatDate(booking.booking_date)
+
+  let text = ''
+
+  if (newStatus === 'confirmed') {
+    text =
+      `✅ <b>Запись подтверждена!</b>\n\n` +
+      `🎵 ${booking.service}\n` +
+      `📅 <b>${dateStr}</b> · ${timeRange}\n\n` +
+      `📍 Большой Сампсониевский, 60Н\n` +
+      `🚇 м. Выборгская · Круглосуточно\n\n` +
+      `💰 Итого: <b>${Number(booking.total_price).toLocaleString('ru-RU')} ₽</b>\n` +
+      `💳 Предоплата: <b>${Number(booking.prepay_amount).toLocaleString('ru-RU')} ₽</b>\n\n` +
+      `🔔 За 6 часов до сессии пришлём напоминание\n\n` +
+      `Ждём тебя в студии! 🎤`
+  } else if (newStatus === 'cancelled') {
+    text =
+      `❌ <b>Запись отменена</b>\n\n` +
+      `К сожалению, ваша запись на <b>${dateStr}</b> (${timeRange}) была отменена.\n\n` +
+      `Если есть вопросы или хотите перенести — напишите нам 🙏`
+  } else {
+    return // для других статусов не уведомляем
+  }
+
+  await tgSend(booking.telegram_id, text)
+}
+
+module.exports = { tgSend, notifyAdmins, notifyClient, sendReminder, notifyStatusChange }

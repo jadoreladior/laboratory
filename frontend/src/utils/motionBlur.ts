@@ -1,76 +1,45 @@
 /**
- * Motion Blur — velocity-based directional blur during scroll.
+ * Scroll Motion Effect — lightweight opacity + direction shift.
  *
- * Uses an SVG feGaussianBlur filter (vertical only) whose stdDeviation
- * is updated in real-time proportional to scroll speed.
- * On scroll stop: exponential decay back to 0 via requestAnimationFrame.
+ * Instead of expensive SVG blur filters, uses only opacity and a tiny
+ * translateY to create a sense of speed without any visual slowdown.
+ * Opacity is the cheapest GPU compositing operation available.
  */
 
-const MAX_BLUR     = 14    // max stdDeviation at peak velocity
-const VELOCITY_CAP = 6     // px/ms → maps to MAX_BLUR
-const SETTLE_MS    = 45    // wait after last scroll event before decaying
-const DECAY_K      = 0.72  // fraction remaining each frame (~60fps decay)
-const MIN_BLUR     = 0.08  // below this → snap to 0
+const SETTLE_MS    = 40    // ms after last scroll to start recovery
+const VELOCITY_CAP = 4     // px/ms → max effect
+const MIN_OPACITY  = 0.82  // opacity at peak velocity
+const MAX_SHIFT    = 3     // px translateY at peak velocity
 
-let svgFilter:   SVGFEGaussianBlurElement | null = null
 let contentEl:   HTMLElement | null = null
-let currentBlur  = 0
-let decayRaf:    number | null = null
 let settleTimer: ReturnType<typeof setTimeout> | null = null
-let prevY        = 0
-let prevT        = 0
-let direction    = 0  // +1 down, -1 up
+let prevY = 0
+let prevT = 0
+let direction = 0
 
-/* ── DOM helpers ─────────────────────────────────────────────────────── */
-
-function resolveEls() {
-  if (!svgFilter) {
-    svgFilter = document.querySelector('#mb-y feGaussianBlur') as SVGFEGaussianBlurElement | null
-  }
-  if (!contentEl) {
-    contentEl = document.getElementById('page-content')
-  }
+function getEl() {
+  if (!contentEl) contentEl = document.getElementById('page-content')
+  return contentEl
 }
 
-function setBlur(v: number) {
-  resolveEls()
-  currentBlur = v
+function applyEffect(velocity: number) {
+  const el = getEl()
+  if (!el) return
 
-  if (!svgFilter || !contentEl) return
+  const t = Math.min(velocity / VELOCITY_CAP, 1)  // 0..1
 
-  if (v > MIN_BLUR) {
-    svgFilter.setAttribute('stdDeviation', `0 ${v.toFixed(3)}`)
-    contentEl.style.filter = 'url(#mb-y)'
-    // Subtle directional shift for extra realism
-    contentEl.style.transform = `translateY(${direction * v * 0.18}px)`
-  } else {
-    svgFilter.setAttribute('stdDeviation', '0 0')
-    contentEl.style.filter = ''
-    contentEl.style.transform = ''
-    currentBlur = 0
-  }
+  el.style.transition = 'none'
+  el.style.opacity    = `${(1 - t * (1 - MIN_OPACITY)).toFixed(3)}`
+  el.style.transform  = `translateY(${(direction * t * MAX_SHIFT).toFixed(2)}px)`
 }
 
-/* ── RAF decay loop ──────────────────────────────────────────────────── */
-
-function startDecay() {
-  if (decayRaf) cancelAnimationFrame(decayRaf)
-
-  const step = () => {
-    currentBlur *= DECAY_K
-    if (currentBlur < MIN_BLUR) {
-      setBlur(0)
-      decayRaf = null
-    } else {
-      setBlur(currentBlur)
-      decayRaf = requestAnimationFrame(step)
-    }
-  }
-
-  decayRaf = requestAnimationFrame(step)
+function clearEffect() {
+  const el = getEl()
+  if (!el) return
+  el.style.transition = 'opacity 0.18s ease, transform 0.22s cubic-bezier(0.25,0.46,0.45,0.94)'
+  el.style.opacity    = '1'
+  el.style.transform  = ''
 }
-
-/* ── Scroll handler ──────────────────────────────────────────────────── */
 
 function onScroll() {
   const now = performance.now()
@@ -81,21 +50,12 @@ function onScroll() {
   prevY = window.scrollY
   prevT = now
 
-  const velocity = Math.abs(dy) / dt                        // px/ms
-  const target   = Math.min((velocity / VELOCITY_CAP) * MAX_BLUR, MAX_BLUR)
+  const velocity = Math.abs(dy) / dt
+  applyEffect(velocity)
 
-  // Increase immediately, don't wait
-  if (target > currentBlur) {
-    if (decayRaf) { cancelAnimationFrame(decayRaf); decayRaf = null }
-    setBlur(target)
-  }
-
-  // Reset settle timer — decay starts once scroll stops
   if (settleTimer) clearTimeout(settleTimer)
-  settleTimer = setTimeout(startDecay, SETTLE_MS)
+  settleTimer = setTimeout(clearEffect, SETTLE_MS)
 }
-
-/* ── Public API ──────────────────────────────────────────────────────── */
 
 export function initMotionBlur(): () => void {
   prevY = window.scrollY
@@ -105,7 +65,6 @@ export function initMotionBlur(): () => void {
   return () => {
     window.removeEventListener('scroll', onScroll)
     if (settleTimer) clearTimeout(settleTimer)
-    if (decayRaf)    cancelAnimationFrame(decayRaf)
-    setBlur(0)
+    clearEffect()
   }
 }
