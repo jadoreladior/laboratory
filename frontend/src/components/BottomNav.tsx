@@ -47,7 +47,7 @@ export function BottomNav() {
       ref={navRef}
       className="fixed bottom-0 left-0 right-0 bottom-nav-height z-50
         bg-[#0E0E0E]/95 border-t border-[#2A2A2A]
-        flex items-start pt-2 relative overflow-hidden"
+        flex items-start pt-2 overflow-hidden"
       style={{ backdropFilter: 'blur(20px)', WebkitBackdropFilter: 'blur(20px)' }}
     >
       {/* Sliding top indicator */}
