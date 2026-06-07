@@ -107,9 +107,13 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
             width: 180,
             height: 180,
             animation: 'float 3.5s ease-in-out infinite',
+            /* Чёрный фон нужен для mix-blend-mode:screen — screen(чёрный,X)=X,
+               поэтому чёрный фон логотипа становится полностью прозрачным */
+            background: '#000',
+            borderRadius: 28,
           }}
         >
-          {/* Скрытый video — нужен только чтобы детектировать наличие файла */}
+          {/* Видео (если есть splash.mp4) */}
           <video
             ref={videoRef}
             src={SPLASH_VIDEO}
@@ -129,9 +133,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
             }}
           />
 
-          {/* Логотип — показывается если нет видео.
-              brightness(4) + contrast(2): делает чёрный фон абсолютно чёрным (JPEG-артефакты
-              исчезают), затем mix-blend-mode:screen убирает чёрное → остаётся только логотип */}
+          {/* Логотип: mix-blend-mode:screen на чёрном фоне убирает чёрное без искажения цветов */}
           {!videoOk && (
             <img
               src={SPLASH_LOGO}
@@ -141,7 +143,6 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
                 height: '100%',
                 objectFit: 'contain',
                 mixBlendMode: 'screen',
-                filter: 'brightness(4) contrast(2) drop-shadow(0 0 24px rgba(255,20,147,0.7))',
               }}
             />
           )}
