@@ -220,4 +220,10 @@ img { transition: opacity 0.3s ease; }
 
 @layer utilities {
   .text-balance { text-wrap: balance; }
+
+  .no-scrollbar::-webkit-scrollbar { display: none; }
+  .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+  .animate-fade-in { animation: fadein 0.3s ease-out both; }
+  .animate-slide-up { animation: fadeSlideUp 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94) both; }
 }

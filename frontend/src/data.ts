@@ -62,6 +62,36 @@ export const SERVICE_CATEGORIES = [
   { id: 'package', label: 'Готовый трек' },
 ] as const
 
+export const ADDONS = [
+  { id: 'video',       label: 'Видеосъёмка сессии',   description: 'Лучшие моменты на видео',              price: 3000, priceLabel: '3 000 ₽' },
+  { id: 'arrangement', label: 'Аранжировка',           description: 'Помощь с битом и аккомпанементом',     price: null, priceLabel: 'По запросу' },
+  { id: 'lyrics',      label: 'Написание текста',       description: 'Совместная работа над словами',        price: null, priceLabel: 'По запросу' },
+  { id: 'backing',     label: 'Живые бэк-вокалы',      description: 'Гармонии и бэки для трека',            price: null, priceLabel: 'По запросу' },
+  { id: 'photoshoot',  label: 'Фотосессия в студии',   description: 'Контент для соцсетей',                 price: 2000, priceLabel: '2 000 ₽' },
+]
+
+export const EQUIPMENT_BRANDS = [
+  { name: 'Manley', logo: null },
+  { name: 'Neumann', logo: null },
+  { name: 'PMC', logo: null },
+  { name: 'Universal Audio', logo: null },
+  { name: 'Rupert Neve', logo: null },
+  { name: 'Avid', logo: null },
+  { name: 'Audeze', logo: null },
+  { name: 'SSL', logo: null },
+]
+
+export const TEAM = [
+  {
+    id: 'engineer1',
+    name: 'Дмитрий',
+    role: 'Звукорежиссёр',
+    specialization: 'Запись · Сведение · Мастеринг',
+    photo: '/assets/laba-6.jpg',
+    bio: 'Работает с хип-хопом, R&B и электронной музыкой. 8 лет опыта, Pro Tools certified.',
+  },
+]
+
 export const ARTICLES: Article[] = [
   {
     id: 'ustav',
