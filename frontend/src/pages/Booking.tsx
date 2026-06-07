@@ -706,9 +706,20 @@ export function Booking() {
             </div>
           </div>
 
-          <p className="text-[11px] text-white/30 text-center mb-5 px-4">
-            После подтверждения с тобой свяжется администратор для оплаты предоплаты
-          </p>
+          {/* Reminder notice */}
+          <div className="flex items-start gap-3 px-4 py-3 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] mb-4">
+            <div className="w-7 h-7 rounded-lg bg-[#C17BFF]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg className="w-3.5 h-3.5 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+              </svg>
+            </div>
+            <div>
+              <div className="text-xs font-semibold text-white mb-0.5">Напомним за 6 часов</div>
+              <div className="text-[11px] text-white/40 leading-relaxed">
+                В день сессии пришлём напоминание в Telegram. Администратор свяжется для оплаты предоплаты.
+              </div>
+            </div>
+          </div>
 
           <button
             onClick={confirm}
@@ -799,9 +810,17 @@ function SuccessScreen({ onDone, onHome }: { onDone: () => void; onHome: () => v
       <p className="font-display text-lg text-[#C17BFF] mb-3">
         До встречи в студии
       </p>
-      <p className="text-sm text-white/40 mb-10 max-w-xs leading-relaxed">
-        Мы уже знаем о тебе. Напомним за день до сессии — просто приходи и твори.
+      <p className="text-sm text-white/40 mb-4 max-w-xs leading-relaxed">
+        Подтверждение уже летит в Telegram. Напомним за 6 часов до сессии — просто приходи и твори.
       </p>
+
+      {/* Reminder chip */}
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#C17BFF]/10 border border-[#C17BFF]/20 mb-8">
+        <svg className="w-4 h-4 text-[#C17BFF] flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
+        </svg>
+        <span className="text-xs text-[#C17BFF] font-medium">Напомним за 6 часов в Telegram</span>
+      </div>
 
       <div className="w-full max-w-xs space-y-3">
         <button onClick={onDone} className="btn-lily w-full py-4 rounded-2xl font-bold text-white">

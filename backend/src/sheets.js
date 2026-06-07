@@ -13,6 +13,7 @@ const SHEET_COLUMNS = {
   BlockedSlots: ['id','date','time','reason','created_at'],
   Settings:     ['key','value'],
   Partners:     ['id','name','role','created_at'],
+  Reminders:    ['booking_id','sent_at'],
 }
 
 let _client = null

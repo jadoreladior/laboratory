@@ -3,6 +3,7 @@ const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
 const { ensureHeaders } = require('./sheets')
+const { startReminderScheduler } = require('./reminders')
 
 const app = express()
 
@@ -38,4 +39,5 @@ app.listen(PORT, () => {
   ensureHeaders().catch(err =>
     console.warn('ensureHeaders failed (non-fatal):', err.message)
   )
+  startReminderScheduler()
 })

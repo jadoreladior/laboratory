@@ -1,7 +1,7 @@
 const express = require('express')
 const { readSheet, appendRow, SHEET_COLUMNS } = require('../sheets')
 const { buildClientProfile } = require('../clientProfile')
-const { notifyAdmins } = require('../notify')
+const { notifyAdmins, notifyClient } = require('../notify')
 
 const router = express.Router()
 
@@ -65,8 +65,9 @@ router.post('/', async (req, res, next) => {
       total_price, prepay_amount, status, notes, created_at,
     }
 
-    // Уведомление админам — не блокируем ответ
+    // Уведомления — не блокируем ответ
     notifyAdmins(booking, profile).catch(() => {})
+    notifyClient(booking).catch(() => {})
 
     res.status(201).json({ ...booking, client_profile: profile })
   } catch (err) { next(err) }

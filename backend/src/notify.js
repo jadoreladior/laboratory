@@ -3,11 +3,17 @@ const https = require('https')
 /**
  * Отправляет сообщение в Telegram через Bot API
  */
-async function tgSend(chatId, text) {
+async function tgSend(chatId, text, extra = {}) {
   const token = process.env.BOT_TOKEN
-  if (!token) return
+  if (!token || !chatId) return
 
-  const body = JSON.stringify({ chat_id: chatId, text, parse_mode: 'HTML', disable_web_page_preview: true })
+  const body = JSON.stringify({
+    chat_id: chatId,
+    text,
+    parse_mode: 'HTML',
+    disable_web_page_preview: true,
+    ...extra,
+  })
 
   return new Promise(resolve => {
     const req = https.request(
@@ -29,7 +35,33 @@ async function tgSend(chatId, text) {
 }
 
 /**
- * Уведомляет всех владельцев о новой записи
+ * Форматирует дату для вывода: "15 июня"
+ */
+function formatDate(dateStr) {
+  try {
+    const d = new Date(dateStr + 'T00:00:00')
+    return d.toLocaleDateString('ru-RU', { day: 'numeric', month: 'long' })
+  } catch {
+    return dateStr
+  }
+}
+
+/**
+ * Рассчитывает время окончания
+ */
+function calcEnd(time, durationHours) {
+  try {
+    const [h, m] = time.split(':').map(Number)
+    const endH = (h + Math.floor(durationHours)) % 24
+    const endM = m || 0
+    return `${String(endH).padStart(2, '0')}:${String(endM).padStart(2, '0')}`
+  } catch {
+    return ''
+  }
+}
+
+/**
+ * Уведомляет всех владельцев/админов о новой записи
  */
 async function notifyAdmins(booking, profile) {
   const adminIds = (process.env.ADMIN_IDS ?? '')
@@ -60,4 +92,59 @@ async function notifyAdmins(booking, profile) {
   await Promise.allSettled(adminIds.map(id => tgSend(id, text)))
 }
 
-module.exports = { notifyAdmins }
+/**
+ * Подтверждение клиенту сразу после бронирования
+ */
+async function notifyClient(booking) {
+  if (!booking.telegram_id) return
+
+  const dur = Number(booking.duration_hours) || 1
+  const endTime = calcEnd(booking.booking_time, dur)
+  const timeRange = endTime
+    ? `${booking.booking_time} — ${endTime}`
+    : booking.booking_time
+  const dateStr = formatDate(booking.booking_date)
+
+  const durLabel = dur === 1 ? '1 час'
+    : dur < 5 ? `${dur} часа`
+    : `${dur} часов`
+
+  const text =
+    `✅ <b>Запись подтверждена!</b>\n\n` +
+    `🎵 ${booking.service}\n` +
+    `📅 <b>${dateStr}</b> · ${timeRange} · ${durLabel}\n\n` +
+    `📍 Большой Сампсониевский, 60Н\n` +
+    `🚇 м. Выборгская · Круглосуточно\n\n` +
+    `💰 Итого: <b>${Number(booking.total_price).toLocaleString('ru-RU')} ₽</b>\n` +
+    `💳 Предоплата: <b>${Number(booking.prepay_amount).toLocaleString('ru-RU')} ₽</b>\n\n` +
+    `🔔 За 6 часов до сессии пришлём напоминание\n\n` +
+    `До встречи в студии! 🎤`
+
+  await tgSend(booking.telegram_id, text)
+}
+
+/**
+ * Напоминание клиенту за 6 часов до сессии
+ */
+async function sendReminder(booking) {
+  if (!booking.telegram_id) return
+
+  const dur = Number(booking.duration_hours) || 1
+  const endTime = calcEnd(booking.booking_time, dur)
+  const timeRange = endTime
+    ? `${booking.booking_time} — ${endTime}`
+    : booking.booking_time
+  const dateStr = formatDate(booking.booking_date)
+
+  const text =
+    `🔔 <b>Напоминание: сессия через 6 часов!</b>\n\n` +
+    `🎵 ${booking.service}\n` +
+    `📅 <b>Сегодня, ${dateStr}</b> · ${timeRange}\n\n` +
+    `📍 Большой Сампсониевский, 60Н\n` +
+    `🚇 м. Выборгская · напротив БЦ «Сигма»\n\n` +
+    `Ждём тебя! Если возникнут вопросы — напиши нам 🎤`
+
+  await tgSend(booking.telegram_id, text)
+}
+
+module.exports = { tgSend, notifyAdmins, notifyClient, sendReminder }
