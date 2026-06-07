@@ -1,10 +1,8 @@
-// Дефолтные имена — показываются если в «Работали с нами» в админке пусто
 const DEFAULT_NAMES = [
-  'SLAVA MARLOW', 'Toxi$', 'LIZER', 'MAYOT', 'SODA LUV', 'Дора',
-  'ДЖИЗУС', 'AUGUST', 'blago white', 'Bushido Zho', 'YUNG TRAPPA', 'DopeVvs',
-  'FRIENDLY THUG 52 NGG', 'ALBLAK 52', 'Telly Grave', 'УГАДАЙКТО', 'КУОК',
-  'Cudea', 'KOUT', 'Josodo', 'Lottery Billz', 'Hofmannita', '044 Rose',
-  'Loco OG Rocka', 'Молодой Платон', 'Ian Hopeless', 'D.masta',
+  'Скриптонит', 'ICEGERGERT', 'FRIENDLY THUG 52 NGG', 'Элджей',
+  'V$XV PRiNCE', 'Yung Trappa', 'Пошлая Молли', 'Markul',
+  'АК-47', 'SSGKOBE', 'FEDUK', 'Thomas Mraz',
+  'Mnogoznaal', 'SKY RAE', 'Yanix', 'Lizer', 'OG Buda', 'MAYOT',
 ]
 
 interface Props {

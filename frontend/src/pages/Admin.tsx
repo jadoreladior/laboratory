@@ -3,19 +3,19 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterv
          getDay, isSameDay, isToday, isPast, parseISO, addDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Mic2, Lock, X, Users, UserPlus, Check, ChevronLeft, ChevronRight,
-         Calendar, BarChart2, Ban, PlusCircle, Tag, Star } from 'lucide-react'
+         Calendar, BarChart2, Ban, PlusCircle, Tag } from 'lucide-react'
 import {
   getAdminBookings, confirmBooking, cancelBooking, updateLeadStatus,
   getClients, addClient, verifyOwnerPin, createBooking,
   getCalendarMonth, getCalendarDay, blockSlot, unblockSlot,
-  getAdminStats, getSettings, saveSettings, getPartners, addPartner, deletePartner,
+  getAdminStats, getSettings, saveSettings,
 } from '../api'
 import type { Lead, Client, DayData, DaySlot, CalendarDay, Partner } from '../api'
 import { SERVICES } from '../data'
 import { useAppContext } from '../App'
 import { OwnerDashboard } from './OwnerDashboard'
 
-type View = 'dashboard' | 'calendar' | 'day' | 'bookings' | 'clients' | 'pin' | 'owner' | 'prices' | 'partners'
+type View = 'dashboard' | 'calendar' | 'day' | 'bookings' | 'clients' | 'pin' | 'owner' | 'prices'
 type FilterStatus = 'pending' | 'confirmed' | 'cancelled'
 type SheetType = null | 'detail' | 'book-form' | 'block-form'
 
@@ -162,7 +162,6 @@ export function Admin() {
 
   if (view === 'owner') return <OwnerDashboard onBack={() => setView('dashboard')} />
   if (view === 'prices') return <PricesView onBack={() => setView('dashboard')} />
-  if (view === 'partners') return <PartnersView onBack={() => setView('dashboard')} />
   if (view === 'clients') return (
     <ClientsView clients={clients} setClients={setClients} onBack={() => setView('dashboard')} />
   )
@@ -369,16 +368,6 @@ export function Admin() {
           <div className="mb-3"><Tag size={22} className="text-white/50" strokeWidth={1.5} /></div>
           <div className="font-bold text-white text-sm">Цены</div>
           <div className="text-xs text-white/40 mt-0.5">Ставки и пакеты</div>
-        </button>
-
-        {/* Partners */}
-        <button
-          onClick={() => setView('partners')}
-          className="card-lab p-5 text-left active:scale-95 transition-transform"
-        >
-          <div className="mb-3"><Star size={22} className="text-white/50" strokeWidth={1.5} /></div>
-          <div className="font-bold text-white text-sm">Работали с нами</div>
-          <div className="text-xs text-white/40 mt-0.5">Артисты и клиенты</div>
         </button>
 
         {/* Owner mode */}
@@ -1459,111 +1448,6 @@ function PricesView({ onBack }: { onBack: () => void }) {
 }
 
 // ─── Partners view ────────────────────────────────────────────────────────────
-
-function PartnersView({ onBack }: { onBack: () => void }) {
-  const [partners, setPartners] = useState<Partner[]>([])
-  const [loading, setLoading]   = useState(true)
-  const [name, setName]         = useState('')
-  const [role, setRole]         = useState('')
-  const [adding, setAdding]     = useState(false)
-  const [deleting, setDeleting] = useState<string | null>(null)
-  const [showForm, setShowForm] = useState(false)
-
-  useEffect(() => {
-    getPartners()
-      .then(setPartners)
-      .catch(() => {})
-      .finally(() => setLoading(false))
-  }, [])
-
-  const handleAdd = async () => {
-    if (!name.trim()) return
-    setAdding(true)
-    try {
-      const p = await addPartner(name.trim(), role.trim())
-      setPartners(prev => [...prev, p])
-      setName(''); setRole(''); setShowForm(false)
-    } catch {} finally { setAdding(false) }
-  }
-
-  const handleDelete = async (id: string) => {
-    setDeleting(id)
-    try {
-      await deletePartner(id)
-      setPartners(prev => prev.filter(p => p.id !== id))
-    } catch {} finally { setDeleting(null) }
-  }
-
-  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#C17BFF]/40 border border-[#2A2A2A]'
-
-  return (
-    <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
-      <div className="flex items-center gap-3 px-4 pt-6 pb-5">
-        <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <ChevronLeft size={18} className="text-white" />
-        </button>
-        <h1 className="font-display font-black text-white text-xl flex-1">Работали с нами</h1>
-        <button
-          onClick={() => setShowForm(v => !v)}
-          className="w-9 h-9 rounded-full bg-[#C17BFF]/15 border border-[#C17BFF]/30 flex items-center justify-center"
-        >
-          <UserPlus size={15} className="text-[#C17BFF]" />
-        </button>
-      </div>
-
-      {/* Add form */}
-      {showForm && (
-        <div className="px-4 mb-4">
-          <div className="card-lab p-4 space-y-2.5">
-            <p className="text-[11px] text-white/30 uppercase tracking-widest">Новый клиент / артист</p>
-            <input className={inp} placeholder="Имя или псевдоним *" value={name}
-              onChange={e => setName(e.target.value)} />
-            <input className={inp} placeholder="Жанр или роль (необязательно)" value={role}
-              onChange={e => setRole(e.target.value)} />
-            <div className="flex gap-2 pt-1">
-              <button onClick={handleAdd} disabled={adding || !name.trim()}
-                className="flex-1 btn-lily py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1 disabled:opacity-40">
-                <Check size={14} /> {adding ? 'Добавляем...' : 'Добавить'}
-              </button>
-              <button onClick={() => setShowForm(false)}
-                className="w-10 rounded-xl card-lab flex items-center justify-center text-white/40">
-                <X size={16} />
-              </button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {loading ? (
-        <div className="text-center py-16 text-white/20">Загружаем...</div>
-      ) : (
-        <div className="px-4 space-y-2">
-          {partners.length === 0 && (
-            <div className="text-center py-12 text-white/20 text-sm">Пока никого нет</div>
-          )}
-          {partners.map(p => (
-            <div key={p.id} className="card-lab p-4 flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-                <span className="text-[#C17BFF] font-bold text-sm">{p.name[0]?.toUpperCase()}</span>
-              </div>
-              <div className="flex-1 min-w-0">
-                <div className="font-semibold text-white text-sm">{p.name}</div>
-                {p.role && <div className="text-xs text-white/35 mt-0.5">{p.role}</div>}
-              </div>
-              <button
-                onClick={() => handleDelete(p.id)}
-                disabled={deleting === p.id}
-                className="w-8 h-8 rounded-xl bg-[#FF4B4B]/10 flex items-center justify-center text-[#FF4B4B]/60 active:scale-90 transition-transform disabled:opacity-40"
-              >
-                <X size={14} />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
-    </div>
-  )
-}
 
 // ─── PIN view ─────────────────────────────────────────────────────────────────
 
