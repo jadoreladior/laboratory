@@ -47,7 +47,6 @@ export function Booking() {
   const [localDate, setLocalDate] = useState<Date>(new Date())
   const [localTime, setLocalTime] = useState<string | null>(null)       // начало
   const [localTimeEnd, setLocalTimeEnd] = useState<string | null>(null) // конец
-  const [isFullDay, setIsFullDay] = useState(false)                     // аренда на сутки
   const [selectedAddons, setSelectedAddons] = useState<string[]>([])
   const [success, setSuccess] = useState(false)
   const [submitting, setSubmitting] = useState(false)
@@ -85,7 +84,6 @@ export function Booking() {
     setLoadingSlots(true)
     setLocalTime(null)
     setLocalTimeEnd(null)
-    setIsFullDay(false)
     const dateStr = format(localDate, 'yyyy-MM-dd')
     getAvailableSlots('A', dateStr)
       .then(setSlots)
@@ -97,12 +95,10 @@ export function Booking() {
   const CAT_CONFIG = buildCatConfig(rates, packagePrices)
   const catCfg = category ? CAT_CONFIG[category] : null
 
-  // Длительность: сутки или из выбранного диапазона
-  const duration = isFullDay
-    ? 24
-    : localTime && localTimeEnd
-      ? (timeToMinutes(localTimeEnd) - timeToMinutes(localTime)) / 60
-      : null
+  // Длительность выводится из выбранного диапазона
+  const duration = localTime && localTimeEnd
+    ? (timeToMinutes(localTimeEnd) - timeToMinutes(localTime)) / 60
+    : null
 
   const computedPrice = (): number => {
     if (!category || !duration) return 0
@@ -125,7 +121,7 @@ export function Booking() {
   const canProceed = () => {
     if (step === 'service') return !!category
     if (step === 'engineer') return !!selectedEngineer
-    if (step === 'datetime') return isFullDay || (!!localTime && !!localTimeEnd)
+    if (step === 'datetime') return !!localTime && !!localTimeEnd
     if (step === 'addons') return true
     return true
   }
@@ -156,14 +152,13 @@ export function Booking() {
 
   const confirm = async () => {
     const service = getDerivedService()
-    const effectiveTime = isFullDay ? '00:00' : localTime
-    if (!service || !effectiveTime) return
+    if (!service || !localTime) return
     setSubmitting(true)
     haptic?.notificationOccurred('success')
 
     const dateStr = format(localDate, 'yyyy-MM-dd')
     const addonLabels = selectedAddons.map(id => ADDONS.find(a => a.id === id)?.label ?? id)
-    const serviceLabel = `${service.title} ${isFullDay ? 24 : service.duration}ч${addonLabels.length ? ' + ' + addonLabels.join(', ') : ''}`
+    const serviceLabel = `${service.title} ${duration ?? service.duration}ч${addonLabels.length ? ' + ' + addonLabels.join(', ') : ''}`
     const clientName = [user?.first_name, user?.last_name].filter(Boolean).join(' ') || 'Клиент'
     const total = computedPrice()
     const prepay = Math.ceil(total * 0.5)
@@ -180,7 +175,7 @@ export function Booking() {
           username: user?.username,
           service: serviceLabel,
           booking_date: dateStr,
-          booking_time: effectiveTime,
+          booking_time: localTime,
           duration_hours: duration ?? service.duration,
           total_price: total,
           prepay_amount: prepay,
@@ -204,7 +199,7 @@ export function Booking() {
           studioId: 'A',
           serviceId: service.id,
           date: dateStr,
-          time: effectiveTime,
+          time: localTime,
           duration: duration ?? service.duration,
           engineer: engineerName,
           totalPrice: total,
@@ -453,42 +448,6 @@ export function Booking() {
           {/* Time picker */}
           <div className="px-4">
 
-            {/* Full-day toggle — не показываем для пакетов */}
-            {category !== 'package' && <button
-              onClick={() => {
-                haptic?.selectionChanged()
-                const next = !isFullDay
-                setIsFullDay(next)
-                if (next) { setLocalTime(null); setLocalTimeEnd(null) }
-              }}
-              className={`w-full flex items-center gap-4 p-4 rounded-2xl mb-4 transition-all active:scale-[0.98]
-                ${isFullDay
-                  ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
-                  : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
-            >
-              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 text-lg
-                ${isFullDay ? 'bg-[#C17BFF]/20' : 'bg-white/5'}`}>
-                🌙
-              </div>
-              <div className="flex-1 text-left">
-                <div className={`font-bold text-sm ${isFullDay ? 'text-white' : 'text-white/80'}`}>Сутки целиком</div>
-                <div className="text-xs text-white/40 mt-0.5">00:00 — 00:00 · 24 часа</div>
-              </div>
-              <div className="text-right flex-shrink-0">
-                {catCfg?.rate && (
-                  <div className={`text-sm font-bold mb-1 ${isFullDay ? 'text-[#C17BFF]' : 'text-white/40'}`}>
-                    {(catCfg.rate * 24).toLocaleString()} ₽
-                  </div>
-                )}
-                <div className={`w-5 h-5 rounded-full border-2 ml-auto flex items-center justify-center
-                  ${isFullDay ? 'border-[#C17BFF] bg-[#C17BFF]' : 'border-white/20'}`}>
-                  {isFullDay && <div className="w-2 h-2 rounded-full bg-white" />}
-                </div>
-              </div>
-            </button>}
-
-            {!isFullDay && (
-            <>
             <div className="flex items-center justify-between mb-3">
               <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">
                 {!localTime ? 'Выберите начало' : !localTimeEnd ? 'Теперь выберите конец' : 'Время выбрано'}
@@ -506,8 +465,9 @@ export function Booking() {
               <div className="text-center py-8 text-white/30 text-sm">Загружаем слоты...</div>
             ) : (() => {
               const rawSlots = slots.length > 0 ? slots : [
-                '10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00',
-                '18:00','19:00','20:00','21:00','22:00'
+                '00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00',
+                '08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00',
+                '16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00',
               ].map(t => ({ time: t, available: true }))
 
               // Valid durations depend on category
@@ -624,11 +584,9 @@ export function Booking() {
                 Для тарифа «Готовый трек» доступны сеансы 3, 5 или 6 часов
               </p>
             )}
-            </>
-            )}
 
             {/* Summary: диапазон + инженер — появляется после выбора обоих */}
-            {(isFullDay || (localTime && localTimeEnd)) && (
+            {localTime && localTimeEnd && (
               <div className="mt-4 p-4 rounded-2xl bg-[#C17BFF]/8 border border-[#C17BFF]/20 animate-fade-in">
                 <div className="flex items-center gap-3 mb-3">
                   <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
@@ -640,9 +598,7 @@ export function Booking() {
                   <div>
                     <div className="text-[10px] text-white/35 uppercase tracking-widest mb-0.5">Вы будете в студии</div>
                     <div className="text-base font-bold text-white">
-                      {isFullDay
-                        ? '00:00 — 00:00 (сутки)'
-                        : `${localTime} — ${localTimeEnd}`}
+                      {localTime} — {localTimeEnd}
                       {duration && <span className="text-sm font-normal text-white/40 ml-2">· {duration} ч</span>}
                     </div>
                   </div>
@@ -734,13 +690,7 @@ export function Booking() {
             <ConfirmRow label="Дата" value={format(localDate, 'd MMMM yyyy', { locale: ru })} />
             <ConfirmRow
               label="Время"
-              value={
-                isFullDay
-                  ? '00:00 — 00:00 · 24 ч (сутки)'
-                  : localTime && localTimeEnd
-                    ? `${localTime} — ${localTimeEnd} · ${duration} ч`
-                    : localTime ?? '—'
-              }
+              value={localTime && localTimeEnd ? `${localTime} — ${localTimeEnd} · ${duration} ч` : localTime ?? '—'}
             />
             {selectedAddons.length > 0 && (
               <ConfirmRow
