@@ -146,7 +146,10 @@
 
 html, body, #root {
   height: 100%;
+  /* Занимаем весь экран, включая notch и home indicator */
+  min-height: 100svh;
   overscroll-behavior: none;
+  overflow-x: hidden;
 }
 
 body {
@@ -164,8 +167,15 @@ img { transition: opacity 0.4s ease; }
 
 /* ── Layout ─────────────────────────────────────────────────────────────────── */
 
-.pb-nav { padding-bottom: calc(72px + var(--safe-bottom)); }
+/* Отступ снизу = высота нава + safe area (notch/home indicator) */
+.pb-nav { padding-bottom: calc(80px + var(--safe-bottom)); }
 .bottom-nav-height { height: calc(64px + var(--safe-bottom)); }
+
+/* Все страницы — минимум высота экрана, скролл внутри */
+.page-root {
+  min-height: 100svh;
+  overflow-x: hidden;
+}
 
 /* ── Page transitions — Apple style ─────────────────────────────────────────── */
 

@@ -378,20 +378,56 @@ export function Booking() {
       {step === 'datetime' && (
         <div className="animate-fade-in pb-28">
 
-          {/* Бейдж выбранного инженера (когда пришли с профиля) */}
-          {selectedEngineer && selectedEngineer !== 'any' && skipToDatetime && (() => {
+          {/* Карточка инженера — показывается всегда когда выбран конкретный */}
+          {selectedEngineer && selectedEngineer !== 'any' && (() => {
             const eng = TEAM.find(m => m.id === selectedEngineer)
             return eng ? (
-              <div className="mx-4 mb-4 flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-[#C17BFF]/10 border border-[#C17BFF]/25">
-                <img src={eng.photo} alt={eng.name}
-                  className="w-9 h-9 rounded-full object-cover object-top flex-shrink-0" />
-                <div className="flex-1 min-w-0">
-                  <div className="text-xs font-semibold text-[#C17BFF]">Запись к {eng.name.split(' ')[0]}</div>
-                  <div className="text-[11px] text-white/40">{eng.role}</div>
+              <div className="mx-4 mb-4 rounded-2xl overflow-hidden border border-[#C17BFF]/20 bg-[#C17BFF]/8">
+                <div className="flex items-center gap-0">
+                  {/* Фото инженера */}
+                  <div className="flex-shrink-0" style={{ width: 80, height: 80 }}>
+                    <img src={eng.photo} alt={eng.name}
+                      className="w-full h-full object-cover"
+                      style={{ objectPosition: 'center top' }} />
+                  </div>
+                  <div className="flex-1 px-3 py-2.5">
+                    <div className="text-[10px] font-semibold text-[#C17BFF] uppercase tracking-widest mb-0.5">Звукорежиссёр</div>
+                    <div className="font-bold text-white text-sm leading-tight">{eng.name}</div>
+                    <div className="text-[11px] text-white/40 mt-0.5">{eng.specialization}</div>
+                  </div>
+                  {/* Живая цена */}
+                  {duration && catCfg && (
+                    <div className="pr-3 text-right flex-shrink-0">
+                      <div className="text-[10px] text-white/30 mb-0.5">{duration} ч</div>
+                      <div className="font-black text-white text-base">
+                        {computedPrice().toLocaleString('ru-RU')} ₽
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             ) : null
           })()}
+
+          {/* Живая цена без конкретного инженера */}
+          {(!selectedEngineer || selectedEngineer === 'any') && duration && catCfg && (
+            <div className="mx-4 mb-4 px-4 py-3 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-between">
+              <div className="text-sm text-white/50">{duration} {duration === 1 ? 'час' : duration < 5 ? 'часа' : 'часов'} · {catCfg.label}</div>
+              <div className="font-black text-white text-lg">{computedPrice().toLocaleString('ru-RU')} ₽</div>
+            </div>
+          )}
+
+          {/* Если время ещё не выбрано — показываем ставку */}
+          {!localTime && catCfg && (
+            <div className="mx-4 mb-4 px-4 py-2.5 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] flex items-center justify-between">
+              <div className="text-xs text-white/40">{catCfg.label}</div>
+              <div className="text-xs text-white/50">
+                {category === 'package'
+                  ? `от ${Object.values(packagePrices).sort((a,b)=>a-b)[0].toLocaleString('ru-RU')} ₽`
+                  : `${catCfg.rate?.toLocaleString('ru-RU')} ₽/ч`}
+              </div>
+            </div>
+          )}
 
           {/* Month calendar */}
           <div className="px-4 mb-4">

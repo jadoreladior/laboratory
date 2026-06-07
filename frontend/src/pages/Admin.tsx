@@ -1394,13 +1394,13 @@ function ClientsView({ clients, setClients, onBack }: {
           />
           <div
             className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none"
-            style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
+            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}
           >
             <div
-              className="animate-scale-in pointer-events-auto w-full"
+              className="animate-slide-up pointer-events-auto w-full"
               style={{
                 maxWidth: 480,
-                maxHeight: '90svh',
+                maxHeight: 'calc(100svh - env(safe-area-inset-top, 0px) - 80px)',
                 overflowY: 'auto',
                 background: '#161616',
                 border: '1px solid #2A2A2A',
@@ -1408,9 +1408,11 @@ function ClientsView({ clients, setClients, onBack }: {
               }}
             >
               {/* Drag handle */}
-              <div className="w-10 h-1 bg-white/15 rounded-full mx-auto mt-3 mb-2" />
+              <div className="sticky top-0 bg-[#161616] pt-3 pb-2 z-10">
+                <div className="w-10 h-1 bg-white/15 rounded-full mx-auto" />
+              </div>
 
-              <div className="px-5 pb-10">
+              <div className="px-5 pb-8">
                 {/* Header */}
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
