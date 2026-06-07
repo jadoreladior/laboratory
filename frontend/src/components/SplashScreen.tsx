@@ -113,7 +113,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
           className="text-[10px] font-semibold tracking-[0.32em] text-white/30 mt-2 uppercase"
           style={{ animation: 'text-reveal 0.55s cubic-bezier(0.25,0.46,0.45,0.94) 0.3s both', opacity: 0 }}
         >
-          Звукозаписывающая студия
+          Студия звукозаписи
         </p>
       </div>
 

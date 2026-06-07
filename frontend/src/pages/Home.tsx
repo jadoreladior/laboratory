@@ -232,7 +232,7 @@ export function Home() {
               <div className="text-sm font-bold text-white leading-tight">
                 <CountUp to={1500000} suffix=" ₽" duration={1400} />
               </div>
-              <div className="text-[11px] text-white/40 mt-1 leading-snug">Парк оборудования</div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">Парк микрофонов</div>
             </div>
 
             <div className="card-lab p-4 rounded-2xl">
