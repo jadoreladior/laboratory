@@ -55,8 +55,8 @@
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px);    }
-  50%       { transform: translateY(-8px);   }
+  0%, 100% { transform: translateY(0px);  filter: blur(0);      }
+  50%       { transform: translateY(-8px); filter: blur(0.6px); }
 }
 
 @keyframes glow-lily {
@@ -75,8 +75,8 @@
 }
 
 @keyframes draw-check {
-  from { stroke-dashoffset: 30; opacity: 0; }
-  to   { stroke-dashoffset: 0;  opacity: 1; }
+  from { stroke-dashoffset: 30; opacity: 0; filter: blur(3px); }
+  to   { stroke-dashoffset: 0;  opacity: 1; filter: blur(0);   }
 }
 
 @keyframes ticker-fwd {
@@ -108,13 +108,13 @@
 }
 
 @keyframes pulse-dot {
-  0%, 100% { opacity: 0.25; transform: scaleY(0.5); }
-  50%       { opacity: 1;    transform: scaleY(1);   }
+  0%, 100% { opacity: 0.25; transform: scaleY(0.5); filter: blur(0.5px); }
+  50%       { opacity: 1;    transform: scaleY(1);   filter: blur(0);     }
 }
 
 @keyframes eq-bar {
-  0%, 100% { transform: scaleY(0.3); }
-  50%       { transform: scaleY(1);  }
+  0%, 100% { transform: scaleY(0.3); filter: blur(0.4px); }
+  50%       { transform: scaleY(1);  filter: blur(0);     }
 }
 
 @keyframes splash-out {
@@ -128,13 +128,13 @@
 }
 
 @keyframes slide-in-right {
-  from { opacity: 0; transform: translateX(28px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(28px); filter: blur(8px); }
+  to   { opacity: 1; transform: translateX(0);    filter: blur(0);   }
 }
 
 @keyframes slide-in-left {
-  from { opacity: 0; transform: translateX(-28px); }
-  to   { opacity: 1; transform: translateX(0); }
+  from { opacity: 0; transform: translateX(-28px); filter: blur(8px); }
+  to   { opacity: 1; transform: translateX(0);     filter: blur(0);   }
 }
 
 /* ── Base ───────────────────────────────────────────────────────────────────── */
