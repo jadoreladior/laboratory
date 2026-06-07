@@ -2,6 +2,7 @@ require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const helmet = require('helmet')
+const path = require('path')
 const { ensureHeaders } = require('./sheets')
 const { startReminderScheduler } = require('./reminders')
 
@@ -26,6 +27,13 @@ app.use('/api/admin/settings', require('./routes/settings'))
 app.use('/api/admin/partners', require('./routes/partners'))
 
 app.get('/health', (_, res) => res.json({ status: 'ok', service: 'laboratoriya-crm' }))
+
+// ── Serve React frontend (built with Vite) ────────────────────────────────────
+const frontendDist = path.join(__dirname, '../../frontend/dist')
+app.use(express.static(frontendDist))
+app.get('*', (_req, res) => {
+  res.sendFile(path.join(frontendDist, 'index.html'))
+})
 
 app.use((err, _req, res, _next) => {
   console.error(err)
