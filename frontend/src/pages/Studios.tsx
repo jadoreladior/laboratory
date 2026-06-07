@@ -319,8 +319,8 @@ export function Studios() {
               className="flex-shrink-0 card-lab rounded-2xl overflow-hidden active:scale-95 transition-transform text-left"
               style={{ width: 140 }}
             >
-              <div className="relative" style={{ height: 160 }}>
-                <img src={member.photo} alt={member.name} className="w-full h-full object-cover" style={{ objectPosition: member.photoPosition ?? 'center top' }} />
+              <div className="relative" style={{ height: 160, overflow: 'hidden' }}>
+                <img src={member.photo} alt={member.name} className="w-full h-full object-cover" style={{ objectPosition: 'center top' }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
                 <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-[#C17BFF]/20 border border-[#C17BFF]/40 flex items-center justify-center">
                   <svg className="w-3 h-3 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
@@ -678,7 +678,11 @@ export function Studios() {
               )}
 
               <button
-                onClick={() => { closeMember(); setStudio('A'); navigate('/booking', { state: { engineer: selectedMember.id } }) }}
+                onClick={() => {
+                  closeMember()
+                  setStudio('A')
+                  navigate('/booking', { state: { engineer: selectedMember.id, category: 'record', skipToDatetime: true } })
+                }}
                 className="btn-lily w-full py-3.5 rounded-2xl font-bold text-white text-sm"
               >
                 Записаться к {selectedMember.name.split(' ')[0]}

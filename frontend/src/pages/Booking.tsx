@@ -35,9 +35,12 @@ export function Booking() {
   const { telegramId } = useAppContext()
   const store = useBookingStore()
 
-  const initialCategory = (location.state as any)?.category as ServiceCategory | undefined
+  const locState      = (location.state as any) ?? {}
+  const initialCategory  = locState.category as ServiceCategory | undefined
+  const initialEngineer  = locState.engineer as string | undefined
+  const skipToDatetime   = !!(initialEngineer && initialCategory && locState.skipToDatetime)
 
-  const [step, setStep] = useState<Step>('service')
+  const [step, setStep] = useState<Step>(skipToDatetime ? 'datetime' : 'service')
   const [category, setCategory] = useState<ServiceCategory | null>(initialCategory ?? null)
 
   // Last choice memory
@@ -52,9 +55,7 @@ export function Booking() {
   const [submitting, setSubmitting] = useState(false)
   const [slots, setSlots] = useState<{ time: string; available: boolean }[]>([])
   const [loadingSlots, setLoadingSlots] = useState(false)
-  const [selectedEngineer, setSelectedEngineer] = useState<string | null>(
-    (location.state as any)?.engineer ?? null
-  )
+  const [selectedEngineer, setSelectedEngineer] = useState<string | null>(initialEngineer ?? null)
   const [calMonth, setCalMonth] = useState(new Date())
   const [rates, setRates] = useState(DEFAULT_RATES)
   const [packagePrices, setPackagePrices] = useState(DEFAULT_PACKAGES)
@@ -113,9 +114,11 @@ export function Booking() {
       ?? null
   }
 
-  const STEPS: Step[] = category && NEEDS_ENGINEER.includes(category)
-    ? ['service', 'engineer', 'datetime', 'addons', 'confirm']
-    : ['service', 'datetime', 'addons', 'confirm']
+  const STEPS: Step[] = skipToDatetime
+    ? ['datetime', 'addons', 'confirm']
+    : category && NEEDS_ENGINEER.includes(category)
+      ? ['service', 'engineer', 'datetime', 'addons', 'confirm']
+      : ['service', 'datetime', 'addons', 'confirm']
   const stepIndex = STEPS.indexOf(step)
 
   const canProceed = () => {
@@ -374,6 +377,22 @@ export function Booking() {
       {/* ── Step: DateTime ── */}
       {step === 'datetime' && (
         <div className="animate-fade-in pb-28">
+
+          {/* Бейдж выбранного инженера (когда пришли с профиля) */}
+          {selectedEngineer && selectedEngineer !== 'any' && skipToDatetime && (() => {
+            const eng = TEAM.find(m => m.id === selectedEngineer)
+            return eng ? (
+              <div className="mx-4 mb-4 flex items-center gap-3 px-3 py-2.5 rounded-2xl bg-[#C17BFF]/10 border border-[#C17BFF]/25">
+                <img src={eng.photo} alt={eng.name}
+                  className="w-9 h-9 rounded-full object-cover object-top flex-shrink-0" />
+                <div className="flex-1 min-w-0">
+                  <div className="text-xs font-semibold text-[#C17BFF]">Запись к {eng.name.split(' ')[0]}</div>
+                  <div className="text-[11px] text-white/40">{eng.role}</div>
+                </div>
+              </div>
+            ) : null
+          })()}
+
           {/* Month calendar */}
           <div className="px-4 mb-4">
             {/* Month header */}
