@@ -18,11 +18,14 @@ export const STUDIOS: Studio[] = [
     ],
     color: '#C17BFF',
     images: [
-      '/assets/laba-1.jpg',
-      '/assets/laba-2.jpg',
-      '/assets/laba-3.jpg',
-      '/assets/laba-4.jpg',
-      '/assets/laba-5.jpg',
+      '/photos/studio/main.jpg',
+      '/photos/studio/2.jpg',
+      '/photos/studio/3.jpg',
+      '/photos/studio/4.jpg',
+      '/photos/studio/5.jpg',
+      '/photos/studio/6.jpg',
+      '/photos/studio/7.jpg',
+      '/photos/studio/8.jpg',
     ],
   },
 ]
@@ -83,12 +86,28 @@ export const EQUIPMENT_BRANDS = [
 
 export const TEAM = [
   {
-    id: 'engineer1',
-    name: 'Дмитрий',
+    id: 'anna',
+    name: 'Анна Хлебникова',
     role: 'Звукорежиссёр',
-    specialization: 'Запись · Сведение · Мастеринг',
-    photo: '/assets/laba-6.jpg',
-    bio: 'Работает с хип-хопом, R&B и электронной музыкой. 8 лет опыта, Pro Tools certified.',
+    specialization: 'Запись · Сведение',
+    photo: '/photos/team/anna-hlebnikova.jpg',
+    bio: '',
+  },
+  {
+    id: 'dioniz',
+    name: 'Дионис Карокозиди',
+    role: 'Звукорежиссёр',
+    specialization: 'Запись · Мастеринг',
+    photo: '/photos/team/dioniz-karokozidi.jpg',
+    bio: '',
+  },
+  {
+    id: 'semen',
+    name: 'Семён Ефименко',
+    role: 'Звукорежиссёр',
+    specialization: 'Запись · Сведение · Аранжировка',
+    photo: '/photos/team/semen-efimenko.jpg',
+    bio: '',
   },
 ]
 

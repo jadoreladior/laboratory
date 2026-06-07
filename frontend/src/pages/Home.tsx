@@ -5,16 +5,16 @@ import { ARTICLES, SERVICE_CATEGORIES } from '../data'
 import { Mic2, Sliders, Key, Package, ChevronRight } from 'lucide-react'
 import { ArtistsTicker } from '../components/ArtistsTicker'
 
-// Все 16 фото — крутим как кино
+// Новые фото из /photos/studio/
 const HERO_IMAGES = [
-  '/assets/laba-1.jpg',
-  '/assets/laba-3.jpg',
-  '/assets/laba-5.jpg',
-  '/assets/laba-7.jpg',
-  '/assets/laba-9.jpg',
-  '/assets/laba-11.jpg',
-  '/assets/laba-14.jpg',
-  '/assets/laba-15.jpg',
+  '/photos/studio/main.jpg',
+  '/photos/studio/2.jpg',
+  '/photos/studio/3.jpg',
+  '/photos/studio/4.jpg',
+  '/photos/studio/5.jpg',
+  '/photos/studio/6.jpg',
+  '/photos/studio/7.jpg',
+  '/photos/studio/8.jpg',
 ]
 
 const CAT_ICONS: Record<string, React.ReactNode> = {
@@ -187,20 +187,20 @@ export function Home() {
               onClick={() => navigate('/studios')}
               className="flex-1 rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
             >
-              <img src="/assets/laba-2.jpg" alt="" className="w-full h-full object-cover" />
+              <img src="/photos/studio/main.jpg" alt="" className="w-full h-full object-cover" />
             </button>
             <div className="flex flex-col gap-2" style={{ width: '38%' }}>
               <button
                 onClick={() => navigate('/studios')}
                 className="flex-1 rounded-2xl overflow-hidden active:scale-[0.97] transition-transform"
               >
-                <img src="/assets/laba-4.jpg" alt="" className="w-full h-full object-cover" />
+                <img src="/photos/studio/2.jpg" alt="" className="w-full h-full object-cover" />
               </button>
               <button
                 onClick={() => navigate('/studios')}
                 className="flex-1 rounded-2xl overflow-hidden active:scale-[0.97] transition-transform relative"
               >
-                <img src="/assets/laba-6.jpg" alt="" className="w-full h-full object-cover" />
+                <img src="/photos/studio/3.jpg" alt="" className="w-full h-full object-cover" />
                 <div className="absolute inset-0 bg-black/50 flex items-center justify-center">
                   <span className="text-white text-xs font-bold">+13</span>
                 </div>

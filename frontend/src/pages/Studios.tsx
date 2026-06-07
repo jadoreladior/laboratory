@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { STUDIOS } from '../data'
+import { STUDIOS, TEAM } from '../data'
 import { useTelegram } from '../hooks/useTelegram'
 import { useBookingStore } from '../store/bookingStore'
 import type { Studio } from '../types'
@@ -188,8 +188,28 @@ export function Studios() {
         </div>
       </div>
 
+      {/* Команда */}
+      <div className="px-4 mb-6">
+        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Команда</p>
+        <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4">
+          {TEAM.map(member => (
+            <div key={member.id} className="flex-shrink-0 card-lab rounded-2xl overflow-hidden" style={{ width: 140 }}>
+              <div className="relative" style={{ height: 160 }}>
+                <img src={member.photo} alt={member.name} className="w-full h-full object-cover object-top" />
+                <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
+              </div>
+              <div className="p-3">
+                <div className="font-bold text-white text-xs leading-tight">{member.name}</div>
+                <div className="text-[10px] text-[#C17BFF] mt-0.5">{member.role}</div>
+                <div className="text-[10px] text-white/35 mt-1 leading-snug">{member.specialization}</div>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
       {/* CTA */}
-      <div className="px-4 mt-6">
+      <div className="px-4 mt-2">
         <button
           onClick={() => { haptic?.impactOccurred('medium'); setStudio('A'); navigate('/booking') }}
           className="btn-lily w-full py-4 rounded-2xl font-bold text-white text-base"
