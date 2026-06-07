@@ -1344,9 +1344,9 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
       </div>
 
       <div className="flex flex-col items-center flex-1 justify-center pb-6">
-        <img src="/assets/logo.jpg" alt="logo"
-          className="w-20 h-20 rounded-full object-cover mb-4 ring-2 ring-[#C17BFF]/30"
-          style={{ boxShadow: '0 0 40px rgba(193,123,255,0.2)' }}
+        <img src="/assets/logo-laba.png" alt="logo"
+          className="w-20 h-20 object-contain mb-4"
+          style={{ filter: 'drop-shadow(0 0 20px rgba(193,123,255,0.5))' }}
         />
         <h2 className="font-display font-black text-white text-xl uppercase tracking-widest mb-1">
           Лаборатория

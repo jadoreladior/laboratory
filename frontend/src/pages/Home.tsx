@@ -81,11 +81,9 @@ export function Home() {
         <div className="absolute inset-0 z-10"
           style={{ background: 'linear-gradient(to bottom, rgba(14,14,14,0.55) 0%, transparent 35%, transparent 55%, rgba(14,14,14,0.95) 100%)' }} />
 
-        {/* Шапка: надпись студии */}
+        {/* Шапка: логотип */}
         <div className="absolute top-0 left-0 right-0 z-20 px-4 pt-5 flex items-center justify-between">
-          <div>
-            <span className="text-[10px] font-bold tracking-[0.3em] text-white/50 uppercase">Студия</span>
-          </div>
+          <img src="/assets/logo-laba.png" alt="Лаборатория" className="w-9 h-9 object-contain" />
           {user && (
             <span className="text-[11px] text-white/40">
               {user.first_name}
@@ -120,25 +118,7 @@ export function Home() {
         </div>
       </div>
 
-      {/* ── TAGLINE + CTA ── */}
-      <div className="px-4 pt-7 pb-6">
-        <p className="text-white/40 text-sm mb-2 font-medium">
-          Создай свой звук.
-        </p>
-        <h2 className="font-display font-black text-2xl text-white leading-tight mb-6">
-          Готовый трек<br/>
-          <span className="text-lily">за 8 часов.</span>
-        </h2>
-        <button
-          onClick={() => go()}
-          className="btn-lily w-full py-4 text-base font-bold rounded-2xl"
-        >
-          Записаться на сессию
-        </button>
-      </div>
-
-      {/* Разделитель */}
-      <div className="h-px bg-[#1E1E1E] mx-4 mb-6" />
+      <div className="h-6" />
 
       <div className="px-4 space-y-8">
 

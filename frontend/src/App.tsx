@@ -92,7 +92,7 @@ export function App() {
 function AnimatedRoutes({ isAdmin }: { isAdmin: boolean }) {
   const location = useLocation()
   return (
-    <div key={location.pathname} className="page-enter">
+    <div key={location.pathname} className="page-enter" style={{ willChange: 'transform, opacity' }}>
       <Routes location={location}>
         <Route path="/" element={<Home />} />
         <Route path="/studios" element={<Studios />} />

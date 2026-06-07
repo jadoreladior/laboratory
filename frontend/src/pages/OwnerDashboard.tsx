@@ -400,35 +400,69 @@ function EmployeesView({ employees, setEmployees, stats, onBack }: {
 // ─── Export ───────────────────────────────────────────────────────────────────
 
 function ExportView({ employees, stats, onBack }: { employees: Employee[]; stats: Stats | null; onBack: () => void }) {
-  const handleExport = (type: 'bookings' | 'financial') => {
-    const a = document.createElement('a')
-    a.href = getExportUrl(type)
-    a.download = `${type}.csv`
-    a.click()
+  const [downloading, setDownloading] = useState<string | null>(null)
+  const [done, setDone] = useState<string | null>(null)
+
+  const handleExport = async (type: 'bookings' | 'financial') => {
+    setDownloading(type)
+    try {
+      const url = getExportUrl(type)
+      const res = await fetch(url)
+      const blob = await res.blob()
+      const blobUrl = URL.createObjectURL(new Blob([blob], { type: 'text/csv;charset=utf-8' }))
+      const a = document.createElement('a')
+      a.href = blobUrl
+      a.download = `laboratoriya-${type}-${new Date().toISOString().slice(0, 10)}.csv`
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      URL.revokeObjectURL(blobUrl)
+      setDone(type)
+      setTimeout(() => setDone(null), 2500)
+    } catch {
+      // fallback — открываем в браузере
+      window.open(getExportUrl(type), '_blank')
+    } finally {
+      setDownloading(null)
+    }
   }
 
   return (
     <div className="pb-nav animate-fade-in">
       <SubHeader title="Выгрузка" sub="CSV для Excel и Google Sheets" onBack={onBack} />
       <div className="px-4 space-y-3">
-        <p className="text-sm text-white/40">Файлы открываются в Excel и Google Sheets.</p>
+        <p className="text-sm text-white/40">Нажми — файл скачается автоматически.</p>
 
         {[
-          { type: 'bookings' as const, title: 'Все бронирования', sub: 'ID, клиент, студия, дата, сумма, статус' },
-          { type: 'financial' as const, title: 'Финансовый отчёт', sub: 'Дата, студия, услуга, выручка по каждой записи' },
-        ].map(({ type, title, sub }) => (
-          <button key={type} onClick={() => handleExport(type)}
-            className="w-full p-4 rounded-2xl bg-white/5 flex items-center gap-4 active:scale-[0.98] transition-all text-left">
-            <div className="w-10 h-10 rounded-xl bg-white/10 flex items-center justify-center flex-shrink-0">
-              <Download size={18} className="text-white/60" />
-            </div>
-            <div className="flex-1 min-w-0">
-              <div className="font-semibold text-white text-sm">{title}</div>
-              <div className="text-xs text-white/40 mt-0.5">{sub}</div>
-            </div>
-            <span className="text-xs text-white/30 flex-shrink-0">CSV</span>
-          </button>
-        ))}
+          { type: 'bookings' as const, title: 'Все бронирования', sub: 'Клиент, услуга, дата, сумма, статус' },
+          { type: 'financial' as const, title: 'Финансовый отчёт', sub: 'Дата, услуга, выручка по каждой записи' },
+        ].map(({ type, title, sub }) => {
+          const isLoading = downloading === type
+          const isDone = done === type
+          return (
+            <button key={type} onClick={() => !isLoading && handleExport(type)}
+              className="w-full p-4 rounded-2xl bg-white/5 flex items-center gap-4 active:scale-[0.97] transition-all text-left"
+              style={{ opacity: isLoading ? 0.7 : 1 }}>
+              <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors
+                ${isDone ? 'bg-green-500/20' : 'bg-white/10'}`}>
+                {isDone
+                  ? <Check size={18} className="text-green-400" />
+                  : isLoading
+                    ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
+                    : <Download size={18} className="text-white/60" />}
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-semibold text-white text-sm">{title}</div>
+                <div className="text-xs text-white/40 mt-0.5">
+                  {isDone ? '✓ Скачано' : isLoading ? 'Загружаем...' : sub}
+                </div>
+              </div>
+              <span className={`text-xs flex-shrink-0 ${isDone ? 'text-green-400' : 'text-white/30'}`}>
+                {isDone ? 'OK' : 'CSV'}
+              </span>
+            </button>
+          )
+        })}
 
         {employees.length > 0 && (
           <div className="p-4 rounded-2xl bg-white/5 mt-2">

@@ -222,12 +222,12 @@ export function Studios() {
       {selected && (
         <>
           <div
-            className="fixed inset-0 z-40 bg-black/80 backdrop-blur-sm"
+            className="fixed inset-0 z-40 bg-black/75 backdrop-blur-sm backdrop-enter"
             onClick={close}
             onTouchMove={e => e.preventDefault()}
           />
           <div
-            className="fixed left-0 right-0 bottom-0 z-40 bg-[#111111] border-t border-[#2A2A2A] rounded-t-3xl flex flex-col animate-slide-up"
+            className="fixed left-0 right-0 bottom-0 z-40 bg-[#111111] border-t border-[#2A2A2A] rounded-t-3xl flex flex-col sheet-enter"
             style={{ maxHeight: '90vh' }}
           >
             {/* Photo gallery */}
