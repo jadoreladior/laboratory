@@ -5,6 +5,7 @@ const helmet = require('helmet')
 const path = require('path')
 const { ensureHeaders } = require('./sheets')
 const { startReminderScheduler } = require('./reminders')
+const { startBot } = require('./bot')
 
 const app = express()
 
@@ -49,4 +50,5 @@ app.listen(PORT, () => {
     console.warn('ensureHeaders failed (non-fatal):', err.message)
   )
   startReminderScheduler()
+  startBot()
 })
