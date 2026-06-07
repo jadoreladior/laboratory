@@ -131,7 +131,7 @@ function Tile({ icon, title, sub, badge, onClick }: {
 function SubHeader({ title, sub, onBack }: { title: string; sub?: string; onBack: () => void }) {
   return (
     <div className="px-4 pt-6 pb-4 flex items-center gap-3">
-      <button onClick={onBack} className="text-white/50 active:scale-95"><ChevronLeft size={20} /></button>
+      <button onClick={onBack} className="text-white/50 active:scale-95"><Icon name="arrow-left" size={20} color="dim" /></button>
       <div>
         <h2 className="text-xl font-bold text-white">{title}</h2>
         {sub && <p className="text-xs text-white/40">{sub}</p>}

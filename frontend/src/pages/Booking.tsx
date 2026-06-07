@@ -19,12 +19,15 @@ const NEEDS_ENGINEER = ['record', 'studio', 'package']
 const DEFAULT_RATES = { record: 1690, studio: 2690, rent: 1360 }
 const DEFAULT_PACKAGES: Record<number, number> = { 3: 7970, 5: 11970, 6: 13970 }
 
-function buildCatConfig(rates: typeof DEFAULT_RATES, pkgs: typeof DEFAULT_PACKAGES) {
+type CatCfg = { icon: React.ReactNode; rate: number | null; label: string; desc: string; durations: number[] }
+
+function buildCatConfig(rates: typeof DEFAULT_RATES, pkgs: typeof DEFAULT_PACKAGES): Record<string, CatCfg> {
   return {
     record:  { icon: <Icon name="microphone" size={22} color="purple" />, rate: rates.record, label: 'Запись', desc: 'С звукорежиссёром · демо в подарок', durations: [1,2,3,4] },
     studio:  { icon: <Icon name="sliders"    size={22} color="purple" />, rate: rates.studio, label: 'Сведение', desc: 'Почасово или дистанционно', durations: [1,2,3,4] },
     rent:    { icon: <Icon name="key"        size={22} color="purple" />, rate: rates.rent, label: 'Аренда', desc: 'Без звукорежиссёра', durations: [1,2,3,4] },
-    package: { icon: <Icon name="package"    size={22} color="purple" />, rate: null as null, label: 'Готовый трек', desc: 'Запись + сведение', durations: [3,5,6] },
+    package: { icon: <Icon name="package"    size={22} color="purple" />, rate: null, label: 'Готовый трек', desc: 'Запись + сведение', durations: [3,5,6] },
+    voice:   { icon: <Icon name="microphone" size={22} color="purple" />, rate: rates.record, label: 'Войс', desc: 'Запись голоса', durations: [1,2,3,4] },
   }
 }
 
