@@ -3,11 +3,7 @@ import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid,
 } from 'recharts'
-import {
-  TrendingUp, Users, Download, UserPlus,
-  Pencil, Trash2, X, Check, ChevronLeft,
-  BarChart2, Building2, FileDown,
-} from 'lucide-react'
+import { Icon } from '../components/Icon'
 import {
   getAdminStats, getEmployees, createEmployee,
   updateEmployee, deleteEmployee, getExportUrl,
@@ -57,7 +53,7 @@ export function OwnerDashboard({ onBack }: { onBack: () => void }) {
   return (
     <div className="pb-nav animate-fade-in">
       <div className="px-4 pt-6 pb-5 flex items-center gap-3">
-        <button onClick={onBack} className="text-white/50 active:scale-95"><ChevronLeft size={20} /></button>
+        <button onClick={onBack} className="text-white/50 active:scale-95"><Icon name="arrow-left" size={20} color="dim" /></button>
         <div>
           <h1 className="text-xl font-bold text-white">Режим владельца</h1>
           <p className="text-xs text-white/40">Лаборатория</p>
@@ -83,25 +79,25 @@ export function OwnerDashboard({ onBack }: { onBack: () => void }) {
       {/* Tiles */}
       <div className="px-4 grid grid-cols-2 gap-3 stagger">
         <Tile
-          icon={<TrendingUp size={22} strokeWidth={1.5} />}
+          icon={<Icon name="trend" size={22} />}
           title="Аналитика"
           sub={`За месяц: ${monthRev}`}
           onClick={() => setSubView('overview')}
         />
         <Tile
-          icon={<Building2 size={22} strokeWidth={1.5} />}
+          icon={<Icon name="building" size={22} />}
           title="Залы & Услуги"
           sub={`${stats?.by_studio?.reduce((s, x) => s + x.count, 0) ?? '—'} записей`}
           onClick={() => setSubView('studios')}
         />
         <Tile
-          icon={<Users size={22} strokeWidth={1.5} />}
+          icon={<Icon name="users" size={22} />}
           title="Сотрудники"
           sub={`${empCount} чел. в команде`}
           onClick={() => setSubView('employees')}
         />
         <Tile
-          icon={<FileDown size={22} strokeWidth={1.5} />}
+          icon={<Icon name="download" size={22} />}
           title="Выгрузка"
           sub="CSV отчёты"
           onClick={() => setSubView('export')}
@@ -172,7 +168,7 @@ function OverviewView({ stats, loading, onBack }: { stats: Stats | null; loading
             {stats.daily.length > 0 && (
               <div className="p-4 rounded-2xl bg-white/5">
                 <div className="text-xs text-white/40 mb-3 flex items-center gap-2">
-                  <TrendingUp size={14} /> Выручка за 30 дней
+                  <Icon name="trend" size={14} /> Выручка за 30 дней
                 </div>
                 <ResponsiveContainer width="100%" height={140}>
                   <AreaChart data={stats.daily} margin={{ top: 0, right: 0, left: -20, bottom: 0 }}>
@@ -361,11 +357,11 @@ function EmployeesView({ employees, setEmployees, stats, onBack }: {
                 <div className="flex gap-2 ml-2">
                   <button onClick={() => setEditingEmp(emp)}
                     className="w-8 h-8 rounded-xl bg-white/10 flex items-center justify-center text-white/60 active:scale-95">
-                    <Pencil size={14} />
+                    <Icon name="edit" size={14} />
                   </button>
                   <button onClick={() => handleDelete(emp.id)}
                     className="w-8 h-8 rounded-xl bg-red-500/20 flex items-center justify-center text-red-400 active:scale-95">
-                    <Trash2 size={14} />
+                    <Icon name="delete" size={14} />
                   </button>
                 </div>
               </div>
@@ -389,7 +385,7 @@ function EmployeesView({ employees, setEmployees, stats, onBack }: {
             className="w-full py-3.5 rounded-2xl border border-white/10 border-dashed
               text-white/40 text-sm flex items-center justify-center gap-2 active:scale-[0.98]"
           >
-            <UserPlus size={16} /> Добавить сотрудника
+            <Icon name="user-add" size={16} /> Добавить сотрудника
           </button>
         )}
       </div>
@@ -446,10 +442,10 @@ function ExportView({ employees, stats, onBack }: { employees: Employee[]; stats
               <div className={`w-10 h-10 rounded-xl flex items-center justify-center flex-shrink-0 transition-colors
                 ${isDone ? 'bg-green-500/20' : 'bg-white/10'}`}>
                 {isDone
-                  ? <Check size={18} className="text-green-400" />
+                  ? <Icon name="check" size={18} style={{ filter: 'brightness(0) saturate(100%) invert(72%) sepia(40%) saturate(459%) hue-rotate(90deg) brightness(96%) contrast(91%)' }} />
                   : isLoading
                     ? <div className="w-4 h-4 border-2 border-white/20 border-t-white rounded-full animate-spin" />
-                    : <Download size={18} className="text-white/60" />}
+                    : <Icon name="download" size={18} color="dim" />}
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-white text-sm">{title}</div>
@@ -533,11 +529,11 @@ function EmployeeForm({ value, onChange, onSave, onCancel, saving }: {
       <div className="flex gap-2 pt-1">
         <button onClick={onSave} disabled={saving || !canSave}
           className="flex-1 py-2.5 rounded-xl btn-lily text-sm font-semibold flex items-center justify-center gap-1 disabled:opacity-40">
-          <Check size={14} /> {saving ? 'Сохраняем...' : 'Сохранить'}
+          <Icon name="check" size={14} /> {saving ? 'Сохраняем...' : 'Сохранить'}
         </button>
         <button onClick={onCancel}
           className="w-10 rounded-xl bg-white/10 flex items-center justify-center text-white/60">
-          <X size={16} />
+          <Icon name="close" size={16} />
         </button>
       </div>
     </div>

@@ -2,8 +2,8 @@ import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTelegram } from '../hooks/useTelegram'
 import { SERVICE_CATEGORIES } from '../data'
-import { Mic2, Sliders, Key, Package, ChevronRight } from 'lucide-react'
 import { ArtistsTicker } from '../components/ArtistsTicker'
+import { Icon } from '../components/Icon'
 
 const HERO_IMAGES = [
   '/photos/studio/main.jpg',
@@ -17,10 +17,10 @@ const HERO_IMAGES = [
 ]
 
 const CAT_ICONS: Record<string, React.ReactNode> = {
-  record:  <Mic2 size={18} strokeWidth={1.5} />,
-  studio:  <Sliders size={18} strokeWidth={1.5} />,
-  rent:    <Key size={18} strokeWidth={1.5} />,
-  package: <Package size={18} strokeWidth={1.5} />,
+  record:  <Icon name="microphone" size={18} color="purple" />,
+  studio:  <Icon name="sliders"    size={18} color="purple" />,
+  rent:    <Icon name="key"        size={18} color="purple" />,
+  package: <Icon name="package"    size={18} color="purple" />,
 }
 const CAT_RATES: Record<string, string> = {
   record:  '1 690 ₽/ч',
@@ -138,7 +138,7 @@ export function Home() {
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Услуги</p>
             <button onClick={() => go()} className="flex items-center gap-1 text-[11px] text-[#C17BFF] font-semibold">
-              Все <ChevronRight size={12} />
+              Все <Icon name="arrow-right" size={12} color="purple" />
             </button>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4">
@@ -165,7 +165,7 @@ export function Home() {
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Студия</p>
             <button onClick={() => navigate('/studios')} className="flex items-center gap-1 text-[11px] text-[#C17BFF] font-semibold">
-              Все фото <ChevronRight size={12} />
+              Все фото <Icon name="arrow-right" size={12} color="purple" />
             </button>
           </div>
           <div className="flex gap-2" style={{ height: 180 }}>

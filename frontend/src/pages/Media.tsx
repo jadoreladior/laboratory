@@ -1,7 +1,7 @@
 import { useNavigate } from 'react-router-dom'
 import { useTelegram } from '../hooks/useTelegram'
 import { ARTICLES } from '../data'
-import { Clock3 } from 'lucide-react'
+import { Icon } from '../components/Icon'
 
 function formatDate(dateStr: string) {
   const d = new Date(dateStr)
@@ -51,7 +51,7 @@ export function Media() {
               <div className="flex items-center gap-2 mt-2">
                 <span className="text-[10px] text-white/30">{formatDate(featured.date)}</span>
                 <span className="text-white/15">·</span>
-                <Clock3 size={10} className="text-white/30" />
+                <Icon name="clock" size={10} color="very-dim" />
                 <span className="text-[10px] text-white/30">{featured.readTime} мин</span>
               </div>
             </div>

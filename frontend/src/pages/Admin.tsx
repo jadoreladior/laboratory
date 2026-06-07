@@ -2,8 +2,7 @@ import { useEffect, useState, useCallback } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval,
          getDay, isSameDay, isToday, isPast, parseISO, addDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Mic2, Lock, X, Users, UserPlus, Check, ChevronLeft, ChevronRight,
-         Calendar, BarChart2, Ban, PlusCircle, Tag, Send } from 'lucide-react'
+import { Icon } from '../components/Icon'
 import {
   getAdminBookings, confirmBooking, cancelBooking, updateLeadStatus,
   getClients, addClient, verifyOwnerPin, createBooking,
@@ -330,7 +329,7 @@ export function Admin() {
           className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2"
         >
           <div className="flex items-center justify-between mb-3">
-            <Calendar size={22} className="text-[#C17BFF]" strokeWidth={1.5} />
+            <Icon name="calendar" size={22} color="purple" />
             <span className="text-[10px] text-white/30 uppercase tracking-widest">Сегодня</span>
           </div>
           <div className="font-bold text-white text-sm">Календарь записей</div>
@@ -347,7 +346,7 @@ export function Admin() {
               {pending}
             </span>
           )}
-          <div className="mb-3"><Mic2 size={22} className="text-white/50" strokeWidth={1.5} /></div>
+          <div className="mb-3"><Icon name="microphone" size={22} color="dim" /></div>
           <div className="font-bold text-white text-sm">Заявки</div>
           <div className="text-xs text-white/40 mt-0.5">Список + статусы</div>
         </button>
@@ -357,7 +356,7 @@ export function Admin() {
           onClick={() => setView('clients')}
           className="card-lab p-5 text-left active:scale-95 transition-transform"
         >
-          <div className="mb-3"><Users size={22} className="text-white/50" strokeWidth={1.5} /></div>
+          <div className="mb-3"><Icon name="users" size={22} color="dim" /></div>
           <div className="font-bold text-white text-sm">Клиенты</div>
           <div className="text-xs text-white/40 mt-0.5">{clients.length} в базе</div>
         </button>
@@ -367,7 +366,7 @@ export function Admin() {
           onClick={() => setView('prices')}
           className="card-lab p-5 text-left active:scale-95 transition-transform"
         >
-          <div className="mb-3"><Tag size={22} className="text-white/50" strokeWidth={1.5} /></div>
+          <div className="mb-3"><Icon name="price" size={22} color="dim" /></div>
           <div className="font-bold text-white text-sm">Цены</div>
           <div className="text-xs text-white/40 mt-0.5">Ставки и пакеты</div>
         </button>
@@ -377,7 +376,7 @@ export function Admin() {
           onClick={() => setView('broadcast')}
           className="card-lab p-5 text-left active:scale-95 transition-transform"
         >
-          <div className="mb-3"><Send size={22} className="text-white/50" strokeWidth={1.5} /></div>
+          <div className="mb-3"><Icon name="send" size={22} color="dim" /></div>
           <div className="font-bold text-white text-sm">Рассылка</div>
           <div className="text-xs text-white/40 mt-0.5">Сообщение клиентам</div>
         </button>
@@ -387,7 +386,7 @@ export function Admin() {
           onClick={() => setView('pin')}
           className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2 border-[#C17BFF]/10"
         >
-          <div className="mb-3"><Lock size={22} className="text-[#C17BFF]/60" strokeWidth={1.5} /></div>
+          <div className="mb-3"><Icon name="lock" size={22} color="purple" opacity={0.6} /></div>
           <div className="font-bold text-white text-sm">Режим владельца</div>
           <div className="text-xs text-white/40 mt-0.5">Аналитика, сотрудники, экспорт</div>
         </button>
@@ -446,7 +445,7 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <ChevronLeft size={18} className="text-white" />
+          <Icon name="arrow-left" size={18} />
         </button>
         <div className="flex-1 text-center">
           <h1 className="font-display font-black text-white text-lg capitalize">
@@ -455,10 +454,10 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
         </div>
         <div className="flex gap-1">
           <button onClick={onPrev} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-            <ChevronLeft size={16} className="text-white/60" />
+            <Icon name="arrow-left" size={16} color="dim" />
           </button>
           <button onClick={onNext} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-            <ChevronRight size={16} className="text-white/60" />
+            <Icon name="arrow-right" size={16} color="dim" />
           </button>
         </div>
       </div>
@@ -467,7 +466,7 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
       {todayInfo && (
         <div className="mx-4 mb-4 card-lab p-3 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-            <Calendar size={18} className="text-[#C17BFF]" />
+            <Icon name="calendar" size={18} color="purple" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs text-white/40">Сегодня</div>
@@ -490,14 +489,14 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-              <Calendar size={18} className="text-[#C17BFF]" />
+              <Icon name="calendar" size={18} color="purple" />
             </div>
             <div>
               <div className="text-xs text-white/40">Сегодня</div>
               <div className="text-sm font-semibold text-white">Записей нет</div>
             </div>
           </div>
-          <ChevronRight size={16} className="text-white/20" />
+          <Icon name="arrow-right" size={16} color="very-dim" />
         </button>
       )}
 
@@ -617,7 +616,7 @@ function DayView({
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <ChevronLeft size={18} className="text-white" />
+          <Icon name="arrow-left" size={18} />
         </button>
         <div className="flex-1">
           <div className="text-[11px] text-white/30 uppercase tracking-widest">День</div>
@@ -631,7 +630,7 @@ function DayView({
             }}
             className="w-9 h-9 rounded-full bg-[#C17BFF]/20 border border-[#C17BFF]/30 flex items-center justify-center"
           >
-            <PlusCircle size={16} className="text-[#C17BFF]" />
+            <Icon name="admin-plus" size={16} color="purple" />
           </button>
         )}
       </div>
@@ -773,7 +772,7 @@ function SlotRow({ slot, acting, isFuture, onClick, onBlock, onUnblock }: {
           <span className="text-sm font-mono font-bold text-white/40">{slot.time}</span>
         </div>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Ban size={14} className="text-[#FF4B4B]/70 flex-shrink-0" />
+          <Icon name="block" size={14} color="red" opacity={0.7} />
           <span className="text-sm text-white/50">
             {slot.blocked?.reason || 'Заблокировано'}
           </span>
@@ -811,7 +810,7 @@ function SlotRow({ slot, acting, isFuture, onClick, onBlock, onUnblock }: {
         <span className={`text-[11px] font-semibold flex-shrink-0 ${st?.color}`}>
           {st?.label}
         </span>
-        <ChevronRight size={14} className="text-white/20 flex-shrink-0" />
+        <Icon name="arrow-right" size={14} color="very-dim" />
       </button>
     )
   }
@@ -835,7 +834,7 @@ function SlotRow({ slot, acting, isFuture, onClick, onBlock, onUnblock }: {
             onClick={onBlock}
             className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-white/25 active:scale-95"
           >
-            <Ban size={12} />
+            <Icon name="block" size={12} />
           </button>
         </div>
       )}
@@ -1154,7 +1153,7 @@ function BookingsView({ bookings, loading, onConfirm, onCancel, onComplete, acti
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <ChevronLeft size={18} className="text-white" />
+          <Icon name="arrow-left" size={18} />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Заявки</h1>
         <button onClick={onRefresh} className="text-[#C17BFF]/60 text-xs">Обновить</button>
@@ -1308,14 +1307,14 @@ function ClientsView({ clients, setClients, onBack }: {
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <ChevronLeft size={18} className="text-white" />
+          <Icon name="arrow-left" size={18} />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Клиенты</h1>
         <button
           onClick={() => setShowForm(v => !v)}
           className="w-9 h-9 rounded-full bg-[#C17BFF]/15 border border-[#C17BFF]/30 flex items-center justify-center"
         >
-          <UserPlus size={15} className="text-[#C17BFF]" />
+          <Icon name="user-add" size={15} color="purple" />
         </button>
       </div>
 
@@ -1344,11 +1343,11 @@ function ClientsView({ clients, setClients, onBack }: {
             <div className="flex gap-2 pt-1">
               <button onClick={handleAdd} disabled={saving || !form.name.trim()}
                 className="flex-1 btn-lily py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1 disabled:opacity-40">
-                <Check size={14} /> {saving ? 'Сохраняем...' : 'Добавить'}
+                <Icon name="check" size={14} /> {saving ? 'Сохраняем...' : 'Добавить'}
               </button>
               <button onClick={() => setShowForm(false)}
                 className="w-10 rounded-xl card-lab flex items-center justify-center text-white/40">
-                <X size={16} />
+                <Icon name="close" size={16} />
               </button>
             </div>
           </div>
@@ -1378,7 +1377,7 @@ function ClientsView({ clients, setClients, onBack }: {
                 </div>
                 {c.notes && <div className="text-xs text-white/25 mt-0.5 italic">{c.notes}</div>}
               </div>
-              <ChevronRight size={14} className="text-white/20 flex-shrink-0" />
+              <Icon name="arrow-right" size={14} color="very-dim" />
             </div>
           </button>
         ))}
@@ -1444,7 +1443,7 @@ function ClientsView({ clients, setClients, onBack }: {
                     onClick={() => setSelectedClient(null)}
                     className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0"
                   >
-                    <X size={14} className="text-white/40" />
+                    <Icon name="close" size={14} color="dim" />
                   </button>
                 </div>
 
@@ -1597,7 +1596,7 @@ function PricesView({ onBack }: { onBack: () => void }) {
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-5">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <ChevronLeft size={18} className="text-white" />
+          <Icon name="arrow-left" size={18} />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Цены</h1>
         <button
@@ -1653,7 +1652,7 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
           onClick={onClose}
           className="w-9 h-9 rounded-full card-lab flex items-center justify-center"
         >
-          <X size={15} className="text-white/40" />
+          <Icon name="close" size={15} color="dim" />
         </button>
       </div>
 
@@ -1752,7 +1751,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-5">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <ChevronLeft size={18} className="text-white" />
+          <Icon name="arrow-left" size={18} />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Рассылка</h1>
       </div>
@@ -1813,7 +1812,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
           disabled={!message.trim() || tooLong || sending || (count ?? 0) === 0}
           className="w-full btn-lily py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-40"
         >
-          <Send size={18} />
+          <Icon name="send" size={18} />
           {sending ? 'Отправляем...' : `Отправить${count ? ` · ${count}` : ''}`}
         </button>
       </div>
