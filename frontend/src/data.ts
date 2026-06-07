@@ -141,6 +141,14 @@ export const EQUIPMENT_ITEMS = [
     description: 'Несведённая песня звучит, как готовая. Планарные драйверы дают настоящий бас, открытый верх и широкую сцену — слышишь всё.',
     photo: '/photos/equipment/audeze-lcd-xc.jpg',
   },
+  {
+    id: 'beyerdynamic-dt1770',
+    name: 'Beyerdynamic DT 1770 Pro',
+    category: 'Мониторы',
+    tag: 'Наушники · Закрытые',
+    description: 'Профессиональные студийные наушники закрытого типа. Точная передача низких частот, изоляция от внешних звуков — идеальны для записи вокала и контроля в кабине.',
+    photo: '/photos/equipment/beyerdynamic-dt1770.jpg',
+  },
   // Обработка
   {
     id: 'manley-voxbox',
