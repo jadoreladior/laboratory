@@ -194,7 +194,7 @@ export function Studios() {
       <div className="px-4 pt-6 pb-4">
         <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-1">Лаборатория</p>
         <h1 className="font-display text-2xl font-black text-white tracking-tight">Студия</h1>
-        <p className="text-sm text-white/40 mt-1">Оборудование на 1 500 000 ₽</p>
+        <p className="text-sm text-white/40 mt-1">Оборудование на 2 500 000 ₽</p>
       </div>
 
       {/* Hero studio card */}
