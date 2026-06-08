@@ -10,7 +10,7 @@ export interface Studio {
   images: string[]
 }
 
-export type ServiceCategory = 'record' | 'studio' | 'voice' | 'rent' | 'package'
+export type ServiceCategory = 'record' | 'studio' | 'rent' | 'package'
 
 export interface Service {
   id: string

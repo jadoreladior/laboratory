@@ -1,7 +1,6 @@
 /**
- * Minimal Telegram bot polling — runs inside the Express process on Render.
- * Handles /start → sends Mini App button.
- * No external service needed (Railway removed).
+ * Telegram bot via webhook — registered automatically on startup.
+ * Render wakes the service on each incoming POST, so no long-polling needed.
  */
 
 const https = require('https')
@@ -13,7 +12,7 @@ const MINI_APP_URL = process.env.MINI_APP_URL
 
 function tgRequest(path, body) {
   const token = process.env.BOT_TOKEN
-  if (!token) return Promise.resolve()
+  if (!token) return Promise.resolve({})
 
   const payload = body ? JSON.stringify(body) : null
 
@@ -63,46 +62,39 @@ async function handleStart(chatId, firstName) {
   })
 }
 
-// ── Polling loop ───────────────────────────────────────────────────────────
+// ── Process a single update (called by webhook route) ──────────────────────
 
-let _offset = 0
-
-async function poll() {
-  if (!process.env.BOT_TOKEN) return
-
+async function handleUpdate(update) {
   try {
-    const data = await tgRequest(
-      `/getUpdates?offset=${_offset}&timeout=20&allowed_updates=["message"]`
-    )
-
-    if (data.ok && Array.isArray(data.result)) {
-      for (const update of data.result) {
-        _offset = update.update_id + 1
-        const msg = update.message
-        if (!msg) continue
-
-        const text = msg.text ?? ''
-        // /start (with or without deep-link payload)
-        if (text.startsWith('/start')) {
-          await handleStart(msg.chat.id, msg.from?.first_name ?? 'друг')
-        }
-      }
+    const msg = update.message
+    if (!msg) return
+    const text = msg.text ?? ''
+    if (text.startsWith('/start')) {
+      await handleStart(msg.chat.id, msg.from?.first_name ?? 'друг')
     }
   } catch (e) {
-    // ignore, retry next cycle
+    console.error('[bot] handleUpdate error:', e.message)
   }
-
-  // long-poll: after each response wait a bit then re-poll
-  setTimeout(poll, 500)
 }
 
-function startBot() {
+// ── Register webhook on startup ────────────────────────────────────────────
+
+async function registerWebhook(baseUrl) {
   if (!process.env.BOT_TOKEN) {
     console.log('[bot] BOT_TOKEN not set — bot disabled')
     return
   }
-  console.log('[bot] Polling started')
-  poll()
+  const webhookUrl = `${baseUrl}/api/bot`
+  const result = await tgRequest('/setWebhook', {
+    url: webhookUrl,
+    allowed_updates: ['message'],
+    drop_pending_updates: false,
+  })
+  if (result.ok) {
+    console.log(`[bot] Webhook registered: ${webhookUrl}`)
+  } else {
+    console.warn('[bot] Webhook registration failed:', result.description)
+  }
 }
 
-module.exports = { startBot }
+module.exports = { handleUpdate, registerWebhook }

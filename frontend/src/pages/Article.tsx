@@ -1,6 +1,6 @@
-import { useParams, useNavigate } from 'react-router-dom'
+﻿import { useParams, useNavigate } from 'react-router-dom'
 import { ARTICLES } from '../data'
-import { Icon } from '../components/Icon'
+import { ChevronLeft, Clock3 } from 'lucide-react'
 import { useTelegram } from '../hooks/useTelegram'
 import type { ArticleBlock } from '../types'
 
@@ -87,7 +87,7 @@ export function Article() {
           className="absolute top-4 left-4 w-9 h-9 rounded-full bg-black/50 border border-white/10
             flex items-center justify-center z-10 backdrop-blur-sm"
         >
-          <Icon name="arrow-left" size={18} />
+          <ChevronLeft size={18} className="text-white" />
         </button>
 
         {/* Tag */}
@@ -102,7 +102,7 @@ export function Article() {
           <div className="flex items-center gap-2 mt-2">
             <span className="text-xs text-white/40">{formatDate(article.date)}</span>
             <span className="text-white/15">·</span>
-            <Icon name="clock" size={10} color="very-dim" />
+            <Clock3 size={10} className="text-white/30" />
             <span className="text-xs text-white/40">{article.readTime} мин чтения</span>
           </div>
         </div>
@@ -125,7 +125,7 @@ export function Article() {
             onClick={() => { haptic?.impactOccurred('light'); navigate('/media') }}
             className="flex items-center gap-1.5 text-sm text-white/30 hover:text-[#C17BFF] transition-colors"
           >
-            <Icon name="arrow-left" size={16} color="dim" />
+            <ChevronLeft size={16} />
             Все материалы
           </button>
         </div>

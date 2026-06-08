@@ -1,5 +1,5 @@
-import { useState, useEffect, useRef } from 'react'
-import { Icon } from '../components/Icon'
+﻿import { useState, useEffect, useRef } from 'react'
+import { Mic2, Sliders, Key, Package, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { format, addDays, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isToday, isPast } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -19,15 +19,12 @@ const NEEDS_ENGINEER = ['record', 'studio', 'package']
 const DEFAULT_RATES = { record: 1690, studio: 2690, rent: 1360 }
 const DEFAULT_PACKAGES: Record<number, number> = { 3: 7970, 5: 11970, 6: 13970 }
 
-type CatCfg = { icon: React.ReactNode; rate: number | null; label: string; desc: string; durations: number[] }
-
-function buildCatConfig(rates: typeof DEFAULT_RATES, pkgs: typeof DEFAULT_PACKAGES): Record<string, CatCfg> {
+function buildCatConfig(rates: typeof DEFAULT_RATES, pkgs: typeof DEFAULT_PACKAGES) {
   return {
-    record:  { icon: <Icon name="microphone" size={22} color="purple" />, rate: rates.record, label: 'Запись', desc: 'С звукорежиссёром · демо в подарок', durations: [1,2,3,4] },
-    studio:  { icon: <Icon name="sliders"    size={22} color="purple" />, rate: rates.studio, label: 'Сведение', desc: 'Почасово или дистанционно', durations: [1,2,3,4] },
-    rent:    { icon: <Icon name="key"        size={22} color="purple" />, rate: rates.rent, label: 'Аренда', desc: 'Без звукорежиссёра', durations: [1,2,3,4] },
-    package: { icon: <Icon name="package"    size={22} color="purple" />, rate: null, label: 'Готовый трек', desc: 'Запись + сведение', durations: [3,5,6] },
-    voice:   { icon: <Icon name="microphone" size={22} color="purple" />, rate: rates.record, label: 'Войс', desc: 'Запись голоса', durations: [1,2,3,4] },
+    record:  { icon: <Mic2 size={22} strokeWidth={1.5} />, rate: rates.record, label: 'Запись', desc: 'С звукорежиссёром · демо в подарок', durations: [1,2,3,4] },
+    studio:  { icon: <Sliders size={22} strokeWidth={1.5} />, rate: rates.studio, label: 'Сведение', desc: 'Почасово или дистанционно', durations: [1,2,3,4] },
+    rent:    { icon: <Key size={22} strokeWidth={1.5} />, rate: rates.rent, label: 'Аренда', desc: 'Без звукорежиссёра', durations: [1,2,3,4] },
+    package: { icon: <Package size={22} strokeWidth={1.5} />, rate: null as null, label: 'Готовый трек', desc: 'Запись + сведение', durations: [3,5,6] },
   }
 }
 
@@ -441,7 +438,7 @@ export function Booking() {
                 disabled={calMonth.getMonth() === new Date().getMonth() && calMonth.getFullYear() === new Date().getFullYear()}
                 className="w-8 h-8 rounded-full card-lab flex items-center justify-center disabled:opacity-30"
               >
-                <Icon name="arrow-left" size={14} />
+                <ChevronLeft size={14} className="text-white" />
               </button>
               <p className="text-sm font-bold text-white capitalize">
                 {format(calMonth, 'LLLL yyyy', { locale: ru })}
@@ -451,7 +448,7 @@ export function Booking() {
                 disabled={calMonth > addMonths(new Date(), 2)}
                 className="w-8 h-8 rounded-full card-lab flex items-center justify-center disabled:opacity-30"
               >
-                <Icon name="arrow-right" size={14} />
+                <ChevronRight size={14} className="text-white" />
               </button>
             </div>
 
@@ -706,7 +703,7 @@ export function Booking() {
                   <div className="flex items-center gap-3">
                     <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all
                       ${isSelected ? 'bg-[#C17BFF] border-[#C17BFF]' : 'border-white/20'}`}>
-                      {isSelected && <Icon name="check" size={13} />}
+                      {isSelected && <Check size={13} strokeWidth={3} className="text-white" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-white text-sm">{addon.label}</div>
@@ -893,3 +890,4 @@ function SuccessScreen({ onDone, onHome }: { onDone: () => void; onHome: () => v
     </div>
   )
 }
+

@@ -1,8 +1,9 @@
-import { useEffect, useState, useCallback } from 'react'
+﻿import { useEffect, useState, useCallback } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval,
          getDay, isSameDay, isToday, isPast, parseISO, addDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
-import { Icon } from '../components/Icon'
+import { Mic2, Lock, X, Users, UserPlus, Check, ChevronLeft, ChevronRight,
+         Calendar, BarChart2, Ban, PlusCircle, Tag, Send } from 'lucide-react'
 import {
   getAdminBookings, confirmBooking, cancelBooking, updateLeadStatus,
   getClients, addClient, verifyOwnerPin, createBooking,
@@ -329,7 +330,7 @@ export function Admin() {
           className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2"
         >
           <div className="flex items-center justify-between mb-3">
-            <Icon name="calendar" size={22} color="purple" />
+            <Calendar size={22} className="text-[#C17BFF]" />
             <span className="text-[10px] text-white/30 uppercase tracking-widest">Сегодня</span>
           </div>
           <div className="font-bold text-white text-sm">Календарь записей</div>
@@ -346,7 +347,7 @@ export function Admin() {
               {pending}
             </span>
           )}
-          <div className="mb-3"><Icon name="microphone" size={22} color="dim" /></div>
+          <div className="mb-3"><Mic2 size={22} className="text-white/50" /></div>
           <div className="font-bold text-white text-sm">Заявки</div>
           <div className="text-xs text-white/40 mt-0.5">Список + статусы</div>
         </button>
@@ -356,7 +357,7 @@ export function Admin() {
           onClick={() => setView('clients')}
           className="card-lab p-5 text-left active:scale-95 transition-transform"
         >
-          <div className="mb-3"><Icon name="users" size={22} color="dim" /></div>
+          <div className="mb-3"><Users size={22} className="text-white/50" /></div>
           <div className="font-bold text-white text-sm">Клиенты</div>
           <div className="text-xs text-white/40 mt-0.5">{clients.length} в базе</div>
         </button>
@@ -366,7 +367,7 @@ export function Admin() {
           onClick={() => setView('prices')}
           className="card-lab p-5 text-left active:scale-95 transition-transform"
         >
-          <div className="mb-3"><Icon name="price" size={22} color="dim" /></div>
+          <div className="mb-3"><Tag size={22} className="text-white/50" /></div>
           <div className="font-bold text-white text-sm">Цены</div>
           <div className="text-xs text-white/40 mt-0.5">Ставки и пакеты</div>
         </button>
@@ -376,7 +377,7 @@ export function Admin() {
           onClick={() => setView('broadcast')}
           className="card-lab p-5 text-left active:scale-95 transition-transform"
         >
-          <div className="mb-3"><Icon name="send" size={22} color="dim" /></div>
+          <div className="mb-3"><Send size={22} className="text-white/50" /></div>
           <div className="font-bold text-white text-sm">Рассылка</div>
           <div className="text-xs text-white/40 mt-0.5">Сообщение клиентам</div>
         </button>
@@ -386,7 +387,7 @@ export function Admin() {
           onClick={() => setView('pin')}
           className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2 border-[#C17BFF]/10"
         >
-          <div className="mb-3"><Icon name="lock" size={22} color="purple" opacity={0.6} /></div>
+          <div className="mb-3"><Lock size={22} className="text-[#C17BFF]/60" /></div>
           <div className="font-bold text-white text-sm">Режим владельца</div>
           <div className="text-xs text-white/40 mt-0.5">Аналитика, сотрудники, экспорт</div>
         </button>
@@ -445,7 +446,7 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <Icon name="arrow-left" size={18} />
+          <ChevronLeft size={18} className="text-white" />
         </button>
         <div className="flex-1 text-center">
           <h1 className="font-display font-black text-white text-lg capitalize">
@@ -454,10 +455,10 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
         </div>
         <div className="flex gap-1">
           <button onClick={onPrev} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-            <Icon name="arrow-left" size={16} color="dim" />
+            <ChevronLeft size={16} className="text-white/60" />
           </button>
           <button onClick={onNext} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-            <Icon name="arrow-right" size={16} color="dim" />
+            <ChevronRight size={16} className="text-white/60" />
           </button>
         </div>
       </div>
@@ -466,7 +467,7 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
       {todayInfo && (
         <div className="mx-4 mb-4 card-lab p-3 flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-            <Icon name="calendar" size={18} color="purple" />
+            <Calendar size={18} className="text-[#C17BFF]" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs text-white/40">Сегодня</div>
@@ -489,14 +490,14 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
         >
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-              <Icon name="calendar" size={18} color="purple" />
+              <Calendar size={18} className="text-[#C17BFF]" />
             </div>
             <div>
               <div className="text-xs text-white/40">Сегодня</div>
               <div className="text-sm font-semibold text-white">Записей нет</div>
             </div>
           </div>
-          <Icon name="arrow-right" size={16} color="very-dim" />
+          <ChevronRight size={16} className="text-white/20" />
         </button>
       )}
 
@@ -616,7 +617,7 @@ function DayView({
       {/* Header */}
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <Icon name="arrow-left" size={18} />
+          <ChevronLeft size={18} className="text-white" />
         </button>
         <div className="flex-1">
           <div className="text-[11px] text-white/30 uppercase tracking-widest">День</div>
@@ -630,7 +631,7 @@ function DayView({
             }}
             className="w-9 h-9 rounded-full bg-[#C17BFF]/20 border border-[#C17BFF]/30 flex items-center justify-center"
           >
-            <Icon name="admin-plus" size={16} color="purple" />
+            <PlusCircle size={16} className="text-[#C17BFF]" />
           </button>
         )}
       </div>
@@ -772,7 +773,7 @@ function SlotRow({ slot, acting, isFuture, onClick, onBlock, onUnblock }: {
           <span className="text-sm font-mono font-bold text-white/40">{slot.time}</span>
         </div>
         <div className="flex items-center gap-2 flex-1 min-w-0">
-          <Icon name="block" size={14} color="red" opacity={0.7} />
+          <Ban size={14} className="text-[#FF4B4B]/70 flex-shrink-0" />
           <span className="text-sm text-white/50">
             {slot.blocked?.reason || 'Заблокировано'}
           </span>
@@ -810,7 +811,7 @@ function SlotRow({ slot, acting, isFuture, onClick, onBlock, onUnblock }: {
         <span className={`text-[11px] font-semibold flex-shrink-0 ${st?.color}`}>
           {st?.label}
         </span>
-        <Icon name="arrow-right" size={14} color="very-dim" />
+        <ChevronRight size={14} className="text-white/20 flex-shrink-0" />
       </button>
     )
   }
@@ -834,7 +835,7 @@ function SlotRow({ slot, acting, isFuture, onClick, onBlock, onUnblock }: {
             onClick={onBlock}
             className="w-7 h-7 rounded-lg bg-white/5 flex items-center justify-center text-white/25 active:scale-95"
           >
-            <Icon name="block" size={12} />
+            <Ban size={12} />
           </button>
         </div>
       )}
@@ -1153,7 +1154,7 @@ function BookingsView({ bookings, loading, onConfirm, onCancel, onComplete, acti
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <Icon name="arrow-left" size={18} />
+          <ChevronLeft size={18} className="text-white" />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Заявки</h1>
         <button onClick={onRefresh} className="text-[#C17BFF]/60 text-xs">Обновить</button>
@@ -1307,14 +1308,14 @@ function ClientsView({ clients, setClients, onBack }: {
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-4">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <Icon name="arrow-left" size={18} />
+          <ChevronLeft size={18} className="text-white" />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Клиенты</h1>
         <button
           onClick={() => setShowForm(v => !v)}
           className="w-9 h-9 rounded-full bg-[#C17BFF]/15 border border-[#C17BFF]/30 flex items-center justify-center"
         >
-          <Icon name="user-add" size={15} color="purple" />
+          <UserPlus size={15} className="text-[#C17BFF]" />
         </button>
       </div>
 
@@ -1343,11 +1344,11 @@ function ClientsView({ clients, setClients, onBack }: {
             <div className="flex gap-2 pt-1">
               <button onClick={handleAdd} disabled={saving || !form.name.trim()}
                 className="flex-1 btn-lily py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1 disabled:opacity-40">
-                <Icon name="check" size={14} /> {saving ? 'Сохраняем...' : 'Добавить'}
+                <Check size={14} /> {saving ? 'Сохраняем...' : 'Добавить'}
               </button>
               <button onClick={() => setShowForm(false)}
                 className="w-10 rounded-xl card-lab flex items-center justify-center text-white/40">
-                <Icon name="close" size={16} />
+                <X size={16} />
               </button>
             </div>
           </div>
@@ -1377,7 +1378,7 @@ function ClientsView({ clients, setClients, onBack }: {
                 </div>
                 {c.notes && <div className="text-xs text-white/25 mt-0.5 italic">{c.notes}</div>}
               </div>
-              <Icon name="arrow-right" size={14} color="very-dim" />
+              <ChevronRight size={14} className="text-white/20 flex-shrink-0" />
             </div>
           </button>
         ))}
@@ -1443,7 +1444,7 @@ function ClientsView({ clients, setClients, onBack }: {
                     onClick={() => setSelectedClient(null)}
                     className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center flex-shrink-0"
                   >
-                    <Icon name="close" size={14} color="dim" />
+                    <X size={14} className="text-white/40" />
                   </button>
                 </div>
 
@@ -1596,7 +1597,7 @@ function PricesView({ onBack }: { onBack: () => void }) {
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-5">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <Icon name="arrow-left" size={18} />
+          <ChevronLeft size={18} className="text-white" />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Цены</h1>
         <button
@@ -1652,7 +1653,7 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
           onClick={onClose}
           className="w-9 h-9 rounded-full card-lab flex items-center justify-center"
         >
-          <Icon name="close" size={15} color="dim" />
+          <X size={15} className="text-white/40" />
         </button>
       </div>
 
@@ -1712,13 +1713,13 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
 // ─── Broadcast view ───────────────────────────────────────────────────────────
 
 function BroadcastView({ onBack }: { onBack: () => void }) {
-  const [message,     setMessage]     = useState('')
-  const [audience,    setAudience]    = useState<'all' | 'with_bookings'>('all')
-  const [count,       setCount]       = useState<number | null>(null)
-  const [sending,     setSending]     = useState(false)
-  const [result,      setResult]      = useState<{ sent: number; failed: number } | null>(null)
-  const [loadingCount,setLoadingCount]= useState(false)
-  const [confirming,  setConfirming]  = useState(false)   // inline confirm instead of window.confirm
+  const [message,    setMessage]    = useState('')
+  const [audience,   setAudience]   = useState<'all' | 'with_bookings'>('all')
+  const [count,      setCount]      = useState<number | null>(null)
+  const [sending,    setSending]    = useState(false)
+  const [confirming, setConfirming] = useState(false)
+  const [result,     setResult]     = useState<{ sent: number; failed: number } | null>(null)
+  const [loadingCount, setLoadingCount] = useState(false)
 
   useEffect(() => {
     setLoadingCount(true)
@@ -1731,45 +1732,45 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
   }, [audience])
 
   const handleSend = async () => {
-    setSending(true)
+    if (!message.trim() || sending) return
+    if (!confirming) { setConfirming(true); return }
     setConfirming(false)
+    setSending(true)
     setResult(null)
     try {
       const r = await sendBroadcast(message, audience)
       setResult(r)
       if (r.sent > 0) setMessage('')
     } catch {
-      setResult({ sent: 0, failed: count ?? 0 })
+      alert('Ошибка при отправке')
     } finally {
       setSending(false)
     }
   }
 
-  const chars    = message.length
-  const tooLong  = chars > 4096
-  const canSend  = !!message.trim() && !tooLong && !sending && (count ?? 0) > 0
+  const chars = message.length
+  const tooLong = chars > 4096
 
   return (
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="flex items-center gap-3 px-4 pt-6 pb-5">
         <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
-          <Icon name="arrow-left" size={18} />
+          <ChevronLeft size={18} className="text-white" />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Рассылка</h1>
       </div>
 
       <div className="px-4 space-y-4">
-        {/* Audience */}
         <div className="card-lab p-4">
           <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Аудитория</p>
           <div className="grid grid-cols-2 gap-2">
             {([
-              { val: 'all',           label: 'Все клиенты',     desc: 'Все в базе' },
-              { val: 'with_bookings', label: 'С бронированием', desc: 'Кто бронировал' },
+              { val: 'all',           label: 'Все клиенты',      desc: 'Все в базе' },
+              { val: 'with_bookings', label: 'С бронированием',  desc: 'Кто бронировал' },
             ] as const).map(opt => (
               <button
                 key={opt.val}
-                onClick={() => { setAudience(opt.val); setConfirming(false) }}
+                onClick={() => setAudience(opt.val)}
                 className={`p-3 rounded-xl text-left transition-all border ${
                   audience === opt.val
                     ? 'bg-[#C17BFF]/10 border-[#C17BFF]/40'
@@ -1782,15 +1783,10 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
             ))}
           </div>
           <div className="mt-3 text-center text-sm text-white/40">
-            {loadingCount
-              ? 'Считаем...'
-              : count !== null
-                ? <><span className="text-white font-semibold">{count}</span> получателей</>
-                : '—'}
+            {loadingCount ? 'Считаем...' : count !== null ? <><span className="text-white font-semibold">{count}</span> получателей</> : '—'}
           </div>
         </div>
 
-        {/* Message */}
         <div className="card-lab p-4">
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Текст сообщения</p>
@@ -1798,7 +1794,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
           </div>
           <textarea
             value={message}
-            onChange={e => { setMessage(e.target.value); setConfirming(false) }}
+            onChange={e => setMessage(e.target.value)}
             placeholder="Привет! У нас новые цены и акции..."
             rows={7}
             className="w-full bg-[#111] border border-[#2A2A2A] rounded-xl p-3 text-sm text-white resize-none outline-none focus:border-[#C17BFF]/40 leading-relaxed"
@@ -1808,7 +1804,6 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
           </p>
         </div>
 
-        {/* Result */}
         {result && (
           <div className={`p-4 rounded-2xl border text-center ${result.failed === 0 ? 'bg-green-500/10 border-green-500/20' : 'bg-yellow-500/10 border-yellow-500/20'}`}>
             <div className="text-lg font-bold text-white">✓ Отправлено: {result.sent}</div>
@@ -1816,36 +1811,23 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
           </div>
         )}
 
-        {/* Inline confirm step — replaces window.confirm() which is blocked in Telegram */}
         {confirming ? (
-          <div className="card-lab p-4 border border-[#C17BFF]/30 space-y-3 animate-scale-in">
-            <p className="text-sm text-white/70 text-center leading-relaxed">
-              Отправить сообщение <span className="text-white font-semibold">{count ?? 0}</span> получателям?
-            </p>
-            <div className="flex gap-3">
-              <button
-                onClick={() => setConfirming(false)}
-                className="flex-1 py-3 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A] text-sm text-white/50 font-semibold"
-              >
-                Отмена
-              </button>
-              <button
-                onClick={handleSend}
-                disabled={sending}
-                className="flex-1 py-3 rounded-xl btn-lily text-sm font-semibold flex items-center justify-center gap-2 disabled:opacity-50"
-              >
-                <Icon name="send" size={16} />
-                {sending ? 'Отправляем...' : 'Отправить'}
+          <div className="p-4 rounded-2xl border border-[#C17BFF]/30 bg-[#C17BFF]/5 text-center space-y-3">
+            <p className="text-sm text-white/70">Отправить <span className="text-white font-semibold">{count ?? '?'}</span> получателям?</p>
+            <div className="flex gap-2">
+              <button onClick={() => setConfirming(false)} className="flex-1 py-3 rounded-xl bg-[#1A1A1A] text-white/60 font-semibold text-sm">Отмена</button>
+              <button onClick={handleSend} disabled={sending} className="flex-1 py-3 rounded-xl btn-lily font-semibold text-sm flex items-center justify-center gap-2 disabled:opacity-40">
+                <Send size={15} /> {sending ? 'Отправляем...' : 'Отправить'}
               </button>
             </div>
           </div>
         ) : (
           <button
-            onClick={() => canSend && setConfirming(true)}
-            disabled={!canSend}
+            onClick={handleSend}
+            disabled={!message.trim() || tooLong || sending || (count ?? 0) === 0}
             className="w-full btn-lily py-4 rounded-2xl font-semibold text-base flex items-center justify-center gap-2 disabled:opacity-40"
           >
-            <Icon name="send" size={18} />
+            <Send size={18} />
             {sending ? 'Отправляем...' : `Отправить${count ? ` · ${count}` : ''}`}
           </button>
         )}
@@ -1853,3 +1835,4 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
     </div>
   )
 }
+

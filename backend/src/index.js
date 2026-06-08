@@ -5,7 +5,7 @@ const helmet = require('helmet')
 const path = require('path')
 const { ensureHeaders } = require('./sheets')
 const { startReminderScheduler } = require('./reminders')
-const { startBot } = require('./bot')
+const { handleUpdate, registerWebhook } = require('./bot')
 
 const app = express()
 
@@ -28,6 +28,12 @@ app.use('/api/admin/settings', require('./routes/settings'))
 app.use('/api/admin/partners',   require('./routes/partners'))
 app.use('/api/admin/broadcast',  require('./routes/broadcast'))
 
+// ── Telegram webhook ───────────────────────────────────────────────────────
+app.post('/api/bot', (req, res) => {
+  res.sendStatus(200)           // always ack immediately
+  handleUpdate(req.body).catch(() => {})
+})
+
 app.get('/health', (_, res) => res.json({ status: 'ok', service: 'laboratoriya-crm' }))
 
 // ── Serve React frontend (built with Vite) ────────────────────────────────────
@@ -43,6 +49,9 @@ app.use((err, _req, res, _next) => {
 })
 
 const PORT = process.env.PORT || 8000
+const RENDER_URL = process.env.RENDER_EXTERNAL_URL
+  ?? process.env.BACKEND_URL
+  ?? 'https://laboratory-backend-xy2t.onrender.com'
 
 app.listen(PORT, () => {
   console.log(`CRM API running on port ${PORT}`)
@@ -50,5 +59,5 @@ app.listen(PORT, () => {
     console.warn('ensureHeaders failed (non-fatal):', err.message)
   )
   startReminderScheduler()
-  startBot()
+  registerWebhook(RENDER_URL)
 })

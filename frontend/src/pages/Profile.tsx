@@ -1,6 +1,6 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { Icon } from '../components/Icon'
+import { Mic2 } from 'lucide-react'
 import { useTelegram } from '../hooks/useTelegram'
 import { useBookingStore } from '../store/bookingStore'
 import { useAppContext } from '../App'
@@ -136,8 +136,8 @@ export function Profile() {
           <div className="text-center py-12 text-white/30 text-sm">Загружаем...</div>
         ) : displayList.length === 0 ? (
           <div className="py-12 text-center">
-            <div className="flex justify-center mb-3">
-              <Icon name="microphone" size={40} color="very-dim" />
+            <div className="flex justify-center text-white/20 mb-3">
+              <Mic2 size={40} />
             </div>
             <p className="text-sm text-white/30 mb-5">
               {tab === 'upcoming' ? 'Нет активных записей' : 'История пуста'}
