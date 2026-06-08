@@ -3,16 +3,20 @@ const { readSheet } = require('../sheets')
 
 const router = express.Router()
 
-const ALL_SLOTS = [
-  '00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00',
-  '08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00',
-  '16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00',
+// Working hours per category
+const WORK_SLOTS = [
+  '10:00','11:00','12:00','13:00','14:00','15:00',
+  '16:00','17:00','18:00','19:00','20:00','21:00','22:00',
 ]
+const ALL_24H = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, '0')}:00`)
 
-// GET /api/slots/:date
+// GET /api/slots/:date?category=rent
 router.get('/:date', async (req, res, next) => {
   try {
     const { date } = req.params
+    const category = req.query.category ?? ''
+    const ALL_SLOTS = category === 'rent' ? ALL_24H : WORK_SLOTS
+
     const leads = await readSheet('Leads')
 
     const booked = new Set()

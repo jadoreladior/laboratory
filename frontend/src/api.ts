@@ -121,8 +121,9 @@ export async function getAdminStats() {
 
 // ─── Slots ───────────────────────────────────────────────────────────────────
 
-export async function getAvailableSlots(_studioId: string, date: string) {
-  const { data } = await api.get(`/api/slots/${date}`)
+export async function getAvailableSlots(_studioId: string, date: string, category?: string) {
+  const params = category ? `?category=${category}` : ''
+  const { data } = await api.get(`/api/slots/${date}${params}`)
   return data.slots as { time: string; available: boolean }[]
 }
 

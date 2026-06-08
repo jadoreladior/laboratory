@@ -19,6 +19,19 @@ const NEEDS_ENGINEER = ['record', 'studio', 'package']
 const DEFAULT_RATES = { record: 1690, studio: 2690, rent: 1360 }
 const DEFAULT_PACKAGES: Record<number, number> = { 3: 7970, 5: 11970, 6: 13970 }
 
+// Working hours per category
+const WORK_SLOTS = ['10:00','11:00','12:00','13:00','14:00','15:00','16:00','17:00','18:00','19:00','20:00','21:00','22:00']
+const ALL_SLOTS  = Array.from({ length: 24 }, (_, h) => `${String(h).padStart(2, '0')}:00`)
+
+function applySlotRange(
+  apiSlots: { time: string; available: boolean }[],
+  cat: ServiceCategory | null,
+): { time: string; available: boolean }[] {
+  const apiMap = new Map(apiSlots.map(s => [s.time, s.available]))
+  const hours = cat === 'rent' ? ALL_SLOTS : WORK_SLOTS
+  return hours.map(time => ({ time, available: apiMap.has(time) ? apiMap.get(time)! : true }))
+}
+
 function buildCatConfig(rates: typeof DEFAULT_RATES, pkgs: typeof DEFAULT_PACKAGES) {
   return {
     record:  { icon: <Mic2 size={22} strokeWidth={1.5} />, rate: rates.record, label: 'Запись', desc: 'С звукорежиссёром · демо в подарок', durations: [1,2,3,4] },
@@ -86,11 +99,11 @@ export function Booking() {
     setLocalTime(null)
     setLocalTimeEnd(null)
     const dateStr = format(localDate, 'yyyy-MM-dd')
-    getAvailableSlots('A', dateStr)
-      .then(setSlots)
-      .catch(() => setSlots([]))
+    getAvailableSlots('A', dateStr, category ?? undefined)
+      .then(apiSlots => setSlots(applySlotRange(apiSlots, category)))
+      .catch(() => setSlots(applySlotRange([], category)))
       .finally(() => setLoadingSlots(false))
-  }, [localDate, step])
+  }, [localDate, step, category])
 
   // Computed values
   const CAT_CONFIG = buildCatConfig(rates, packagePrices)
@@ -519,11 +532,8 @@ export function Booking() {
             {loadingSlots ? (
               <div className="text-center py-8 text-white/30 text-sm">Загружаем слоты...</div>
             ) : (() => {
-              const rawSlots = slots.length > 0 ? slots : [
-                '00:00','01:00','02:00','03:00','04:00','05:00','06:00','07:00',
-                '08:00','09:00','10:00','11:00','12:00','13:00','14:00','15:00',
-                '16:00','17:00','18:00','19:00','20:00','21:00','22:00','23:00',
-              ].map(t => ({ time: t, available: true }))
+              const rawSlots = slots.length > 0 ? slots
+                : (category === 'rent' ? ALL_SLOTS : WORK_SLOTS).map(t => ({ time: t, available: true }))
 
               // Valid durations depend on category
               const validDurations = category === 'package' ? [3, 5, 6] : null // null = any integer ≥ 1
