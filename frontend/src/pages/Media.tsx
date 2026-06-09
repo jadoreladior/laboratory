@@ -1,4 +1,4 @@
-﻿import { useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 import { useTelegram } from '../hooks/useTelegram'
 import { ARTICLES } from '../data'
 import { Clock3 } from 'lucide-react'
@@ -19,7 +19,7 @@ export function Media() {
 
       {/* Header */}
       <div className="px-4 pt-6 pb-5">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-1">Лаборатория</p>
+        <p className="text-xs font-medium text-white/40 mb-1">Лаборатория</p>
         <h1 className="font-display text-2xl font-black text-white tracking-tight">Медиа</h1>
         <p className="text-sm text-white/40 mt-1">Интервью, гайды и истории из студии</p>
       </div>
@@ -40,7 +40,7 @@ export function Media() {
             <div className="absolute inset-0 bg-gradient-to-t from-black/90 via-black/30 to-transparent" />
 
             {/* Tag badge */}
-            <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest
+            <span className="absolute top-3 left-3 text-[10px] font-bold
               px-2.5 py-1 rounded-full bg-[#CC0066]/20 text-[#CC0066] border border-[#CC0066]/30 backdrop-blur-sm">
               {featured.tag}
             </span>
@@ -73,7 +73,7 @@ export function Media() {
               />
             </div>
             <div className="flex-1 min-w-0 py-0.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#CC0066]/70">
+              <span className="text-[10px] font-bold text-[#CC0066]/70">
                 {article.tag}
               </span>
               <h3 className="text-sm font-bold text-white mt-0.5 leading-tight line-clamp-2">

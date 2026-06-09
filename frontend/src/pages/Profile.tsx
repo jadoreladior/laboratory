@@ -1,4 +1,4 @@
-﻿import { useEffect, useState } from 'react'
+import { useEffect, useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Mic2 } from 'lucide-react'
 import { useTelegram } from '../hooks/useTelegram'
@@ -69,7 +69,7 @@ export function Profile() {
 
       {/* Header */}
       <div className="px-4 pt-6 pb-2">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-1">Личный кабинет</p>
+        <p className="text-xs font-medium text-white/40 mb-1">Личный кабинет</p>
         <h1 className="font-display text-2xl font-black text-white tracking-tight">Профиль</h1>
       </div>
 
@@ -81,7 +81,7 @@ export function Profile() {
               className="w-14 h-14 rounded-full object-cover ring-2 ring-[#CC0066]/30" />
           ) : (
             <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, #CC006640, #CC006615)', boxShadow: '0 0 20px rgba(204,0,102,0.15)' }}>
+              style={{ background: 'rgba(204,0,102,0.12)' }}>
               <span className="text-[#CC0066] font-bold text-xl">
                 {user ? user.first_name[0] : '?'}
               </span>
@@ -106,7 +106,7 @@ export function Profile() {
       {/* Bookings section */}
       <div className="px-4 mb-6">
         <div className="flex items-center justify-between mb-3">
-          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Мои записи</p>
+          <p className="text-xs font-medium text-white/40">Мои записи</p>
           <button onClick={() => navigate('/booking')}
             className="text-xs text-[#CC0066] font-semibold">
             + Новая

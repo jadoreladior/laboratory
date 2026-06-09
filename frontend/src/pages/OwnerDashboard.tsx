@@ -1,4 +1,4 @@
-﻿import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react'
 import {
   AreaChart, Area, BarChart, Bar, XAxis, YAxis,
   Tooltip, ResponsiveContainer, CartesianGrid,
@@ -238,7 +238,7 @@ function StudiosView({ stats, onBack }: { stats: Stats | null; onBack: () => voi
         ) : (
           <>
             <div>
-              <h3 className="text-xs text-white/40 uppercase tracking-widest mb-3">Зал</h3>
+              <h3 className="text-xs text-white/40 mb-3">Зал</h3>
               <div className="space-y-2">
                 {(stats.by_studio ?? []).map(s => {
                   const maxRev = Math.max(...(stats.by_studio ?? []).map(x => x.revenue), 1)
@@ -260,7 +260,7 @@ function StudiosView({ stats, onBack }: { stats: Stats | null; onBack: () => voi
             </div>
 
             <div>
-              <h3 className="text-xs text-white/40 uppercase tracking-widest mb-3">Топ услуг</h3>
+              <h3 className="text-xs text-white/40 mb-3">Топ услуг</h3>
               <div className="space-y-2">
                 {stats.by_service.map(s => {
                   const maxCnt = Math.max(...stats.by_service.map(x => x.count), 1)
@@ -466,7 +466,7 @@ function ExportView({ employees, stats, onBack }: { employees: Employee[]; stats
 
         {employees.length > 0 && (
           <div className="p-4 rounded-2xl bg-white/5 mt-2">
-            <h3 className="text-xs text-white/40 uppercase tracking-widest mb-3">Расчёт по сотрудникам</h3>
+            <h3 className="text-xs text-white/40 mb-3">Расчёт по сотрудникам</h3>
             <div className="space-y-3">
               {employees.map(emp => {
                 const monthRev = stats?.revenue.month ?? 0

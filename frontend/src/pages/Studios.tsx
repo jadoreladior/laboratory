@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef, useMemo } from 'react'
+import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { STUDIOS, TEAM, STUDIO_RULES, EQUIPMENT_ITEMS } from '../data'
 import { useTelegram } from '../hooks/useTelegram'
@@ -192,7 +192,7 @@ export function Studios() {
 
       {/* Header */}
       <div className="px-4 pt-6 pb-4">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-1">Лаборатория</p>
+        <p className="text-xs font-medium text-white/40 mb-1">Лаборатория</p>
         <h1 className="font-display text-2xl font-black text-white tracking-tight">Студия</h1>
         <p className="text-sm text-white/40 mt-1">Оборудование на 2 500 000 ₽</p>
       </div>
@@ -234,7 +234,7 @@ export function Studios() {
 
       {/* Rules */}
       <div className="px-4 mb-6">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Правила</p>
+        <p className="text-xs font-medium text-white/40 mb-3">Правила</p>
         <div className="card-lab overflow-hidden">
           {STUDIO_RULES.map((rule, i) => (
             <div
@@ -251,7 +251,7 @@ export function Studios() {
 
       {/* Equipment by category */}
       <div className="px-4 mb-6">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Оборудование</p>
+        <p className="text-xs font-medium text-white/40 mb-3">Оборудование</p>
 
         {/* Category tabs */}
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar mb-4">
@@ -293,7 +293,7 @@ export function Studios() {
 
       {/* Photo gallery */}
       <div className="px-4 mb-4">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Фото студии</p>
+        <p className="text-xs font-medium text-white/40 mb-3">Фото студии</p>
         <div className="flex gap-2 overflow-x-auto pb-1 no-scrollbar">
           {STUDIOS[0].images.map((src, i) => (
             <button
@@ -310,7 +310,7 @@ export function Studios() {
 
       {/* Команда */}
       <div className="px-4 mb-6">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Команда</p>
+        <p className="text-xs font-medium text-white/40 mb-3">Команда</p>
         <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4">
           {TEAM.map(member => (
             <button
@@ -545,7 +545,7 @@ export function Studios() {
 
               <p className="text-sm text-white/50 leading-relaxed mb-4">{selected.description}</p>
 
-              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/25 mb-2">Оборудование</p>
+              <p className="text-[10px] font-semibold text-white/25 mb-2">Оборудование</p>
               <div className="flex flex-wrap gap-1.5 mb-5">
                 {selected.features.map(f => (
                   <span key={f} className="text-xs px-2.5 py-1 rounded-full font-medium border"
@@ -633,7 +633,7 @@ export function Studios() {
 
               {selectedMember.tracks && selectedMember.tracks.length > 0 && (
                 <>
-                  <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Работы</p>
+                  <p className="text-xs font-medium text-white/40 mb-3">Работы</p>
                   <div className="space-y-2 mb-5">
                     {selectedMember.tracks.map((track, i) => {
                       const isPlaying = playingTrack === track.url

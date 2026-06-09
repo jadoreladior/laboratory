@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback } from 'react'
 import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterval,
          getDay, isSameDay, isToday, isPast, parseISO, addDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
@@ -270,7 +270,7 @@ export function Admin() {
   return (
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="px-4 pt-6 pb-5">
-        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-1">Лаборатория</p>
+        <p className="text-xs font-medium text-white/40 mb-1">Лаборатория</p>
         <h1 className="font-display text-2xl font-black text-white tracking-tight">CRM</h1>
       </div>
 
@@ -293,7 +293,7 @@ export function Admin() {
         <div className="px-4 mb-5">
           <div className="card-lab p-4">
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Выручка за 30 дней</p>
+              <p className="text-xs font-medium text-white/40">Выручка за 30 дней</p>
               <span className="text-sm font-bold text-white">{(revenueMonth/1000).toFixed(0)}к ₽</span>
             </div>
             <div className="flex items-end gap-0.5 h-12">
@@ -328,7 +328,7 @@ export function Admin() {
         >
           <div className="flex items-center justify-between mb-3">
             <Calendar size={22} className="text-[#CC0066]" />
-            <span className="text-[10px] text-white/30 uppercase tracking-widest">Сегодня</span>
+            <span className="text-xs font-medium text-white/40">Сегодня</span>
           </div>
           <div className="font-bold text-white text-sm">Календарь записей</div>
           <div className="text-xs text-white/40 mt-0.5">Слоты, загрузка, управление</div>
@@ -631,7 +631,7 @@ function DayView({
           <ChevronLeft size={18} className="text-white" />
         </button>
         <div className="flex-1">
-          <div className="text-[11px] text-white/30 uppercase tracking-widest">День</div>
+          <div className="text-xs font-medium text-white/40">День</div>
           <h1 className="text-base font-bold text-white capitalize">{label}</h1>
         </div>
         {isFutureOrToday && (
@@ -660,7 +660,7 @@ function DayView({
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${Math.round(((data.booked_count + data.blocked_count) / (data.booked_count + data.blocked_count + data.free_count)) * 100)}%`,
-                  background: 'linear-gradient(90deg, #CC0066, #9B4FE0)',
+                  background: '#CC0066',
                 }}
               />
             </div>
@@ -690,74 +690,69 @@ function DayView({
         ))}
       </div>
 
-      {/* Centered modal */}
+      {/* Bottom sheet modal */}
       {sheet && (
         <>
           <div
             className="fixed inset-0 z-40"
-            style={{ backdropFilter: 'blur(16px)', WebkitBackdropFilter: 'blur(16px)', backgroundColor: 'rgba(0,0,0,0.6)' }}
+            style={{ backdropFilter: 'blur(12px)', WebkitBackdropFilter: 'blur(12px)', backgroundColor: 'rgba(0,0,0,0.55)' }}
             onClick={onCloseSheet}
           />
-          {/* Flex centering wrapper */}
           <div
-            className="fixed inset-0 z-50 flex items-center justify-center pointer-events-none"
-            style={{
-              paddingLeft: 16, paddingRight: 16,
-              paddingTop: 'env(safe-area-inset-top, 16px)',
-              paddingBottom: 'env(safe-area-inset-bottom, 16px)',
-            }}
+            className="fixed inset-x-0 bottom-0 z-50 flex justify-center pointer-events-none"
+            style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
           >
-          <div
-            className="animate-scale-in pointer-events-auto w-full"
-            style={{
-              maxWidth: 420,
-              maxHeight: 'calc(100svh - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px) - 80px)',
-              overflowY: 'auto',
-              background: '#161616',
-              border: '1px solid #2A2A2A',
-              borderRadius: 24,
-            }}
-          >
-            {/* drag handle */}
-            <div className="w-10 h-1 bg-white/15 rounded-full mx-auto mt-3 mb-4" />
+            <div
+              className="animate-slide-up pointer-events-auto w-full"
+              style={{
+                maxWidth: 480,
+                maxHeight: '90svh',
+                overflowY: 'auto',
+                background: '#161616',
+                border: '1px solid #2A2A2A',
+                borderRadius: '24px 24px 0 0',
+              }}
+            >
+              {/* drag handle */}
+              <div className="w-10 h-1 bg-white/15 rounded-full mx-auto mt-3 mb-1" />
 
-            {sheet === 'detail' && sheetSlot?.booking && (
-              <BookingDetailSheet
-                booking={sheetSlot.booking}
-                acting={acting}
-                onConfirm={() => handleConf(sheetSlot.booking!.id)}
-                onCancel={() => handleCanc(sheetSlot.booking!.id)}
-                onComplete={() => handleComp(sheetSlot.booking!.id)}
-                onClose={onCloseSheet}
-              />
-            )}
+              {sheet === 'detail' && sheetSlot?.booking && (
+                <BookingDetailSheet
+                  booking={sheetSlot.booking}
+                  acting={acting}
+                  onConfirm={() => handleConf(sheetSlot.booking!.id)}
+                  onCancel={() => handleCanc(sheetSlot.booking!.id)}
+                  onComplete={() => handleComp(sheetSlot.booking!.id)}
+                  onClose={onCloseSheet}
+                />
+              )}
 
-            {sheet === 'book-form' && sheetSlot && (
-              <QuickBookForm
-                date={date}
-                time={sheetSlot.time}
-                onClose={onCloseSheet}
-                onCreated={onBookCreated}
-              />
-            )}
+              {sheet === 'book-form' && sheetSlot && (
+                <QuickBookForm
+                  date={date}
+                  time={sheetSlot.time}
+                  onClose={onCloseSheet}
+                  onCreated={onBookCreated}
+                />
+              )}
 
-            {sheet === 'time-pick' && (
-              <TimePickSheet
-                slots={data?.slots ?? []}
-                onPick={onPickTime}
-                onClose={onCloseSheet}
-              />
-            )}
+              {sheet === 'time-pick' && (
+                <TimePickSheet
+                  slots={data?.slots ?? []}
+                  onPick={onPickTime}
+                  onClose={onCloseSheet}
+                />
+              )}
 
-            {sheet === 'block-form' && sheetSlot && (
-              <BlockSlotForm
-                date={date}
-                time={sheetSlot.time}
-                onClose={onCloseSheet}
-                onBlocked={onBlocked}
-              />
-            )}
-          </div>
+              {sheet === 'block-form' && sheetSlot && (
+                <BlockSlotForm
+                  date={date}
+                  time={sheetSlot.time}
+                  onClose={onCloseSheet}
+                  onBlocked={onBlocked}
+                />
+              )}
+            </div>
           </div>
         </>
       )}
@@ -1126,8 +1121,9 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
         )}
 
         {/* Price */}
-        <input className={inp} placeholder="Стоимость ₽" type="number"
-          value={price}
+        <input className={inp} placeholder="Стоимость ₽ (необязательно)" type="number"
+          inputMode="numeric"
+          value={price || ''}
           onChange={e => setPrice(Number(e.target.value))} />
 
         {/* Notes */}
@@ -1145,7 +1141,7 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
         <button
           onClick={handleSubmit}
           disabled={saving || !name.trim()}
-          className="btn-lily w-full py-3.5 rounded-2xl font-bold text-white disabled:opacity-40"
+          className="btn-lily w-full py-3.5 rounded-2xl font-semibold text-white disabled:opacity-40"
         >
           {saving ? 'Сохраняем...' : 'Создать запись'}
         </button>
@@ -1417,7 +1413,7 @@ function ClientsView({ clients, setClients, onBack }: {
       {showForm && (
         <div className="px-4 mb-4">
           <div className="card-lab p-4 space-y-2.5">
-            <p className="text-[11px] text-white/30 uppercase tracking-widest">Новый клиент</p>
+            <p className="text-xs font-medium text-white/40">Новый клиент</p>
             <input className={inp} placeholder="Имя *" value={form.name}
               onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
             <input className={inp} placeholder="Телефон" value={form.phone}
@@ -1588,7 +1584,7 @@ function ClientsView({ clients, setClients, onBack }: {
                     {/* Booking history */}
                     {profile.history.length > 0 ? (
                       <div>
-                        <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-2">
+                        <p className="text-xs font-medium text-white/40 mb-2">
                           История записей
                         </p>
                         <div className="space-y-2">
@@ -1701,7 +1697,7 @@ function PricesView({ onBack }: { onBack: () => void }) {
         <div className="px-4 space-y-5">
           {/* Hourly rates */}
           <div className="card-lab p-4 space-y-3.5">
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Почасовые ставки</p>
+            <p className="text-xs font-medium text-white/40">Почасовые ставки</p>
             <Field label="Запись (со звукорежиссёром)" k="record_rate" />
             <Field label="Сведение (почасово)" k="studio_rate" />
             <Field label="Аренда (без звукорежиссёра)" k="rent_rate" />
@@ -1709,7 +1705,7 @@ function PricesView({ onBack }: { onBack: () => void }) {
 
           {/* Packages */}
           <div className="card-lab p-4 space-y-3.5">
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Пакеты «Готовый трек»</p>
+            <p className="text-xs font-medium text-white/40">Пакеты «Готовый трек»</p>
             <Field label="3 часа" k="package_3h" />
             <Field label="5 часов" k="package_5h" />
             <Field label="6 часов" k="package_6h" />
@@ -1810,7 +1806,7 @@ function PartnersView({ partners, setPartners, onBack }: {
       {showForm && (
         <div className="px-4 mb-4">
           <div className="card-lab p-4 space-y-2.5">
-            <p className="text-[11px] text-white/30 uppercase tracking-widest">Новый партнёр</p>
+            <p className="text-xs font-medium text-white/40">Новый партнёр</p>
             <input className={inp} placeholder="Название / Имя *" value={form.name}
               onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
             <input className={inp} placeholder="Роль (студия, агентство, продакшн...)" value={form.role}
@@ -1888,10 +1884,10 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
           className="w-20 h-20 object-contain mb-4"
           style={{ filter: 'drop-shadow(0 0 20px rgba(204,0,102,0.5))' }}
         />
-        <h2 className="font-display font-black text-white text-xl uppercase tracking-widest mb-1">
+        <h2 className="font-display font-black text-white text-xl mb-1">
           Лаборатория
         </h2>
-        <p className="text-[10px] text-white/30 uppercase tracking-widest mb-8">Режим владельца</p>
+        <p className="text-xs font-medium text-white/40 mb-8">Режим владельца</p>
 
         {/* PIN dots */}
         <div className="flex gap-4 mb-2">
@@ -1988,7 +1984,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
 
       <div className="px-4 space-y-4">
         <div className="card-lab p-4">
-          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Аудитория</p>
+          <p className="text-xs font-medium text-white/40 mb-3">Аудитория</p>
           <div className="grid grid-cols-2 gap-2">
             {([
               { val: 'all',           label: 'Все клиенты',      desc: 'Все в базе' },
@@ -2015,7 +2011,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
 
         <div className="card-lab p-4">
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Текст сообщения</p>
+            <p className="text-xs font-medium text-white/40">Текст сообщения</p>
             <span className={`text-[11px] ${tooLong ? 'text-red-400' : 'text-white/25'}`}>{chars}/4096</span>
           </div>
           <textarea

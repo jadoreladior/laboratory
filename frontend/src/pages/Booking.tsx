@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { Mic2, Sliders, Key, Package, Check, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useNavigate, useLocation } from 'react-router-dom'
 import { format, addDays, isSameDay, startOfMonth, endOfMonth, eachDayOfInterval, getDay, addMonths, subMonths, isToday, isPast } from 'date-fns'
@@ -259,7 +259,7 @@ export function Booking() {
           </svg>
         </button>
         <div className="flex-1">
-          <div className="text-[10px] text-white/30 uppercase tracking-widest mb-0.5">
+          <div className="text-xs font-medium text-white/40 mb-0.5">
             Шаг {stepIndex + 1} из {STEPS.length}
           </div>
           <h1 className="text-lg font-bold text-white">{STEP_LABELS[step]}</h1>
@@ -299,7 +299,7 @@ export function Booking() {
                     : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
               >
                 {isLast && !isSelected && (
-                  <span className="absolute top-2.5 right-3 text-[9px] font-semibold text-[#CC0066]/60 uppercase tracking-widest">
+                  <span className="absolute top-2.5 right-3 text-[9px] font-semibold text-[#CC0066]/60">
                     прошлый раз
                   </span>
                 )}
@@ -404,7 +404,7 @@ export function Booking() {
                       style={{ objectPosition: 'center top' }} />
                   </div>
                   <div className="flex-1 px-3 py-2.5">
-                    <div className="text-[10px] font-semibold text-[#CC0066] uppercase tracking-widest mb-0.5">Звукорежиссёр</div>
+                    <div className="text-[10px] font-semibold text-[#CC0066] mb-0.5">Звукорежиссёр</div>
                     <div className="font-bold text-white text-sm leading-tight">{eng.name}</div>
                     <div className="text-[11px] text-white/40 mt-0.5">{eng.specialization}</div>
                   </div>
@@ -517,7 +517,7 @@ export function Booking() {
           <div className="px-4">
 
             <div className="flex items-center justify-between mb-3">
-              <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">
+              <p className="text-xs font-medium text-white/40">
                 {!localTime ? 'Выберите начало' : !localTimeEnd ? 'Теперь выберите конец' : 'Время выбрано'}
               </p>
               {localTime && (
@@ -661,7 +661,7 @@ export function Booking() {
                     </svg>
                   </div>
                   <div>
-                    <div className="text-[10px] text-white/35 uppercase tracking-widest mb-0.5">Вы будете в студии</div>
+                    <div className="text-[10px] text-white/35 mb-0.5">Вы будете в студии</div>
                     <div className="text-base font-bold text-white">
                       {localTime} — {localTimeEnd}
                       {duration && <span className="text-sm font-normal text-white/40 ml-2">· {duration} ч</span>}
@@ -677,7 +677,7 @@ export function Booking() {
                       </svg>
                     </div>
                     <div>
-                      <div className="text-[10px] text-white/35 uppercase tracking-widest mb-0.5">Звукорежиссёр</div>
+                      <div className="text-[10px] text-white/35 mb-0.5">Звукорежиссёр</div>
                       <div className="text-sm font-semibold text-white">
                         {selectedEngineer === 'any'
                           ? 'Назначим лучшего свободного'

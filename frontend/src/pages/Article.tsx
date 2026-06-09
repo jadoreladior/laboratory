@@ -1,4 +1,4 @@
-﻿import { useParams, useNavigate } from 'react-router-dom'
+import { useParams, useNavigate } from 'react-router-dom'
 import { ARTICLES } from '../data'
 import { ChevronLeft, Clock3 } from 'lucide-react'
 import { useTelegram } from '../hooks/useTelegram'
@@ -91,7 +91,7 @@ export function Article() {
         </button>
 
         {/* Tag */}
-        <span className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest
+        <span className="absolute top-4 right-4 text-[10px] font-bold
           px-2.5 py-1 rounded-full bg-[#CC0066]/20 text-[#CC0066] border border-[#CC0066]/30 backdrop-blur-sm">
           {article.tag}
         </span>

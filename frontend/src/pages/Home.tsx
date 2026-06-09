@@ -1,4 +1,4 @@
-﻿import { useState, useEffect, useRef } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { useTelegram } from '../hooks/useTelegram'
 import { SERVICE_CATEGORIES } from '../data'
@@ -136,7 +136,7 @@ export function Home() {
         {/* ── УСЛУГИ ── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Услуги</p>
+            <p className="text-xs font-medium text-white/40">Услуги</p>
             <button onClick={() => go()} className="flex items-center gap-1 text-[11px] text-[#CC0066] font-semibold">
               Все <ChevronRight size={12} />
             </button>
@@ -163,7 +163,7 @@ export function Home() {
         {/* ── ФОТО-ГАЛЕРЕЯ ── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Студия</p>
+            <p className="text-xs font-medium text-white/40">Студия</p>
             <button onClick={() => navigate('/studios')} className="flex items-center gap-1 text-[11px] text-[#CC0066] font-semibold">
               Все фото <ChevronRight size={12} />
             </button>
@@ -197,7 +197,7 @@ export function Home() {
 
         {/* ── О СТУДИИ ── */}
         <div>
-          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">О студии</p>
+          <p className="text-xs font-medium text-white/40 mb-3">О студии</p>
 
           {/* Статы: 4 плитки */}
           <div className="grid grid-cols-2 gap-2 mb-3 stagger">
@@ -256,7 +256,7 @@ export function Home() {
 
         {/* ── ЯНДЕКС КАРТА ── */}
         <div>
-          <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">Как добраться</p>
+          <p className="text-xs font-medium text-white/40 mb-3">Как добраться</p>
 
           {/* Карта */}
           <div className="rounded-2xl overflow-hidden" style={{ height: 200 }}>

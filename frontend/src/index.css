@@ -216,10 +216,7 @@ img { transition: opacity 0.4s ease; }
 .font-display { font-family: 'Unbounded', sans-serif; }
 
 .text-lily {
-  background: linear-gradient(135deg, #CC0066 0%, #E0A0FF 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  color: #CC0066;
 }
 
 .text-shimmer {
@@ -234,19 +231,17 @@ img { transition: opacity 0.4s ease; }
 /* ── Buttons — Apple tap feel ───────────────────────────────────────────────── */
 
 .btn-lily {
-  background: linear-gradient(135deg, #CC0066 0%, #9B4FE0 100%);
+  background: #CC0066;
   color: #fff;
   border-radius: 16px;
   font-weight: 600;
   letter-spacing: -0.01em;
-  transition: transform 0.18s var(--ease-spring), opacity 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 20px rgba(204,0,102,0.4), 0 1px 3px rgba(0,0,0,0.3);
+  transition: transform 0.18s var(--ease-spring), opacity 0.15s ease;
   will-change: transform;
 }
 .btn-lily:active {
   transform: scale(0.95);
-  opacity: 0.88;
-  box-shadow: 0 2px 10px rgba(204,0,102,0.25);
+  opacity: 0.85;
 }
 
 /* Все интерактивные элементы — spring при тапе */
@@ -368,8 +363,8 @@ input::placeholder, textarea::placeholder {
 
 input:focus, textarea:focus, select:focus {
   outline: none;
-  border-color: rgba(193, 123, 255, 0.4);
-  box-shadow: 0 0 0 1px rgba(193, 123, 255, 0.25);
+  border-color: rgba(204, 0, 102, 0.4);
+  box-shadow: 0 0 0 1px rgba(204, 0, 102, 0.15);
 }
 
 /* Safari autofill dark */

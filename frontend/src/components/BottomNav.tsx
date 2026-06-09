@@ -61,8 +61,8 @@ export function BottomNav() {
           style={{
             width: 32,
             height: 2,
-            background: 'linear-gradient(90deg, #CC0066, #E0A0FF)',
-            boxShadow: '0 0 8px rgba(204,0,102,0.8)',
+            background: '#CC0066',
+            boxShadow: '0 0 6px rgba(204,0,102,0.6)',
             marginLeft: -16,
           }}
         />

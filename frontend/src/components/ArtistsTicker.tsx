@@ -49,7 +49,7 @@ export function ArtistsTicker(_props: Props) {
 
   return (
     <div>
-      <h3 className="text-[11px] font-semibold text-white/30 uppercase tracking-widest mb-3">
+      <h3 className="text-xs font-medium text-white/40 mb-3">
         Работали с нами
       </h3>
       <div className="space-y-2 -mx-4 overflow-hidden">
