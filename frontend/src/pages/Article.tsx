@@ -26,7 +26,7 @@ function Block({ block }: { block: ArticleBlock }) {
   }
   if (block.type === 'quote') {
     return (
-      <blockquote className="border-l-2 border-[#C17BFF]/40 pl-4 my-1">
+      <blockquote className="border-l-2 border-[#CC0066]/40 pl-4 my-1">
         <p className="text-sm text-white/50 italic leading-relaxed">
           «{block.text}»
         </p>
@@ -61,7 +61,7 @@ export function Article() {
         <p className="text-white/30 text-sm">Статья не найдена</p>
         <button
           onClick={() => navigate('/media')}
-          className="mt-4 text-sm text-[#C17BFF] underline"
+          className="mt-4 text-sm text-[#CC0066] underline"
         >
           Вернуться
         </button>
@@ -92,7 +92,7 @@ export function Article() {
 
         {/* Tag */}
         <span className="absolute top-4 right-4 text-[10px] font-bold uppercase tracking-widest
-          px-2.5 py-1 rounded-full bg-[#C17BFF]/20 text-[#C17BFF] border border-[#C17BFF]/30 backdrop-blur-sm">
+          px-2.5 py-1 rounded-full bg-[#CC0066]/20 text-[#CC0066] border border-[#CC0066]/30 backdrop-blur-sm">
           {article.tag}
         </span>
 
@@ -114,7 +114,7 @@ export function Article() {
           {article.subtitle}
         </p>
 
-        <div className="w-8 h-px bg-[#C17BFF]/20" />
+        <div className="w-8 h-px bg-[#CC0066]/20" />
 
         {article.blocks.map((block, i) => (
           <Block key={i} block={block} />
@@ -123,7 +123,7 @@ export function Article() {
         <div className="pt-4 pb-2">
           <button
             onClick={() => { haptic?.impactOccurred('light'); navigate('/media') }}
-            className="flex items-center gap-1.5 text-sm text-white/30 hover:text-[#C17BFF] transition-colors"
+            className="flex items-center gap-1.5 text-sm text-white/30 hover:text-[#CC0066] transition-colors"
           >
             <ChevronLeft size={16} />
             Все материалы

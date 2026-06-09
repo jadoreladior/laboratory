@@ -61,8 +61,8 @@ export function BottomNav() {
           style={{
             width: 32,
             height: 2,
-            background: 'linear-gradient(90deg, #C17BFF, #E0A0FF)',
-            boxShadow: '0 0 8px rgba(193,123,255,0.8)',
+            background: 'linear-gradient(90deg, #CC0066, #E0A0FF)',
+            boxShadow: '0 0 8px rgba(204,0,102,0.8)',
             marginLeft: -16,
           }}
         />
@@ -75,7 +75,7 @@ export function BottomNav() {
           end={to === '/'}
           className={({ isActive }) =>
             `flex-1 flex flex-col items-center gap-1 py-1
-            ${isActive ? 'text-[#C17BFF]' : 'text-white/35'}`
+            ${isActive ? 'text-[#CC0066]' : 'text-white/35'}`
           }
           style={{ transition: 'color 0.22s ease' }}
         >
@@ -90,7 +90,7 @@ export function BottomNav() {
               >
                 {isActive && (
                   <span
-                    className="absolute inset-0 rounded-full bg-[#C17BFF]/20 blur-md scale-[2.2]"
+                    className="absolute inset-0 rounded-full bg-[#CC0066]/20 blur-md scale-[2.2]"
                     style={{ animation: 'fadeIn 0.3s ease both' }}
                   />
                 )}

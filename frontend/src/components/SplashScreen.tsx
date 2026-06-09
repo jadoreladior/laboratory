@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+﻿import { useEffect, useState } from 'react'
 
 /** Equalizer bars — audio studio branding */
 function EqBars() {
@@ -16,7 +16,7 @@ function EqBars() {
       {bars.map((b, i) => (
         <div
           key={i}
-          className="rounded-full bg-[#C17BFF]"
+          className="rounded-full bg-[#CC0066]"
           style={{
             width: 3,
             height: `${b.h * 32}px`,
@@ -65,7 +65,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
           width: 480,
           height: 480,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(193,123,255,0.12) 0%, transparent 65%)',
+          background: 'radial-gradient(circle, rgba(204,0,102,0.12) 0%, transparent 65%)',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -80,7 +80,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
           width: 240,
           height: 240,
           borderRadius: '50%',
-          background: 'radial-gradient(circle, rgba(193,123,255,0.08) 0%, transparent 70%)',
+          background: 'radial-gradient(circle, rgba(204,0,102,0.08) 0%, transparent 70%)',
           top: '50%',
           left: '50%',
           transform: 'translate(-50%, -50%)',
@@ -141,7 +141,7 @@ export function SplashScreen({ onDone }: SplashScreenProps) {
         {[0, 1, 2].map(i => (
           <div
             key={i}
-            className="rounded-full bg-[#C17BFF]"
+            className="rounded-full bg-[#CC0066]"
             style={{
               width: 4,
               height: 16,

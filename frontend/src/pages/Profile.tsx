@@ -78,11 +78,11 @@ export function Profile() {
         <div className="card-lab p-4 flex items-center gap-4">
           {user?.photo_url ? (
             <img src={user.photo_url} alt="avatar"
-              className="w-14 h-14 rounded-full object-cover ring-2 ring-[#C17BFF]/30" />
+              className="w-14 h-14 rounded-full object-cover ring-2 ring-[#CC0066]/30" />
           ) : (
             <div className="w-14 h-14 rounded-full flex items-center justify-center flex-shrink-0"
-              style={{ background: 'linear-gradient(135deg, #C17BFF40, #C17BFF15)', boxShadow: '0 0 20px rgba(193,123,255,0.15)' }}>
-              <span className="text-[#C17BFF] font-bold text-xl">
+              style={{ background: 'linear-gradient(135deg, #CC006640, #CC006615)', boxShadow: '0 0 20px rgba(204,0,102,0.15)' }}>
+              <span className="text-[#CC0066] font-bold text-xl">
                 {user ? user.first_name[0] : '?'}
               </span>
             </div>
@@ -98,8 +98,8 @@ export function Profile() {
               {upcoming.length > 0 ? `${upcoming.length} предстоящих` : 'Нет активных записей'}
             </div>
           </div>
-          <div className="w-2 h-2 rounded-full bg-[#C17BFF] flex-shrink-0"
-            style={{ boxShadow: '0 0 8px rgba(193,123,255,0.7)' }} />
+          <div className="w-2 h-2 rounded-full bg-[#CC0066] flex-shrink-0"
+            style={{ boxShadow: '0 0 8px rgba(204,0,102,0.7)' }} />
         </div>
       </div>
 
@@ -108,7 +108,7 @@ export function Profile() {
         <div className="flex items-center justify-between mb-3">
           <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Мои записи</p>
           <button onClick={() => navigate('/booking')}
-            className="text-xs text-[#C17BFF] font-semibold">
+            className="text-xs text-[#CC0066] font-semibold">
             + Новая
           </button>
         </div>
@@ -179,7 +179,7 @@ function BookingCard({ booking, onCancel }: { booking: Booking; onCancel?: (id: 
   const endTime = duration && booking.time ? calcEndTime(booking.time, duration) : null
 
   return (
-    <div className={`card-lab p-4 ${isActive ? 'border-[#C17BFF]/15' : ''}`}>
+    <div className={`card-lab p-4 ${isActive ? 'border-[#CC0066]/15' : ''}`}>
       {/* Заголовок: услуга + статус */}
       <div className="flex items-start justify-between mb-3">
         <div className="flex-1 min-w-0 pr-3">
@@ -224,11 +224,11 @@ function BookingCard({ booking, onCancel }: { booking: Booking; onCancel?: (id: 
       {/* Инженер — только для не-аренды и если есть */}
       {!isRent && booking.engineer && (
         <div className="mt-2.5 flex items-center gap-2">
-          <svg className="w-3 h-3 text-[#C17BFF]/60 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+          <svg className="w-3 h-3 text-[#CC0066]/60 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
             <circle cx="12" cy="7" r="4"/>
           </svg>
-          <span className="text-xs text-[#C17BFF]/70 font-medium">{booking.engineer}</span>
+          <span className="text-xs text-[#CC0066]/70 font-medium">{booking.engineer}</span>
         </div>
       )}
 

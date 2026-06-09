@@ -270,7 +270,7 @@ export function Booking() {
       <div className="flex gap-1 px-4 mb-6">
         {STEPS.map((s, i) => (
           <div key={s} className={`h-0.5 flex-1 rounded-full transition-all duration-500
-            ${i <= stepIndex ? 'bg-[#C17BFF]' : 'bg-[#2A2A2A]'}`} />
+            ${i <= stepIndex ? 'bg-[#CC0066]' : 'bg-[#2A2A2A]'}`} />
         ))}
       </div>
 
@@ -279,9 +279,9 @@ export function Booking() {
         <div className="px-4 animate-fade-in pb-28">
           {lastCategory && (
             <div className="flex items-center gap-2 mb-1">
-              <div className="w-1.5 h-1.5 rounded-full bg-[#C17BFF]" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#CC0066]" />
               <span className="text-xs text-white/30">
-                В прошлый раз: <span className="text-[#C17BFF]/70">{CAT_CONFIG[lastCategory]?.label}</span>
+                В прошлый раз: <span className="text-[#CC0066]/70">{CAT_CONFIG[lastCategory]?.label}</span>
               </span>
             </div>
           )}
@@ -295,17 +295,17 @@ export function Booking() {
                 onClick={() => { haptic?.selectionChanged(); setCategory(id as ServiceCategory) }}
                 className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98] relative
                   ${isSelected
-                    ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
+                    ? 'bg-[#CC0066]/10 border border-[#CC0066]/40'
                     : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
               >
                 {isLast && !isSelected && (
-                  <span className="absolute top-2.5 right-3 text-[9px] font-semibold text-[#C17BFF]/60 uppercase tracking-widest">
+                  <span className="absolute top-2.5 right-3 text-[9px] font-semibold text-[#CC0066]/60 uppercase tracking-widest">
                     прошлый раз
                   </span>
                 )}
                 <div className="flex items-center gap-4">
                   <div className={`w-11 h-11 rounded-xl flex items-center justify-center flex-shrink-0
-                    ${isSelected ? 'bg-[#C17BFF]/20 text-[#C17BFF]' : 'bg-white/5 text-white/40'}`}>
+                    ${isSelected ? 'bg-[#CC0066]/20 text-[#CC0066]' : 'bg-white/5 text-white/40'}`}>
                     {cfg.icon}
                   </div>
                   <div className="flex-1 min-w-0">
@@ -313,11 +313,11 @@ export function Booking() {
                     <div className="text-xs text-white/40 mt-0.5">{cfg.desc}</div>
                   </div>
                   <div className="text-right flex-shrink-0">
-                    <div className={`font-bold text-sm ${isSelected ? 'text-[#C17BFF]' : 'text-white/60'}`}>
+                    <div className={`font-bold text-sm ${isSelected ? 'text-[#CC0066]' : 'text-white/60'}`}>
                       {cfg.rate ? `${cfg.rate.toLocaleString()} ₽/ч` : 'от 7 970 ₽'}
                     </div>
                     <div className={`mt-1 w-5 h-5 rounded-full border-2 ml-auto flex items-center justify-center
-                      ${isSelected ? 'border-[#C17BFF] bg-[#C17BFF]' : 'border-white/20'}`}>
+                      ${isSelected ? 'border-[#CC0066] bg-[#CC0066]' : 'border-white/20'}`}>
                       {isSelected && <div className="w-2 h-2 rounded-full bg-white" />}
                     </div>
                   </div>
@@ -341,12 +341,12 @@ export function Booking() {
             onClick={() => { haptic?.selectionChanged(); setSelectedEngineer('any') }}
             className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98]
               ${selectedEngineer === 'any'
-                ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
+                ? 'bg-[#CC0066]/10 border border-[#CC0066]/40'
                 : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
           >
             <div className="flex items-center gap-4">
               <div className={`w-11 h-11 rounded-full flex items-center justify-center flex-shrink-0 text-lg
-                ${selectedEngineer === 'any' ? 'bg-[#C17BFF]/20' : 'bg-white/5'}`}>
+                ${selectedEngineer === 'any' ? 'bg-[#CC0066]/20' : 'bg-white/5'}`}>
                 🎲
               </div>
               <div className="flex-1">
@@ -354,7 +354,7 @@ export function Booking() {
                 <div className="text-xs text-white/40 mt-0.5">Назначим лучшего на ваше время</div>
               </div>
               <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center
-                ${selectedEngineer === 'any' ? 'border-[#C17BFF] bg-[#C17BFF]' : 'border-white/20'}`}>
+                ${selectedEngineer === 'any' ? 'border-[#CC0066] bg-[#CC0066]' : 'border-white/20'}`}>
                 {selectedEngineer === 'any' && <div className="w-2 h-2 rounded-full bg-white" />}
               </div>
             </div>
@@ -367,7 +367,7 @@ export function Booking() {
               onClick={() => { haptic?.selectionChanged(); setSelectedEngineer(member.id) }}
               className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98]
                 ${selectedEngineer === member.id
-                  ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
+                  ? 'bg-[#CC0066]/10 border border-[#CC0066]/40'
                   : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
             >
               <div className="flex items-center gap-4">
@@ -378,7 +378,7 @@ export function Booking() {
                   <div className="text-xs text-white/40 mt-0.5">{member.specialization}</div>
                 </div>
                 <div className={`w-5 h-5 rounded-full border-2 flex-shrink-0 flex items-center justify-center
-                  ${selectedEngineer === member.id ? 'border-[#C17BFF] bg-[#C17BFF]' : 'border-white/20'}`}>
+                  ${selectedEngineer === member.id ? 'border-[#CC0066] bg-[#CC0066]' : 'border-white/20'}`}>
                   {selectedEngineer === member.id && <div className="w-2 h-2 rounded-full bg-white" />}
                 </div>
               </div>
@@ -395,7 +395,7 @@ export function Booking() {
           {selectedEngineer && selectedEngineer !== 'any' && (() => {
             const eng = TEAM.find(m => m.id === selectedEngineer)
             return eng ? (
-              <div className="mx-4 mb-4 rounded-2xl overflow-hidden border border-[#C17BFF]/20 bg-[#C17BFF]/8">
+              <div className="mx-4 mb-4 rounded-2xl overflow-hidden border border-[#CC0066]/20 bg-[#CC0066]/8">
                 <div className="flex items-center gap-0">
                   {/* Фото инженера */}
                   <div className="flex-shrink-0" style={{ width: 80, height: 80 }}>
@@ -404,7 +404,7 @@ export function Booking() {
                       style={{ objectPosition: 'center top' }} />
                   </div>
                   <div className="flex-1 px-3 py-2.5">
-                    <div className="text-[10px] font-semibold text-[#C17BFF] uppercase tracking-widest mb-0.5">Звукорежиссёр</div>
+                    <div className="text-[10px] font-semibold text-[#CC0066] uppercase tracking-widest mb-0.5">Звукорежиссёр</div>
                     <div className="font-bold text-white text-sm leading-tight">{eng.name}</div>
                     <div className="text-[11px] text-white/40 mt-0.5">{eng.specialization}</div>
                   </div>
@@ -498,11 +498,11 @@ export function Booking() {
                         onClick={() => { haptic?.selectionChanged(); setLocalDate(day) }}
                         className={`aspect-square rounded-xl flex items-center justify-center transition-all
                           ${!inMonth ? 'opacity-0 pointer-events-none' : ''}
-                          ${sel ? 'bg-[#C17BFF]' : tod ? 'bg-[#C17BFF]/15 ring-1 ring-[#C17BFF]/50' : disabled ? '' : 'bg-[#1A1A1A] active:scale-90'}
+                          ${sel ? 'bg-[#CC0066]' : tod ? 'bg-[#CC0066]/15 ring-1 ring-[#CC0066]/50' : disabled ? '' : 'bg-[#1A1A1A] active:scale-90'}
                           ${disabled && inMonth ? 'opacity-25' : ''}`}
                       >
                         <span className={`text-sm font-bold
-                          ${sel ? 'text-white' : tod ? 'text-[#C17BFF]' : 'text-white'}`}>
+                          ${sel ? 'text-white' : tod ? 'text-[#CC0066]' : 'text-white'}`}>
                           {format(day, 'd')}
                         </span>
                       </button>
@@ -624,11 +624,11 @@ export function Booking() {
                         onClick={() => handleSlotClick(slot)}
                         className={`py-3 rounded-xl text-sm font-semibold transition-all
                           ${state === 'start' || state === 'end'
-                            ? 'bg-[#C17BFF] text-white shadow-lg'
+                            ? 'bg-[#CC0066] text-white shadow-lg'
                             : state === 'in-range'
-                              ? 'bg-[#C17BFF]/20 text-[#C17BFF]/80 border border-[#C17BFF]/30 cursor-not-allowed pointer-events-none'
+                              ? 'bg-[#CC0066]/20 text-[#CC0066]/80 border border-[#CC0066]/30 cursor-not-allowed pointer-events-none'
                               : state === 'valid-end'
-                                ? 'bg-transparent border-2 border-[#C17BFF]/70 text-[#C17BFF] active:scale-95'
+                                ? 'bg-transparent border-2 border-[#CC0066]/70 text-[#CC0066] active:scale-95'
                                 : state === 'invalid-end'
                                   ? 'opacity-25 cursor-not-allowed bg-[#1A1A1A] text-white border border-[#2A2A2A]'
                                   : state === 'unavailable'
@@ -652,10 +652,10 @@ export function Booking() {
 
             {/* Summary: диапазон + инженер — появляется после выбора обоих */}
             {localTime && localTimeEnd && (
-              <div className="mt-4 p-4 rounded-2xl bg-[#C17BFF]/8 border border-[#C17BFF]/20 animate-fade-in">
+              <div className="mt-4 p-4 rounded-2xl bg-[#CC0066]/8 border border-[#CC0066]/20 animate-fade-in">
                 <div className="flex items-center gap-3 mb-3">
-                  <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-                    <svg className="w-4 h-4 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <div className="w-8 h-8 rounded-xl bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+                    <svg className="w-4 h-4 text-[#CC0066]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                       <circle cx="12" cy="12" r="10"/>
                       <polyline points="12 6 12 12 16 14"/>
                     </svg>
@@ -669,9 +669,9 @@ export function Booking() {
                   </div>
                 </div>
                 {selectedEngineer && (
-                  <div className="flex items-center gap-3 pt-3 border-t border-[#C17BFF]/15">
-                    <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-                      <svg className="w-4 h-4 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+                  <div className="flex items-center gap-3 pt-3 border-t border-[#CC0066]/15">
+                    <div className="w-8 h-8 rounded-xl bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+                      <svg className="w-4 h-4 text-[#CC0066]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                         <path d="M20 21v-2a4 4 0 00-4-4H8a4 4 0 00-4 4v2"/>
                         <circle cx="12" cy="7" r="4"/>
                       </svg>
@@ -707,19 +707,19 @@ export function Booking() {
                   onClick={() => toggleAddon(addon.id)}
                   className={`w-full text-left p-4 rounded-2xl transition-all active:scale-[0.98]
                     ${isSelected
-                      ? 'bg-[#C17BFF]/10 border border-[#C17BFF]/40'
+                      ? 'bg-[#CC0066]/10 border border-[#CC0066]/40'
                       : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
                 >
                   <div className="flex items-center gap-3">
                     <div className={`w-6 h-6 rounded-lg border-2 flex items-center justify-center flex-shrink-0 transition-all
-                      ${isSelected ? 'bg-[#C17BFF] border-[#C17BFF]' : 'border-white/20'}`}>
+                      ${isSelected ? 'bg-[#CC0066] border-[#CC0066]' : 'border-white/20'}`}>
                       {isSelected && <Check size={13} strokeWidth={3} className="text-white" />}
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-semibold text-white text-sm">{addon.label}</div>
                       <div className="text-xs text-white/40 mt-0.5">{addon.description}</div>
                     </div>
-                    <div className={`text-sm font-bold flex-shrink-0 ${isSelected ? 'text-[#C17BFF]' : 'text-white/50'}`}>
+                    <div className={`text-sm font-bold flex-shrink-0 ${isSelected ? 'text-[#CC0066]' : 'text-white/50'}`}>
                       {addon.priceLabel}
                     </div>
                   </div>
@@ -742,8 +742,8 @@ export function Booking() {
               <div className="text-white font-bold text-sm">Лаборатория</div>
               <div className="text-white/50 text-xs mt-0.5">Большой Сампсониевский 60Н</div>
             </div>
-            <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#C17BFF]"
-              style={{ boxShadow: '0 0 12px rgba(193,123,255,0.9)' }} />
+            <div className="absolute top-3 right-3 w-2 h-2 rounded-full bg-[#CC0066]"
+              style={{ boxShadow: '0 0 12px rgba(204,0,102,0.9)' }} />
           </div>
 
           {/* Summary card */}
@@ -775,8 +775,8 @@ export function Booking() {
 
           {/* Reminder notice */}
           <div className="flex items-start gap-3 px-4 py-3 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] mb-4">
-            <div className="w-7 h-7 rounded-lg bg-[#C17BFF]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
-              <svg className="w-3.5 h-3.5 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <div className="w-7 h-7 rounded-lg bg-[#CC0066]/10 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <svg className="w-3.5 h-3.5 text-[#CC0066]" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
               </svg>
             </div>
@@ -832,7 +832,7 @@ function ConfirmRow({ label, value, bold, accent }: { label: string; value: stri
   return (
     <div className="flex items-start justify-between gap-3">
       <span className="text-sm text-white/40 flex-shrink-0">{label}</span>
-      <span className={`text-sm font-medium text-right ${accent ? 'text-[#C17BFF] font-semibold' : bold ? 'text-white font-bold' : 'text-white'}`}>
+      <span className={`text-sm font-medium text-right ${accent ? 'text-[#CC0066] font-semibold' : bold ? 'text-white font-bold' : 'text-white'}`}>
         {value}
       </span>
     </div>
@@ -854,27 +854,27 @@ function SuccessScreen({ onDone, onHome }: { onDone: () => void; onHome: () => v
       <div className="relative mb-8">
         <div
           ref={ringRef}
-          className="success-ring w-28 h-28 rounded-full border-2 border-[#C17BFF]/20 flex items-center justify-center"
+          className="success-ring w-28 h-28 rounded-full border-2 border-[#CC0066]/20 flex items-center justify-center"
         >
           <div
-            className="w-20 h-20 rounded-full bg-[#C17BFF]/5 flex items-center justify-center"
-            style={{ boxShadow: '0 0 40px rgba(193,123,255,0.15), 0 0 80px rgba(193,123,255,0.08)' }}
+            className="w-20 h-20 rounded-full bg-[#CC0066]/5 flex items-center justify-center"
+            style={{ boxShadow: '0 0 40px rgba(204,0,102,0.15), 0 0 80px rgba(204,0,102,0.08)' }}
           >
-            <svg className="w-9 h-9 text-[#C17BFF] success-check" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+            <svg className="w-9 h-9 text-[#CC0066] success-check" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
             </svg>
           </div>
         </div>
         <div className="absolute inset-0 success-orbit">
-          <div className="w-2 h-2 rounded-full bg-[#C17BFF] absolute -top-1 left-1/2 -translate-x-1/2"
-            style={{ boxShadow: '0 0 8px rgba(193,123,255,0.9)' }} />
+          <div className="w-2 h-2 rounded-full bg-[#CC0066] absolute -top-1 left-1/2 -translate-x-1/2"
+            style={{ boxShadow: '0 0 8px rgba(204,0,102,0.9)' }} />
         </div>
       </div>
 
       <h2 className="font-display text-2xl font-black text-white mb-2">
         Запись создана!
       </h2>
-      <p className="font-display text-lg text-[#C17BFF] mb-3">
+      <p className="font-display text-lg text-[#CC0066] mb-3">
         До встречи в студии
       </p>
       <p className="text-sm text-white/40 mb-4 max-w-xs leading-relaxed">
@@ -882,11 +882,11 @@ function SuccessScreen({ onDone, onHome }: { onDone: () => void; onHome: () => v
       </p>
 
       {/* Reminder chip */}
-      <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#C17BFF]/10 border border-[#C17BFF]/20 mb-8">
-        <svg className="w-4 h-4 text-[#C17BFF] flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
+      <div className="flex items-center gap-2 px-4 py-2.5 rounded-2xl bg-[#CC0066]/10 border border-[#CC0066]/20 mb-8">
+        <svg className="w-4 h-4 text-[#CC0066] flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M14.857 17.082a23.848 23.848 0 005.454-1.31A8.967 8.967 0 0118 9.75v-.7V9A6 6 0 006 9v.75a8.967 8.967 0 01-2.312 6.022c1.733.64 3.56 1.085 5.455 1.31m5.714 0a24.255 24.255 0 01-5.714 0m5.714 0a3 3 0 11-5.714 0" />
         </svg>
-        <span className="text-xs text-[#C17BFF] font-medium">Напомним за 6 часов в Telegram</span>
+        <span className="text-xs text-[#CC0066] font-medium">Напомним за 6 часов в Telegram</span>
       </div>
 
       <div className="w-full max-w-xs space-y-3">

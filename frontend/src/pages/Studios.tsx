@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from 'react'
+﻿import { useState, useEffect, useRef, useMemo } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { STUDIOS, TEAM, STUDIO_RULES, EQUIPMENT_ITEMS } from '../data'
 import { useTelegram } from '../hooks/useTelegram'
@@ -15,7 +15,7 @@ function RichText({ text, className = '' }: { text: string; className?: string }
     <span className={className}>
       {parts.map((part, i) =>
         i % 2 === 1
-          ? <span key={i} className="text-[#C17BFF] font-semibold">{part}</span>
+          ? <span key={i} className="text-[#CC0066] font-semibold">{part}</span>
           : <span key={i}>{part}</span>
       )}
     </span>
@@ -66,8 +66,8 @@ function EquipmentPhoto({ src, alt }: { src: string; alt: string }) {
   const [failed, setFailed] = useState(false)
   return failed ? (
     <div className="absolute inset-0 flex items-center justify-center">
-      <div className="w-16 h-16 rounded-2xl bg-[#C17BFF]/10 border border-[#C17BFF]/20 flex items-center justify-center">
-        <svg className="w-7 h-7 text-[#C17BFF]/40" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
+      <div className="w-16 h-16 rounded-2xl bg-[#CC0066]/10 border border-[#CC0066]/20 flex items-center justify-center">
+        <svg className="w-7 h-7 text-[#CC0066]/40" fill="none" stroke="currentColor" strokeWidth={1.5} viewBox="0 0 24 24">
           <path strokeLinecap="round" strokeLinejoin="round" d="M6.827 6.175A2.31 2.31 0 015.186 7.23c-.38.054-.757.112-1.134.175C2.999 7.58 2.25 8.507 2.25 9.574V18a2.25 2.25 0 002.25 2.25h15A2.25 2.25 0 0021.75 18V9.574c0-1.067-.75-1.994-1.802-2.169a47.865 47.865 0 00-1.134-.175 2.31 2.31 0 01-1.64-1.055l-.822-1.316a2.192 2.192 0 00-1.736-1.039 48.774 48.774 0 00-5.232 0 2.192 2.192 0 00-1.736 1.039l-.821 1.316z" />
           <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 12.75a4.5 4.5 0 11-9 0 4.5 4.5 0 019 0zM18.75 10.5h.008v.008h-.008V10.5z" />
         </svg>
@@ -223,8 +223,8 @@ export function Studios() {
               </div>
             </div>
           </div>
-          <div className="absolute right-4 top-4 w-8 h-8 rounded-full bg-[#C17BFF]/25 border border-[#C17BFF]/40 flex items-center justify-center">
-            <svg className="w-4 h-4 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+          <div className="absolute right-4 top-4 w-8 h-8 rounded-full bg-[#CC0066]/25 border border-[#CC0066]/40 flex items-center justify-center">
+            <svg className="w-4 h-4 text-[#CC0066]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"/>
               <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"/>
             </svg>
@@ -242,7 +242,7 @@ export function Studios() {
               className={`flex items-start gap-3 px-4 py-3.5
                 ${i < STUDIO_RULES.length - 1 ? 'border-b border-[#2A2A2A]' : ''}`}
             >
-              <span className="flex-shrink-0 text-[#C17BFF]/70 mt-0.5">{RULE_ICONS[rule.icon]}</span>
+              <span className="flex-shrink-0 text-[#CC0066]/70 mt-0.5">{RULE_ICONS[rule.icon]}</span>
               <RichText text={rule.text} className="text-sm text-white/75 leading-snug" />
             </div>
           ))}
@@ -261,7 +261,7 @@ export function Studios() {
               onClick={() => { haptic?.selectionChanged(); setActiveGroup(i) }}
               className={`flex-shrink-0 px-3.5 py-2 rounded-xl text-sm font-medium transition-all
                 ${activeGroup === i
-                  ? 'bg-[#C17BFF]/15 text-[#C17BFF] border border-[#C17BFF]/30'
+                  ? 'bg-[#CC0066]/15 text-[#CC0066] border border-[#CC0066]/30'
                   : 'bg-[#1A1A1A] text-white/50 border border-[#2A2A2A]'}`}
             >
               {g.label}
@@ -278,7 +278,7 @@ export function Studios() {
               className={`w-full flex items-center gap-3 px-4 py-3.5 text-left active:bg-white/5 transition-colors
                 ${i < arr.length - 1 ? 'border-b border-[#2A2A2A]' : ''}`}
             >
-              <div className="w-1.5 h-1.5 rounded-full bg-[#C17BFF] flex-shrink-0" />
+              <div className="w-1.5 h-1.5 rounded-full bg-[#CC0066] flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <div className="text-sm text-white">{item.name}</div>
                 <div className="text-[10px] text-white/30 mt-0.5">{item.tag}</div>
@@ -322,15 +322,15 @@ export function Studios() {
               <div className="relative" style={{ height: 160, overflow: 'hidden' }}>
                 <img src={member.photo} alt={member.name} className="w-full h-full object-cover" style={{ objectPosition: 'center top' }} />
                 <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
-                <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-[#C17BFF]/20 border border-[#C17BFF]/40 flex items-center justify-center">
-                  <svg className="w-3 h-3 text-[#C17BFF]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
+                <div className="absolute bottom-2 right-2 w-6 h-6 rounded-full bg-[#CC0066]/20 border border-[#CC0066]/40 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-[#CC0066]" fill="none" stroke="currentColor" strokeWidth={2.5} viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" d="M9 5l7 7-7 7" />
                   </svg>
                 </div>
               </div>
               <div className="p-3">
                 <div className="font-bold text-white text-xs leading-tight">{member.name}</div>
-                <div className="text-[10px] text-[#C17BFF] font-semibold mt-0.5">{member.role}</div>
+                <div className="text-[10px] text-[#CC0066] font-semibold mt-0.5">{member.role}</div>
               </div>
             </button>
           ))}
@@ -353,7 +353,7 @@ export function Studios() {
       <button
         onClick={() => { haptic?.impactOccurred('medium'); setStudio('A'); navigate('/booking') }}
         className="btn-lily w-full py-4 rounded-2xl font-bold text-white text-base"
-        style={{ boxShadow: '0 8px 32px rgba(193,123,255,0.45), 0 2px 8px rgba(0,0,0,0.5)' }}
+        style={{ boxShadow: '0 8px 32px rgba(204,0,102,0.45), 0 2px 8px rgba(0,0,0,0.5)' }}
       >
         Записаться в студию
       </button>
@@ -447,7 +447,7 @@ export function Studios() {
                   <button
                     key={i}
                     onClick={() => setLightbox(lb => lb ? { ...lb, index: i } : lb)}
-                    className={`transition-all duration-300 rounded-full ${i === lightbox.index ? 'w-4 h-1.5 bg-[#C17BFF]' : 'w-1.5 h-1.5 bg-white/30'}`}
+                    className={`transition-all duration-300 rounded-full ${i === lightbox.index ? 'w-4 h-1.5 bg-[#CC0066]' : 'w-1.5 h-1.5 bg-white/30'}`}
                   />
                 ))}
               </div>
@@ -515,7 +515,7 @@ export function Studios() {
                   {selected.images.map((_, i) => (
                     <button key={i} onClick={() => goTo(i)}
                       className={`transition-all duration-300 rounded-full
-                        ${i === photoIndex ? 'w-4 h-1.5 bg-[#C17BFF]' : 'w-1.5 h-1.5 bg-white/25'}`} />
+                        ${i === photoIndex ? 'w-4 h-1.5 bg-[#CC0066]' : 'w-1.5 h-1.5 bg-white/25'}`} />
                   ))}
                 </div>
               )}
@@ -536,7 +536,7 @@ export function Studios() {
                   if (tg?.openLink) tg.openLink(url)
                   else window.open(url, '_blank')
                 }}
-                className="flex items-center gap-1.5 text-[#C17BFF]/70 text-xs mb-3 active:opacity-70">
+                className="flex items-center gap-1.5 text-[#CC0066]/70 text-xs mb-3 active:opacity-70">
                 <svg className="w-3 h-3 flex-shrink-0" fill="currentColor" viewBox="0 0 24 24">
                   <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z"/>
                 </svg>
@@ -610,7 +610,7 @@ export function Studios() {
               </button>
               <div className="absolute bottom-4 left-5">
                 <div className="font-display font-black text-white text-lg leading-tight">{selectedMember.name}</div>
-                <div className="text-[#C17BFF] text-xs mt-1 font-semibold">{selectedMember.role}</div>
+                <div className="text-[#CC0066] text-xs mt-1 font-semibold">{selectedMember.role}</div>
                 <div className="text-white/40 text-[10px] mt-0.5">{selectedMember.specialization}</div>
               </div>
             </div>
@@ -624,7 +624,7 @@ export function Studios() {
                 <div className="space-y-2 mb-5">
                   {(selectedMember as any).facts.map((fact: string, i: number) => (
                     <div key={i} className="flex items-center gap-2.5">
-                      <div className="w-1.5 h-1.5 rounded-full bg-[#C17BFF] flex-shrink-0" />
+                      <div className="w-1.5 h-1.5 rounded-full bg-[#CC0066] flex-shrink-0" />
                       <span className="text-xs text-white/60 leading-snug">{fact}</span>
                     </div>
                   ))}
@@ -642,10 +642,10 @@ export function Studios() {
                           key={i}
                           onClick={() => playTrack(track.url)}
                           className={`w-full flex items-center gap-3 p-3.5 rounded-2xl transition-all active:scale-[0.98]
-                            ${isPlaying ? 'bg-[#C17BFF]/15 border border-[#C17BFF]/30' : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
+                            ${isPlaying ? 'bg-[#CC0066]/15 border border-[#CC0066]/30' : 'bg-[#1A1A1A] border border-[#2A2A2A]'}`}
                         >
                           <div className={`w-9 h-9 rounded-full flex items-center justify-center flex-shrink-0
-                            ${isPlaying ? 'bg-[#C17BFF]' : 'bg-[#2A2A2A]'}`}>
+                            ${isPlaying ? 'bg-[#CC0066]' : 'bg-[#2A2A2A]'}`}>
                             {isPlaying ? (
                               <svg className="w-4 h-4 text-white" fill="currentColor" viewBox="0 0 24 24">
                                 <rect x="6" y="4" width="4" height="16" rx="1"/>
@@ -658,13 +658,13 @@ export function Studios() {
                             )}
                           </div>
                           <div className="flex-1 text-left">
-                            <div className={`text-sm font-medium ${isPlaying ? 'text-[#C17BFF]' : 'text-white'}`}>
+                            <div className={`text-sm font-medium ${isPlaying ? 'text-[#CC0066]' : 'text-white'}`}>
                               {track.title}
                             </div>
                             {isPlaying && (
                               <div className="flex gap-0.5 mt-1">
                                 {[1,2,3,4,5].map(b => (
-                                  <div key={b} className="w-0.5 rounded-full bg-[#C17BFF]"
+                                  <div key={b} className="w-0.5 rounded-full bg-[#CC0066]"
                                     style={{ height: Math.random() * 12 + 4, animation: `pulse-ring ${0.4 + b * 0.1}s ease infinite alternate` }} />
                                 ))}
                               </div>
@@ -736,7 +736,7 @@ export function Studios() {
                 </button>
                 {/* Category badge */}
                 <div className="absolute top-3 left-3 px-2.5 py-1 rounded-full text-xs font-semibold"
-                  style={{ background: 'rgba(193,123,255,0.2)', color: '#C17BFF', border: '1px solid rgba(193,123,255,0.35)', backdropFilter: 'blur(8px)' }}>
+                  style={{ background: 'rgba(204,0,102,0.2)', color: '#CC0066', border: '1px solid rgba(204,0,102,0.35)', backdropFilter: 'blur(8px)' }}>
                   {selectedEquipment.category}
                 </div>
               </div>
@@ -745,7 +745,7 @@ export function Studios() {
               <div className="p-5 flex-1 min-h-0 overflow-y-auto">
                 <div className="mb-1">
                   <h2 className="font-display font-black text-white text-lg leading-tight">{selectedEquipment.name}</h2>
-                  <p className="text-[11px] text-[#C17BFF]/70 mt-1">{selectedEquipment.tag}</p>
+                  <p className="text-[11px] text-[#CC0066]/70 mt-1">{selectedEquipment.tag}</p>
                 </div>
                 <div className="w-8 h-px bg-[#2A2A2A] my-3" />
                 <p className="text-sm text-white/60 leading-relaxed">{selectedEquipment.description}</p>

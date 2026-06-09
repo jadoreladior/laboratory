@@ -41,7 +41,7 @@ export function Media() {
 
             {/* Tag badge */}
             <span className="absolute top-3 left-3 text-[10px] font-bold uppercase tracking-widest
-              px-2.5 py-1 rounded-full bg-[#C17BFF]/20 text-[#C17BFF] border border-[#C17BFF]/30 backdrop-blur-sm">
+              px-2.5 py-1 rounded-full bg-[#CC0066]/20 text-[#CC0066] border border-[#CC0066]/30 backdrop-blur-sm">
               {featured.tag}
             </span>
 
@@ -73,7 +73,7 @@ export function Media() {
               />
             </div>
             <div className="flex-1 min-w-0 py-0.5">
-              <span className="text-[10px] font-bold uppercase tracking-widest text-[#C17BFF]/70">
+              <span className="text-[10px] font-bold uppercase tracking-widest text-[#CC0066]/70">
                 {article.tag}
               </span>
               <h3 className="text-sm font-bold text-white mt-0.5 leading-tight line-clamp-2">

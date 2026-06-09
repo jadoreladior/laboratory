@@ -1,4 +1,4 @@
-import type { Studio, Service, Article } from './types'
+﻿import type { Studio, Service, Article } from './types'
 
 export const STUDIOS: Studio[] = [
   {
@@ -16,7 +16,7 @@ export const STUDIOS: Studio[] = [
       'Avid Pro Tools',
       'Audeze LCD-XC',
     ],
-    color: '#C17BFF',
+    color: '#CC0066',
     images: [
       '/photos/studio/main.jpg',
       '/photos/studio/2.jpg',

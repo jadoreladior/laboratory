@@ -282,7 +282,7 @@ export function Admin() {
         {[
           { label: 'Ожидают', value: pending, accent: pending > 0 ? 'text-yellow-400' : 'text-white' },
           { label: 'Подтверждены', value: confirmed, accent: 'text-green-400' },
-          { label: 'Неделя ₽', value: `${(revenue7/1000).toFixed(0)}к`, accent: 'text-[#C17BFF]' },
+          { label: 'Неделя ₽', value: `${(revenue7/1000).toFixed(0)}к`, accent: 'text-[#CC0066]' },
         ].map(({ label, value, accent }) => (
           <div key={label} className="card-lab p-3 text-center">
             <div className={`text-xl font-black ${accent}`}>{value}</div>
@@ -310,7 +310,7 @@ export function Admin() {
                     className="flex-1 rounded-sm transition-all"
                     style={{
                       height: h,
-                      background: isT ? '#C17BFF' : 'rgba(193,123,255,0.3)',
+                      background: isT ? '#CC0066' : 'rgba(204,0,102,0.3)',
                     }}
                     title={`${d.date}: ${d.revenue.toLocaleString()} ₽`}
                   />
@@ -330,7 +330,7 @@ export function Admin() {
           className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2"
         >
           <div className="flex items-center justify-between mb-3">
-            <Calendar size={22} className="text-[#C17BFF]" />
+            <Calendar size={22} className="text-[#CC0066]" />
             <span className="text-[10px] text-white/30 uppercase tracking-widest">Сегодня</span>
           </div>
           <div className="font-bold text-white text-sm">Календарь записей</div>
@@ -385,9 +385,9 @@ export function Admin() {
         {/* Owner mode */}
         <button
           onClick={() => setView('pin')}
-          className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2 border-[#C17BFF]/10"
+          className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2 border-[#CC0066]/10"
         >
-          <div className="mb-3"><Lock size={22} className="text-[#C17BFF]/60" /></div>
+          <div className="mb-3"><Lock size={22} className="text-[#CC0066]/60" /></div>
           <div className="font-bold text-white text-sm">Режим владельца</div>
           <div className="text-xs text-white/40 mt-0.5">Аналитика, сотрудники, экспорт</div>
         </button>
@@ -466,8 +466,8 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
       {/* Today quick info */}
       {todayInfo && (
         <div className="mx-4 mb-4 card-lab p-3 flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-            <Calendar size={18} className="text-[#C17BFF]" />
+          <div className="w-10 h-10 rounded-xl bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+            <Calendar size={18} className="text-[#CC0066]" />
           </div>
           <div className="flex-1 min-w-0">
             <div className="text-xs text-white/40">Сегодня</div>
@@ -477,7 +477,7 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
           </div>
           <button
             onClick={() => onDayClick(todayKey)}
-            className="text-[#C17BFF] text-xs font-semibold"
+            className="text-[#CC0066] text-xs font-semibold"
           >
             Открыть
           </button>
@@ -489,8 +489,8 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
           className="mx-4 mb-4 card-lab p-3 flex items-center justify-between"
         >
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-              <Calendar size={18} className="text-[#C17BFF]" />
+            <div className="w-10 h-10 rounded-xl bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+              <Calendar size={18} className="text-[#CC0066]" />
             </div>
             <div>
               <div className="text-xs text-white/40">Сегодня</div>
@@ -527,14 +527,14 @@ function CalendarView({ calDate, monthData, loading, onBack, onPrev, onNext, onD
                 disabled={!inMonth}
                 className={`aspect-square rounded-xl flex flex-col items-center justify-center relative transition-all
                   ${!inMonth ? 'opacity-0 pointer-events-none' : 'active:scale-90'}
-                  ${isTodayDay ? 'ring-1 ring-[#C17BFF]/60' : ''}
+                  ${isTodayDay ? 'ring-1 ring-[#CC0066]/60' : ''}
                   ${inMonth && !isTodayDay ? 'bg-[#1A1A1A]' : ''}
-                  ${isTodayDay ? 'bg-[#C17BFF]/10' : ''}
+                  ${isTodayDay ? 'bg-[#CC0066]/10' : ''}
                 `}
               >
                 <span className={`text-sm font-bold leading-none
                   ${!inMonth ? 'text-white/10'
-                  : isTodayDay ? 'text-[#C17BFF]'
+                  : isTodayDay ? 'text-[#CC0066]'
                   : isPastDay ? 'text-white/30'
                   : 'text-white'}`}
                 >
@@ -629,9 +629,9 @@ function DayView({
               const freeSlot = data?.slots.find(s => s.status === 'free')
               if (freeSlot) onOpenSlot(freeSlot)
             }}
-            className="w-9 h-9 rounded-full bg-[#C17BFF]/20 border border-[#C17BFF]/30 flex items-center justify-center"
+            className="w-9 h-9 rounded-full bg-[#CC0066]/20 border border-[#CC0066]/30 flex items-center justify-center"
           >
-            <PlusCircle size={16} className="text-[#C17BFF]" />
+            <PlusCircle size={16} className="text-[#CC0066]" />
           </button>
         )}
       </div>
@@ -652,7 +652,7 @@ function DayView({
                 className="h-full rounded-full transition-all"
                 style={{
                   width: `${Math.round(((data.booked_count + data.blocked_count) / (data.booked_count + data.blocked_count + data.free_count)) * 100)}%`,
-                  background: 'linear-gradient(90deg, #C17BFF, #9B4FE0)',
+                  background: 'linear-gradient(90deg, #CC0066, #9B4FE0)',
                 }}
               />
             </div>
@@ -827,7 +827,7 @@ function SlotRow({ slot, acting, isFuture, onClick, onBlock, onUnblock }: {
         <div className="flex gap-2 flex-shrink-0">
           <button
             onClick={onClick}
-            className="px-2.5 py-1.5 rounded-lg bg-[#C17BFF]/15 text-[#C17BFF] text-xs font-medium border border-[#C17BFF]/20 active:scale-95"
+            className="px-2.5 py-1.5 rounded-lg bg-[#CC0066]/15 text-[#CC0066] text-xs font-medium border border-[#CC0066]/20 active:scale-95"
           >
             + Добавить
           </button>
@@ -877,8 +877,8 @@ function BookingDetailSheet({ booking, acting, onConfirm, onCancel, onComplete, 
       <div className="card-lab p-4 mb-3">
         <div className="flex items-center gap-3 mb-3">
           {/* Avatar */}
-          <div className="w-11 h-11 rounded-full bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-            <span className="text-[#C17BFF] font-bold text-lg">
+          <div className="w-11 h-11 rounded-full bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+            <span className="text-[#CC0066] font-bold text-lg">
               {(booking.client_name || '?')[0].toUpperCase()}
             </span>
           </div>
@@ -889,7 +889,7 @@ function BookingDetailSheet({ booking, acting, onConfirm, onCancel, onComplete, 
                 href={tgUrl}
                 target="_blank"
                 rel="noreferrer"
-                className="text-[#C17BFF] text-xs font-medium"
+                className="text-[#CC0066] text-xs font-medium"
               >
                 {booking.username ? `@${booking.username}` : `TG: ${booking.telegram_id}`}
               </a>
@@ -897,8 +897,8 @@ function BookingDetailSheet({ booking, acting, onConfirm, onCancel, onComplete, 
           </div>
           {/* First visit badge */}
           {p?.is_first_visit && (
-            <div className="px-2 py-1 rounded-full bg-[#C17BFF]/15 border border-[#C17BFF]/30 flex-shrink-0">
-              <span className="text-[10px] font-bold text-[#C17BFF] uppercase tracking-wider">Первый раз</span>
+            <div className="px-2 py-1 rounded-full bg-[#CC0066]/15 border border-[#CC0066]/30 flex-shrink-0">
+              <span className="text-[10px] font-bold text-[#CC0066] uppercase tracking-wider">Первый раз</span>
             </div>
           )}
         </div>
@@ -977,7 +977,7 @@ function Row({ label, value, bold, accent }: { label: string; value: string; bol
   return (
     <div className="flex items-center justify-between gap-3">
       <span className="text-sm text-white/40 flex-shrink-0">{label}</span>
-      <span className={`text-sm text-right ${accent ? 'text-[#C17BFF] font-semibold' : bold ? 'text-white font-bold' : 'text-white'}`}>
+      <span className={`text-sm text-right ${accent ? 'text-[#CC0066] font-semibold' : bold ? 'text-white font-bold' : 'text-white'}`}>
         {value}
       </span>
     </div>
@@ -1017,7 +1017,7 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
   const catalogSvc = SERVICES.find(s => s.category === selectedBase?.category && s.duration === duration)
   const catalogPrice = catalogSvc?.price ?? 0
 
-  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#C17BFF]/40 border border-[#2A2A2A]'
+  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#CC0066]/40 border border-[#2A2A2A]'
 
   // When category changes → reset duration and price
   const handleCategoryChange = (newSvcId: string) => {
@@ -1066,7 +1066,7 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
     <div className="px-5 pb-8">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-display font-black text-white text-lg">Новая запись</h3>
-        <div className="px-3 py-1 rounded-full bg-[#C17BFF]/15 text-[#C17BFF] text-xs font-semibold border border-[#C17BFF]/30">
+        <div className="px-3 py-1 rounded-full bg-[#CC0066]/15 text-[#CC0066] text-xs font-semibold border border-[#CC0066]/30">
           {time}
         </div>
       </div>
@@ -1101,7 +1101,7 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
                 onClick={() => handleDurationChange(d)}
                 className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all ${
                   duration === d
-                    ? 'bg-[#C17BFF]/15 border-[#C17BFF]/40 text-[#C17BFF]'
+                    ? 'bg-[#CC0066]/15 border-[#CC0066]/40 text-[#CC0066]'
                     : 'bg-[#1A1A1A] border-[#2A2A2A] text-white/50'
                 }`}
               >{d}ч</button>
@@ -1221,7 +1221,7 @@ function BookingsView({ bookings, loading, onConfirm, onCancel, onComplete, acti
           <ChevronLeft size={18} className="text-white" />
         </button>
         <h1 className="font-display font-black text-white text-xl flex-1">Заявки</h1>
-        <button onClick={onRefresh} className="text-[#C17BFF]/60 text-xs">Обновить</button>
+        <button onClick={onRefresh} className="text-[#CC0066]/60 text-xs">Обновить</button>
       </div>
 
       {/* Tab tiles */}
@@ -1261,8 +1261,8 @@ function BookingsView({ bookings, loading, onConfirm, onCancel, onComplete, acti
             <div key={b.id} className="card-lab p-4">
               {/* Client row */}
               <div className="flex items-center gap-2.5 mb-2.5">
-                <div className="w-8 h-8 rounded-full bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-                  <span className="text-[#C17BFF] font-bold text-xs">
+                <div className="w-8 h-8 rounded-full bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+                  <span className="text-[#CC0066] font-bold text-xs">
                     {(b.client_name || '?')[0].toUpperCase()}
                   </span>
                 </div>
@@ -1270,7 +1270,7 @@ function BookingsView({ bookings, loading, onConfirm, onCancel, onComplete, acti
                   <div className="font-semibold text-white text-sm">{b.client_name || '—'}</div>
                   {tgLink && (
                     <a href={tgLink} target="_blank" rel="noreferrer"
-                      className="text-xs text-[#C17BFF]/70">
+                      className="text-xs text-[#CC0066]/70">
                       {b.username ? `@${b.username}` : `ID: ${(b as any).telegram_id}`}
                     </a>
                   )}
@@ -1366,7 +1366,7 @@ function ClientsView({ clients, setClients, onBack }: {
     c.phone?.includes(search)
   )
 
-  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#C17BFF]/40 border border-[#2A2A2A]'
+  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#CC0066]/40 border border-[#2A2A2A]'
 
   return (
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
@@ -1377,9 +1377,9 @@ function ClientsView({ clients, setClients, onBack }: {
         <h1 className="font-display font-black text-white text-xl flex-1">Клиенты</h1>
         <button
           onClick={() => setShowForm(v => !v)}
-          className="w-9 h-9 rounded-full bg-[#C17BFF]/15 border border-[#C17BFF]/30 flex items-center justify-center"
+          className="w-9 h-9 rounded-full bg-[#CC0066]/15 border border-[#CC0066]/30 flex items-center justify-center"
         >
-          <UserPlus size={15} className="text-[#C17BFF]" />
+          <UserPlus size={15} className="text-[#CC0066]" />
         </button>
       </div>
 
@@ -1431,8 +1431,8 @@ function ClientsView({ clients, setClients, onBack }: {
             className="w-full card-lab p-4 text-left active:scale-[0.98] transition-transform"
           >
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-full bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-                <span className="text-[#C17BFF] font-bold text-sm">{c.name[0]}</span>
+              <div className="w-10 h-10 rounded-full bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+                <span className="text-[#CC0066] font-bold text-sm">{c.name[0]}</span>
               </div>
               <div className="flex-1 min-w-0">
                 <div className="font-semibold text-white text-sm">{c.name}</div>
@@ -1480,8 +1480,8 @@ function ClientsView({ clients, setClients, onBack }: {
                 {/* Header */}
                 <div className="flex items-center justify-between mb-5">
                   <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 rounded-full bg-[#C17BFF]/15 flex items-center justify-center flex-shrink-0">
-                      <span className="text-[#C17BFF] font-black text-lg">{selectedClient.name[0]}</span>
+                    <div className="w-12 h-12 rounded-full bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+                      <span className="text-[#CC0066] font-black text-lg">{selectedClient.name[0]}</span>
                     </div>
                     <div>
                       <h3 className="font-display font-black text-white text-lg leading-tight">{selectedClient.name}</h3>
@@ -1491,7 +1491,7 @@ function ClientsView({ clients, setClients, onBack }: {
                             href={`https://t.me/${selectedClient.username}`}
                             target="_blank"
                             rel="noreferrer"
-                            className="text-xs text-[#C17BFF]"
+                            className="text-xs text-[#CC0066]"
                           >
                             @{selectedClient.username}
                           </a>
@@ -1529,7 +1529,7 @@ function ClientsView({ clients, setClients, onBack }: {
                         <div className="text-[10px] text-white/30 mt-0.5 leading-tight">завершено</div>
                       </div>
                       <div className="card-lab p-3 text-center">
-                        <div className="text-xl font-black text-[#C17BFF]">
+                        <div className="text-xl font-black text-[#CC0066]">
                           {profile.total_spent >= 1000
                             ? `${(profile.total_spent / 1000).toFixed(0)}к`
                             : `${profile.total_spent}`}
@@ -1544,7 +1544,7 @@ function ClientsView({ clients, setClients, onBack }: {
                         {profile.preferred_service && (
                           <div className="flex items-center justify-between">
                             <span className="text-xs text-white/40">Любимая услуга</span>
-                            <span className="text-xs font-semibold text-[#C17BFF] text-right max-w-[60%] leading-snug">
+                            <span className="text-xs font-semibold text-[#CC0066] text-right max-w-[60%] leading-snug">
                               {profile.preferred_service}
                             </span>
                           </div>
@@ -1639,7 +1639,7 @@ function PricesView({ onBack }: { onBack: () => void }) {
     } catch {} finally { setSaving(false) }
   }
 
-  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm outline-none focus:ring-1 focus:ring-[#C17BFF]/40 border border-[#2A2A2A]'
+  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm outline-none focus:ring-1 focus:ring-[#CC0066]/40 border border-[#2A2A2A]'
 
   const Field = ({ label, k }: { label: string; k: string }) => (
     <div>
@@ -1724,7 +1724,7 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
       <div className="flex flex-col items-center flex-1 justify-center pb-6">
         <img src="/assets/logo-laba.png" alt="logo"
           className="w-20 h-20 object-contain mb-4"
-          style={{ filter: 'drop-shadow(0 0 20px rgba(193,123,255,0.5))' }}
+          style={{ filter: 'drop-shadow(0 0 20px rgba(204,0,102,0.5))' }}
         />
         <h2 className="font-display font-black text-white text-xl uppercase tracking-widest mb-1">
           Лаборатория
@@ -1738,9 +1738,9 @@ function PinView({ pin, pinError, pinLoading, onDigit, onBackspace, onClose }: {
             return (
               <div key={i} className="w-3.5 h-3.5 rounded-full transition-all duration-150"
                 style={{
-                  background: pinError && filled ? '#FF4B4B' : filled ? '#C17BFF' : 'transparent',
-                  border: `1.5px solid ${pinError && filled ? '#FF4B4B' : filled ? '#C17BFF' : 'rgba(255,255,255,0.2)'}`,
-                  boxShadow: filled && !pinError ? '0 0 10px rgba(193,123,255,0.5)' : 'none',
+                  background: pinError && filled ? '#FF4B4B' : filled ? '#CC0066' : 'transparent',
+                  border: `1.5px solid ${pinError && filled ? '#FF4B4B' : filled ? '#CC0066' : 'rgba(255,255,255,0.2)'}`,
+                  boxShadow: filled && !pinError ? '0 0 10px rgba(204,0,102,0.5)' : 'none',
                 }}
               />
             )
@@ -1837,11 +1837,11 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
                 onClick={() => setAudience(opt.val)}
                 className={`p-3 rounded-xl text-left transition-all border ${
                   audience === opt.val
-                    ? 'bg-[#C17BFF]/10 border-[#C17BFF]/40'
+                    ? 'bg-[#CC0066]/10 border-[#CC0066]/40'
                     : 'bg-[#1A1A1A] border-[#2A2A2A]'
                 }`}
               >
-                <div className={`text-sm font-semibold ${audience === opt.val ? 'text-[#C17BFF]' : 'text-white'}`}>{opt.label}</div>
+                <div className={`text-sm font-semibold ${audience === opt.val ? 'text-[#CC0066]' : 'text-white'}`}>{opt.label}</div>
                 <div className="text-[11px] text-white/30 mt-0.5">{opt.desc}</div>
               </button>
             ))}
@@ -1861,7 +1861,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
             onChange={e => setMessage(e.target.value)}
             placeholder="Привет! У нас новые цены и акции..."
             rows={7}
-            className="w-full bg-[#111] border border-[#2A2A2A] rounded-xl p-3 text-sm text-white resize-none outline-none focus:border-[#C17BFF]/40 leading-relaxed"
+            className="w-full bg-[#111] border border-[#2A2A2A] rounded-xl p-3 text-sm text-white resize-none outline-none focus:border-[#CC0066]/40 leading-relaxed"
           />
           <p className="text-[10px] text-white/20 mt-2">
             Поддерживается HTML: &lt;b&gt;жирный&lt;/b&gt;, &lt;i&gt;курсив&lt;/i&gt;, &lt;a href="..."&gt;ссылка&lt;/a&gt;
@@ -1876,7 +1876,7 @@ function BroadcastView({ onBack }: { onBack: () => void }) {
         )}
 
         {confirming ? (
-          <div className="p-4 rounded-2xl border border-[#C17BFF]/30 bg-[#C17BFF]/5 text-center space-y-3">
+          <div className="p-4 rounded-2xl border border-[#CC0066]/30 bg-[#CC0066]/5 text-center space-y-3">
             <p className="text-sm text-white/70">Отправить <span className="text-white font-semibold">{count ?? '?'}</span> получателям?</p>
             <div className="flex gap-2">
               <button onClick={() => setConfirming(false)} className="flex-1 py-3 rounded-xl bg-[#1A1A1A] text-white/60 font-semibold text-sm">Отмена</button>

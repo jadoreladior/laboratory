@@ -119,7 +119,7 @@ export function Home() {
               style={{
                 width: 4,
                 height: i === heroIndex ? 20 : 4,
-                backgroundColor: i === heroIndex ? '#C17BFF' : 'rgba(255,255,255,0.25)',
+                backgroundColor: i === heroIndex ? '#CC0066' : 'rgba(255,255,255,0.25)',
               }}
             />
           ))}
@@ -137,7 +137,7 @@ export function Home() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Услуги</p>
-            <button onClick={() => go()} className="flex items-center gap-1 text-[11px] text-[#C17BFF] font-semibold">
+            <button onClick={() => go()} className="flex items-center gap-1 text-[11px] text-[#CC0066] font-semibold">
               Все <ChevronRight size={12} />
             </button>
           </div>
@@ -149,12 +149,12 @@ export function Home() {
                 className="flex-shrink-0 card-lab p-4 rounded-2xl text-left active:scale-95 transition-transform"
                 style={{ minWidth: 156 }}
               >
-                <div className="w-9 h-9 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+                <div className="w-9 h-9 rounded-xl bg-[#CC0066]/10 flex items-center justify-center text-[#CC0066] mb-3">
                   {CAT_ICONS[cat.id]}
                 </div>
                 <div className="font-bold text-white text-sm mb-1">{cat.label}</div>
                 <div className="text-[10px] text-white/35 mb-3 leading-snug">{CAT_DESC[cat.id]}</div>
-                <div className="font-bold text-[#C17BFF] text-sm">{CAT_RATES[cat.id]}</div>
+                <div className="font-bold text-[#CC0066] text-sm">{CAT_RATES[cat.id]}</div>
               </button>
             ))}
           </div>
@@ -164,7 +164,7 @@ export function Home() {
         <div>
           <div className="flex items-center justify-between mb-3">
             <p className="text-[11px] font-semibold text-white/30 uppercase tracking-widest">Студия</p>
-            <button onClick={() => navigate('/studios')} className="flex items-center gap-1 text-[11px] text-[#C17BFF] font-semibold">
+            <button onClick={() => navigate('/studios')} className="flex items-center gap-1 text-[11px] text-[#CC0066] font-semibold">
               Все фото <ChevronRight size={12} />
             </button>
           </div>
@@ -202,7 +202,7 @@ export function Home() {
           {/* Статы: 4 плитки */}
           <div className="grid grid-cols-2 gap-2 mb-3 stagger">
             <div className="card-lab p-4 rounded-2xl">
-              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+              <div className="w-8 h-8 rounded-xl bg-[#CC0066]/10 flex items-center justify-center text-[#CC0066] mb-3">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M3.75 3.75v4.5m0-4.5h4.5m-4.5 0L9 9M3.75 20.25v-4.5m0 4.5h4.5m-4.5 0L9 15M20.25 3.75h-4.5m4.5 0v4.5m0-4.5L15 9m5.25 11.25h-4.5m4.5 0v-4.5m0 4.5L15 15" />
                 </svg>
@@ -214,7 +214,7 @@ export function Home() {
             </div>
 
             <div className="card-lab p-4 rounded-2xl">
-              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+              <div className="w-8 h-8 rounded-xl bg-[#CC0066]/10 flex items-center justify-center text-[#CC0066] mb-3">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -224,7 +224,7 @@ export function Home() {
             </div>
 
             <div className="card-lab p-4 rounded-2xl">
-              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+              <div className="w-8 h-8 rounded-xl bg-[#CC0066]/10 flex items-center justify-center text-[#CC0066] mb-3">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 18.75a6 6 0 006-6v-1.5m-6 7.5a6 6 0 01-6-6v-1.5m6 7.5v3.75m-3.75 0h7.5M12 15.75a3 3 0 01-3-3V4.5a3 3 0 116 0v8.25a3 3 0 01-3 3z" />
                 </svg>
@@ -236,7 +236,7 @@ export function Home() {
             </div>
 
             <div className="card-lab p-4 rounded-2xl">
-              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] mb-3">
+              <div className="w-8 h-8 rounded-xl bg-[#CC0066]/10 flex items-center justify-center text-[#CC0066] mb-3">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={1.75} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
@@ -277,7 +277,7 @@ export function Home() {
             className="mt-3 w-full flex items-center justify-between px-4 py-3.5 rounded-2xl bg-[#1A1A1A] border border-[#2A2A2A] active:scale-[0.98] transition-transform text-left"
           >
             <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-xl bg-[#C17BFF]/10 flex items-center justify-center text-[#C17BFF] flex-shrink-0">
+              <div className="w-8 h-8 rounded-xl bg-[#CC0066]/10 flex items-center justify-center text-[#CC0066] flex-shrink-0">
                 <svg className="w-4 h-4" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
                   <path strokeLinecap="round" strokeLinejoin="round" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
@@ -301,7 +301,7 @@ export function Home() {
         <button
           onClick={() => { haptic?.impactOccurred('medium'); navigate('/studios') }}
           className="w-full btn-lily py-4 rounded-2xl font-bold text-white text-base flex items-center justify-center gap-2"
-          style={{ boxShadow: '0 8px 32px rgba(193,123,255,0.4), 0 2px 8px rgba(0,0,0,0.5)' }}
+          style={{ boxShadow: '0 8px 32px rgba(204,0,102,0.4), 0 2px 8px rgba(0,0,0,0.5)' }}
         >
           <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>

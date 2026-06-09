@@ -1,4 +1,4 @@
-@tailwind base;
+﻿@tailwind base;
 @tailwind components;
 @tailwind utilities;
 
@@ -11,7 +11,7 @@
   --ease-accel:   cubic-bezier(0.4, 0.0, 1, 1);
 
   --safe-bottom:  env(safe-area-inset-bottom, 0px);
-  --lab-lily:     #C17BFF;
+  --lab-lily:     #CC0066;
   --lab-red:      #FF4B4B;
   --lab-bg:       #0E0E0E;
   --lab-card:     #1A1A1A;
@@ -60,8 +60,8 @@
 }
 
 @keyframes glow-lily {
-  0%, 100% { filter: drop-shadow(0 0 12px rgba(193,123,255,0.5)) drop-shadow(0 0 40px rgba(193,123,255,0.2)); }
-  50%       { filter: drop-shadow(0 0 24px rgba(193,123,255,0.8)) drop-shadow(0 0 80px rgba(193,123,255,0.35)); }
+  0%, 100% { filter: drop-shadow(0 0 12px rgba(204,0,102,0.5)) drop-shadow(0 0 40px rgba(204,0,102,0.2)); }
+  50%       { filter: drop-shadow(0 0 24px rgba(204,0,102,0.8)) drop-shadow(0 0 80px rgba(204,0,102,0.35)); }
 }
 
 @keyframes shimmer {
@@ -216,7 +216,7 @@ img { transition: opacity 0.4s ease; }
 .font-display { font-family: 'Unbounded', sans-serif; }
 
 .text-lily {
-  background: linear-gradient(135deg, #C17BFF 0%, #E0A0FF 100%);
+  background: linear-gradient(135deg, #CC0066 0%, #E0A0FF 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
@@ -234,19 +234,19 @@ img { transition: opacity 0.4s ease; }
 /* ── Buttons — Apple tap feel ───────────────────────────────────────────────── */
 
 .btn-lily {
-  background: linear-gradient(135deg, #C17BFF 0%, #9B4FE0 100%);
+  background: linear-gradient(135deg, #CC0066 0%, #9B4FE0 100%);
   color: #fff;
   border-radius: 16px;
   font-weight: 600;
   letter-spacing: -0.01em;
   transition: transform 0.18s var(--ease-spring), opacity 0.15s ease, box-shadow 0.2s ease;
-  box-shadow: 0 4px 20px rgba(193,123,255,0.4), 0 1px 3px rgba(0,0,0,0.3);
+  box-shadow: 0 4px 20px rgba(204,0,102,0.4), 0 1px 3px rgba(0,0,0,0.3);
   will-change: transform;
 }
 .btn-lily:active {
   transform: scale(0.95);
   opacity: 0.88;
-  box-shadow: 0 2px 10px rgba(193,123,255,0.25);
+  box-shadow: 0 2px 10px rgba(204,0,102,0.25);
 }
 
 /* Все интерактивные элементы — spring при тапе */
@@ -274,7 +274,7 @@ button:active {
 /* ── Glow effects ───────────────────────────────────────────────────────────── */
 
 .glow-lily {
-  box-shadow: 0 0 0 1px var(--lab-lily), 0 0 20px rgba(193,123,255,0.25);
+  box-shadow: 0 0 0 1px var(--lab-lily), 0 0 20px rgba(204,0,102,0.25);
 }
 
 /* ── Logo ───────────────────────────────────────────────────────────────────── */
@@ -308,8 +308,8 @@ button:active {
 
 .success-ring { transition: border-color 0.6s ease, box-shadow 0.6s ease; }
 .success-ring-animate {
-  border-color: rgba(193,123,255,0.6);
-  box-shadow: 0 0 30px rgba(193,123,255,0.2);
+  border-color: rgba(204,0,102,0.6);
+  box-shadow: 0 0 30px rgba(204,0,102,0.2);
 }
 
 .success-check {

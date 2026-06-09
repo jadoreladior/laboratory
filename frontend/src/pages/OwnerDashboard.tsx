@@ -504,7 +504,7 @@ function EmployeeForm({ value, onChange, onSave, onCancel, saving }: {
   onCancel: () => void
   saving: boolean
 }) {
-  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#C17BFF]/40 border border-[#2A2A2A]'
+  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#CC0066]/40 border border-[#2A2A2A]'
   const canSave = !!value.name.trim() && !!value.telegram_id
 
   return (

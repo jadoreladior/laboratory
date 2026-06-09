@@ -1,4 +1,4 @@
-/** PNG icon sprite component — maps logical names to /icons/*.png */
+﻿/** PNG icon sprite component — maps logical names to /icons/*.png */
 
 // CSS filter chains that recolour a white PNG to the target hex
 const FILTER_PURPLE = 'brightness(0) invert(65%) sepia(48%) saturate(1053%) hue-rotate(223deg) brightness(103%)'
@@ -51,7 +51,7 @@ type IconColor = 'white' | 'purple' | 'red' | 'dim' | 'very-dim'
 interface IconProps {
   name: string
   size?: number
-  /** Colour preset — 'white' = no tint, 'purple' = #C17BFF filter, 'red' = #FF4B4B filter,
+  /** Colour preset — 'white' = no tint, 'purple' = #CC0066 filter, 'red' = #FF4B4B filter,
    *  'dim' = 40% opacity, 'very-dim' = 20% opacity */
   color?: IconColor
   /** Explicit opacity (overrides color preset's opacity) */
