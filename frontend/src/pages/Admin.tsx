@@ -989,35 +989,74 @@ function Row({ label, value, bold, accent }: { label: string; value: string; bol
 function QuickBookForm({ date, time, onClose, onCreated }: {
   date: string; time: string; onClose: () => void; onCreated: (b: Lead) => void
 }) {
-  const [form, setForm] = useState({
-    client_name: '',
-    username: '',
-    phone: '',
-    service: SERVICES[0]?.title ?? '',
-    price: SERVICES[0]?.price ?? 0,
-    notes: '',
-  })
-  const [saving, setSaving] = useState(false)
+  const [svcId,    setSvcId]    = useState(SERVICES[0]?.id ?? '')
+  const [name,     setName]     = useState('')
+  const [username, setUsername] = useState('')
+  const [tgId,     setTgId]     = useState('')
+  const [duration, setDuration] = useState(1)
+  const [price,    setPrice]    = useState(SERVICES[0]?.price ?? 0)
+  const [notes,    setNotes]    = useState('')
+  const [saving,   setSaving]   = useState(false)
 
-  const selectedSvc = SERVICES.find(s => s.title === form.service || s.id === form.service)
+  // Find unique base services (one per category for the top-level select)
+  const BASE_SVCS = SERVICES.filter((s, i, arr) =>
+    arr.findIndex(x => x.category === s.category) === i
+  )
+  const selectedBase = BASE_SVCS.find(s => {
+    const picked = SERVICES.find(x => x.id === svcId)
+    return s.category === picked?.category
+  }) ?? BASE_SVCS[0]
+
+  // Duration options for the selected category
+  const durationOpts = SERVICES
+    .filter(s => s.category === selectedBase?.category && s.duration > 0)
+    .map(s => s.duration)
+  const uniqueDurs = [...new Set(durationOpts)].sort((a, b) => a - b)
+
+  // Price from catalog, or manual override
+  const catalogSvc = SERVICES.find(s => s.category === selectedBase?.category && s.duration === duration)
+  const catalogPrice = catalogSvc?.price ?? 0
 
   const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#C17BFF]/40 border border-[#2A2A2A]'
 
+  // When category changes → reset duration and price
+  const handleCategoryChange = (newSvcId: string) => {
+    setSvcId(newSvcId)
+    const base = BASE_SVCS.find(s => s.id === newSvcId)
+    const durs = SERVICES.filter(s => s.category === base?.category && s.duration > 0).map(s => s.duration)
+    const firstDur = Math.min(...durs) || 1
+    setDuration(firstDur)
+    const p = SERVICES.find(s => s.category === base?.category && s.duration === firstDur)?.price ?? 0
+    setPrice(p)
+  }
+
+  // When duration changes → update price from catalog
+  const handleDurationChange = (d: number) => {
+    setDuration(d)
+    const p = SERVICES.find(s => s.category === selectedBase?.category && s.duration === d)?.price ?? catalogPrice
+    setPrice(p)
+  }
+
+  const serviceLabel = selectedBase
+    ? `${selectedBase.title}${duration > 0 ? ` ${duration}ч` : ''}`
+    : ''
+
   const handleSubmit = async () => {
-    if (!form.client_name.trim()) return
+    if (!name.trim()) return
     setSaving(true)
     try {
-      const price = Number(form.price) || selectedSvc?.price || 0
+      const finalPrice = Number(price) || 0
       const booking = await createBooking({
-        client_name: form.client_name,
-        username: form.username || undefined,
-        service: form.service,
+        client_name: name,
+        telegram_id: tgId ? Number(tgId) : undefined,
+        username:    username || undefined,
+        service:     serviceLabel,
         booking_date: date,
         booking_time: time,
-        duration_hours: selectedSvc?.duration ?? 1,
-        total_price: price,
-        prepay_amount: Math.ceil(price * 0.5),
-        notes: form.notes,
+        duration_hours: duration,
+        total_price:    finalPrice,
+        prepay_amount:  Math.ceil(finalPrice * 0.5),
+        notes,
       })
       onCreated(booking as Lead)
     } catch {} finally { setSaving(false) }
@@ -1033,38 +1072,63 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
       </div>
 
       <div className="space-y-2.5 mb-5">
-        <input className={inp} placeholder="Имя клиента *" value={form.client_name}
-          onChange={e => setForm(p => ({ ...p, client_name: e.target.value }))} />
-        <input className={inp} placeholder="@username (необязательно)" value={form.username}
-          onChange={e => setForm(p => ({ ...p, username: e.target.value }))} />
-        <input className={inp} placeholder="Телефон (необязательно)" value={form.phone}
-          onChange={e => setForm(p => ({ ...p, phone: e.target.value }))} />
+        {/* Client info */}
+        <input className={inp} placeholder="Имя клиента *" value={name}
+          onChange={e => setName(e.target.value)} />
+        <input className={inp} placeholder="@username (необязательно)" value={username}
+          onChange={e => setUsername(e.target.value)} />
+        <input className={inp} placeholder="Telegram ID (необязательно)" value={tgId}
+          onChange={e => setTgId(e.target.value)} />
 
+        {/* Service category */}
         <select
           className={`${inp} appearance-none`}
-          value={form.service}
-          onChange={e => {
-            const svc = SERVICES.find(s => s.title === e.target.value)
-            setForm(p => ({ ...p, service: e.target.value, price: svc?.price ?? p.price }))
-          }}
+          value={svcId}
+          onChange={e => handleCategoryChange(e.target.value)}
         >
-          {SERVICES.map(s => (
-            <option key={s.id} value={s.title}>{s.title} — {s.price.toLocaleString()} ₽</option>
+          {BASE_SVCS.map(s => (
+            <option key={s.id} value={s.id}>{s.title}</option>
           ))}
         </select>
 
-        <input className={inp} placeholder="Стоимость ₽" type="number"
-          value={form.price}
-          onChange={e => setForm(p => ({ ...p, price: Number(e.target.value) }))} />
+        {/* Duration */}
+        {uniqueDurs.length > 1 && (
+          <div className="flex gap-2">
+            {uniqueDurs.map(d => (
+              <button
+                key={d}
+                type="button"
+                onClick={() => handleDurationChange(d)}
+                className={`flex-1 py-2 rounded-xl text-sm font-semibold border transition-all ${
+                  duration === d
+                    ? 'bg-[#C17BFF]/15 border-[#C17BFF]/40 text-[#C17BFF]'
+                    : 'bg-[#1A1A1A] border-[#2A2A2A] text-white/50'
+                }`}
+              >{d}ч</button>
+            ))}
+          </div>
+        )}
 
-        <input className={inp} placeholder="Заметка" value={form.notes}
-          onChange={e => setForm(p => ({ ...p, notes: e.target.value }))} />
+        {/* Price */}
+        <input className={inp} placeholder="Стоимость ₽" type="number"
+          value={price}
+          onChange={e => setPrice(Number(e.target.value))} />
+
+        {/* Notes */}
+        <input className={inp} placeholder="Заметка" value={notes}
+          onChange={e => setNotes(e.target.value)} />
+      </div>
+
+      {/* Summary line */}
+      <div className="mb-4 px-3 py-2 rounded-xl bg-[#1A1A1A] border border-[#2A2A2A] text-xs text-white/40 flex justify-between">
+        <span>{serviceLabel}</span>
+        <span className="text-white/70 font-semibold">{price.toLocaleString()} ₽ · предоплата {Math.ceil(Number(price)*0.5).toLocaleString()} ₽</span>
       </div>
 
       <div className="space-y-2">
         <button
           onClick={handleSubmit}
-          disabled={saving || !form.client_name.trim()}
+          disabled={saving || !name.trim()}
           className="btn-lily w-full py-3.5 rounded-2xl font-bold text-white disabled:opacity-40"
         >
           {saving ? 'Сохраняем...' : 'Создать запись'}
