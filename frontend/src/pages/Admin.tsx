@@ -3,22 +3,23 @@ import { format, addMonths, subMonths, startOfMonth, endOfMonth, eachDayOfInterv
          getDay, isSameDay, isToday, isPast, parseISO, addDays } from 'date-fns'
 import { ru } from 'date-fns/locale'
 import { Mic2, Lock, X, Users, UserPlus, Check, ChevronLeft, ChevronRight,
-         Calendar, BarChart2, Ban, PlusCircle, Tag, Send } from 'lucide-react'
+         Calendar, BarChart2, Ban, PlusCircle, Tag, Send, Handshake } from 'lucide-react'
 import {
   getAdminBookings, confirmBooking, cancelBooking, updateLeadStatus,
   getClients, addClient, verifyOwnerPin, createBooking,
   getCalendarMonth, getCalendarDay, blockSlot, unblockSlot,
   getAdminStats, getSettings, saveSettings, getClientProfile,
   sendBroadcast, getBroadcastCount,
+  getPartners, addPartner, deletePartner,
 } from '../api'
-import type { Lead, Client, DayData, DaySlot, CalendarDay, ClientProfile } from '../api'
+import type { Lead, Client, DayData, DaySlot, CalendarDay, ClientProfile, Partner } from '../api'
 import { SERVICES } from '../data'
 import { useAppContext } from '../App'
 import { OwnerDashboard } from './OwnerDashboard'
 
-type View = 'dashboard' | 'calendar' | 'day' | 'bookings' | 'clients' | 'pin' | 'owner' | 'prices' | 'broadcast'
+type View = 'dashboard' | 'calendar' | 'day' | 'bookings' | 'clients' | 'pin' | 'owner' | 'prices' | 'broadcast' | 'partners'
 type FilterStatus = 'pending' | 'confirmed' | 'cancelled'
-type SheetType = null | 'detail' | 'book-form' | 'block-form'
+type SheetType = null | 'detail' | 'book-form' | 'block-form' | 'time-pick'
 
 const SL: Record<string, { label: string; color: string; bg: string }> = {
   pending:   { label: 'Ожидает',      color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
@@ -57,10 +58,12 @@ export function Admin() {
   const [sheetSlot,  setSheetSlot]  = useState<DaySlot | null>(null)
   const [acting,     setActing]     = useState<string | null>(null)
 
+  const [partners, setPartners] = useState<Partner[]>([])
+
   const load = useCallback(() => {
     setLoading(true)
-    Promise.all([getAdminBookings(), getClients(), getAdminStats()])
-      .then(([b, c, s]) => { setBookings(b); setClients(c); setStats(s) })
+    Promise.all([getAdminBookings(), getClients(), getAdminStats(), getPartners()])
+      .then(([b, c, s, p]) => { setBookings(b); setClients(c); setStats(s); setPartners(p) })
       .catch(() => {})
       .finally(() => setLoading(false))
   }, [])
@@ -164,6 +167,7 @@ export function Admin() {
   if (view === 'owner') return <OwnerDashboard onBack={() => setView('dashboard')} />
   if (view === 'prices')     return <PricesView     onBack={() => setView('dashboard')} />
   if (view === 'broadcast')  return <BroadcastView  onBack={() => setView('dashboard')} />
+  if (view === 'partners')   return <PartnersView   partners={partners} setPartners={setPartners} onBack={() => setView('dashboard')} />
   if (view === 'clients') return (
     <ClientsView clients={clients} setClients={setClients} onBack={() => setView('dashboard')} />
   )
@@ -195,6 +199,8 @@ export function Admin() {
       sheetSlot={sheetSlot}
       acting={acting}
       onBack={() => setView('calendar')}
+      onAddNew={() => setSheet('time-pick')}
+      onPickTime={(slot) => { setSheetSlot(slot); setSheet('book-form') }}
       onOpenSlot={(slot) => {
         setSheetSlot(slot)
         if (slot.status === 'booked') setSheet('detail')
@@ -220,17 +226,8 @@ export function Admin() {
       onCancel={handleCancel}
       onComplete={handleComplete}
       onCloseSheet={() => setSheet(null)}
-      onBookCreated={(newBooking) => {
-        setDayData(prev => {
-          if (!prev) return prev
-          return {
-            ...prev,
-            slots: prev.slots.map(s => s.time === newBooking.booking_time
-              ? { ...s, status: 'booked', booking: newBooking } : s),
-            booked_count: prev.booked_count + 1,
-            free_count: prev.free_count - 1,
-          }
-        })
+      onBookCreated={() => {
+        loadDay(dayDate)
         setSheet(null)
       }}
       onBlocked={(blocked) => {
@@ -380,6 +377,18 @@ export function Admin() {
           <div className="mb-3"><Send size={22} className="text-white/50" /></div>
           <div className="font-bold text-white text-sm">Рассылка</div>
           <div className="text-xs text-white/40 mt-0.5">Сообщение клиентам</div>
+        </button>
+
+        {/* Partners */}
+        <button
+          onClick={() => setView('partners')}
+          className="card-lab p-5 text-left active:scale-95 transition-transform col-span-2"
+        >
+          <div className="flex items-center gap-3 mb-1">
+            <Handshake size={22} className="text-white/50" />
+            <div className="font-bold text-white text-sm">Партнёры</div>
+          </div>
+          <div className="text-xs text-white/40">{partners.length > 0 ? `${partners.length} партнёра в базе` : 'Работали с нами'}</div>
         </button>
 
         {/* Owner mode */}
@@ -589,7 +598,7 @@ function DayView({
   date, data, loading, sheet, sheetSlot, acting,
   onBack, onOpenSlot, onBlockSlot, onUnblock,
   onConfirm, onCancel, onComplete,
-  onCloseSheet, onBookCreated, onBlocked,
+  onCloseSheet, onBookCreated, onBlocked, onAddNew, onPickTime,
 }: {
   date: string
   data: DayData | null
@@ -605,8 +614,10 @@ function DayView({
   onCancel: (id: string) => void
   onComplete: (id: string) => void
   onCloseSheet: () => void
-  onBookCreated: (b: Lead) => void
+  onBookCreated: () => void
   onBlocked: (b: any) => void
+  onAddNew: () => void
+  onPickTime: (slot: DaySlot) => void
 }) {
   const parsedDate = parseISO(date)
   const label = format(parsedDate, 'EEEE, d MMMM', { locale: ru })
@@ -625,10 +636,7 @@ function DayView({
         </div>
         {isFutureOrToday && (
           <button
-            onClick={() => {
-              const freeSlot = data?.slots.find(s => s.status === 'free')
-              if (freeSlot) onOpenSlot(freeSlot)
-            }}
+            onClick={() => onAddNew()}
             className="w-9 h-9 rounded-full bg-[#CC0066]/20 border border-[#CC0066]/30 flex items-center justify-center"
           >
             <PlusCircle size={16} className="text-[#CC0066]" />
@@ -730,6 +738,14 @@ function DayView({
                 time={sheetSlot.time}
                 onClose={onCloseSheet}
                 onCreated={onBookCreated}
+              />
+            )}
+
+            {sheet === 'time-pick' && (
+              <TimePickSheet
+                slots={data?.slots ?? []}
+                onPick={onPickTime}
+                onClose={onCloseSheet}
               />
             )}
 
@@ -987,7 +1003,7 @@ function Row({ label, value, bold, accent }: { label: string; value: string; bol
 // ─── Quick booking form ───────────────────────────────────────────────────────
 
 function QuickBookForm({ date, time, onClose, onCreated }: {
-  date: string; time: string; onClose: () => void; onCreated: (b: Lead) => void
+  date: string; time: string; onClose: () => void; onCreated: () => void
 }) {
   const [svcId,    setSvcId]    = useState(SERVICES[0]?.id ?? '')
   const [name,     setName]     = useState('')
@@ -1046,7 +1062,7 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
     setSaving(true)
     try {
       const finalPrice = Number(price) || 0
-      const booking = await createBooking({
+      await createBooking({
         client_name: name,
         telegram_id: tgId ? Number(tgId) : undefined,
         username:    username || undefined,
@@ -1058,7 +1074,7 @@ function QuickBookForm({ date, time, onClose, onCreated }: {
         prepay_amount:  Math.ceil(finalPrice * 0.5),
         notes,
       })
-      onCreated(booking as Lead)
+      onCreated()
     } catch {} finally { setSaving(false) }
   }
 
@@ -1201,6 +1217,11 @@ function BookingsView({ bookings, loading, onConfirm, onCancel, onComplete, acti
 }) {
   const [filter, setFilter] = useState<FilterStatus>('pending')
 
+  const changeFilter = (f: FilterStatus) => {
+    setFilter(f)
+    window.scrollTo({ top: 0, behavior: 'smooth' })
+  }
+
   const filtered = bookings
     .filter(b => b.status === filter)
     .sort((a, b) =>
@@ -1233,7 +1254,7 @@ function BookingsView({ bookings, loading, onConfirm, onCancel, onComplete, acti
         ] as const).map(t => (
           <button
             key={t.id}
-            onClick={() => setFilter(t.id)}
+            onClick={() => changeFilter(t.id)}
             className={`py-3 rounded-2xl text-center transition-all active:scale-95
               ${filter === t.id ? 'bg-white/10 ring-1 ring-white/20' : 'card-lab'}`}
           >
@@ -1458,7 +1479,7 @@ function ClientsView({ clients, setClients, onBack }: {
           />
           <div
             className="fixed inset-0 z-50 flex items-end justify-center pointer-events-none"
-            style={{ paddingBottom: 'calc(env(safe-area-inset-bottom, 0px) + 68px)' }}
+            style={{ paddingBottom: 'env(safe-area-inset-bottom, 0px)' }}
           >
             <div
               className="animate-slide-up pointer-events-auto w-full"
@@ -1648,6 +1669,7 @@ function PricesView({ onBack }: { onBack: () => void }) {
         <input
           className={inp}
           type="number"
+          inputMode="numeric"
           value={prices[k] ?? ''}
           onChange={e => set(k, e.target.value)}
           style={{ paddingRight: 36 }}
@@ -1702,7 +1724,147 @@ function PricesView({ onBack }: { onBack: () => void }) {
   )
 }
 
+// ─── Time pick sheet ─────────────────────────────────────────────────────────
+
+function TimePickSheet({ slots, onPick, onClose }: {
+  slots: DaySlot[]
+  onPick: (slot: DaySlot) => void
+  onClose: () => void
+}) {
+  const free = slots.filter(s => s.status === 'free')
+  return (
+    <div className="px-5 pb-8">
+      <div className="flex items-center justify-between mb-5">
+        <h3 className="font-display font-black text-white text-lg">Выбери время</h3>
+        <button onClick={onClose} className="w-8 h-8 rounded-full bg-white/5 flex items-center justify-center">
+          <X size={14} className="text-white/40" />
+        </button>
+      </div>
+      {free.length === 0 ? (
+        <p className="text-center text-white/30 text-sm py-6">Нет свободных слотов</p>
+      ) : (
+        <div className="grid grid-cols-3 gap-2">
+          {free.map(slot => (
+            <button
+              key={slot.time}
+              onClick={() => onPick(slot)}
+              className="py-3 rounded-xl bg-[#CC0066]/10 border border-[#CC0066]/25 text-[#CC0066] font-semibold text-sm active:scale-95 transition-transform"
+            >
+              {slot.time}
+            </button>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
 // ─── Partners view ────────────────────────────────────────────────────────────
+
+function PartnersView({ partners, setPartners, onBack }: {
+  partners: Partner[]
+  setPartners: React.Dispatch<React.SetStateAction<Partner[]>>
+  onBack: () => void
+}) {
+  const [showForm, setShowForm] = useState(false)
+  const [form, setForm] = useState({ name: '', role: '' })
+  const [saving, setSaving] = useState(false)
+  const [deletingId, setDeletingId] = useState<string | null>(null)
+
+  const inp = 'w-full px-3 py-2.5 rounded-xl bg-[#1A1A1A] text-white text-sm placeholder-white/25 outline-none focus:ring-1 focus:ring-[#CC0066]/40 border border-[#2A2A2A]'
+
+  const handleAdd = async () => {
+    if (!form.name.trim()) return
+    setSaving(true)
+    try {
+      const p = await addPartner(form.name, form.role)
+      setPartners(prev => [...prev, p])
+      setForm({ name: '', role: '' })
+      setShowForm(false)
+    } catch {} finally { setSaving(false) }
+  }
+
+  const handleDelete = async (id: string) => {
+    setDeletingId(id)
+    try {
+      await deletePartner(id)
+      setPartners(prev => prev.filter(p => p.id !== id))
+    } catch {} finally { setDeletingId(null) }
+  }
+
+  return (
+    <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
+      <div className="flex items-center gap-3 px-4 pt-6 pb-4">
+        <button onClick={onBack} className="w-9 h-9 rounded-full card-lab flex items-center justify-center">
+          <ChevronLeft size={18} className="text-white" />
+        </button>
+        <h1 className="font-display font-black text-white text-xl flex-1">Партнёры</h1>
+        <button
+          onClick={() => setShowForm(v => !v)}
+          className="w-9 h-9 rounded-full bg-[#CC0066]/15 border border-[#CC0066]/30 flex items-center justify-center"
+        >
+          <UserPlus size={15} className="text-[#CC0066]" />
+        </button>
+      </div>
+
+      {showForm && (
+        <div className="px-4 mb-4">
+          <div className="card-lab p-4 space-y-2.5">
+            <p className="text-[11px] text-white/30 uppercase tracking-widest">Новый партнёр</p>
+            <input className={inp} placeholder="Название / Имя *" value={form.name}
+              onChange={e => setForm(p => ({ ...p, name: e.target.value }))} />
+            <input className={inp} placeholder="Роль (студия, агентство, продакшн...)" value={form.role}
+              onChange={e => setForm(p => ({ ...p, role: e.target.value }))} />
+            <div className="flex gap-2 pt-1">
+              <button onClick={handleAdd} disabled={saving || !form.name.trim()}
+                className="flex-1 btn-lily py-2.5 rounded-xl text-sm font-semibold flex items-center justify-center gap-1 disabled:opacity-40">
+                <Check size={14} /> {saving ? 'Сохраняем...' : 'Добавить'}
+              </button>
+              <button onClick={() => setShowForm(false)}
+                className="w-10 rounded-xl card-lab flex items-center justify-center text-white/40">
+                <X size={16} />
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      <div className="px-4 space-y-2">
+        {partners.length === 0 ? (
+          <div className="text-center py-16">
+            <div className="text-white/15 mb-4">
+              <Handshake size={48} className="mx-auto" />
+            </div>
+            <p className="text-white/30 text-sm mb-5">Партнёров пока нет</p>
+            <button
+              onClick={() => setShowForm(true)}
+              className="btn-lily px-6 py-2.5 rounded-xl text-sm font-semibold"
+            >
+              Добавить партнёра
+            </button>
+          </div>
+        ) : partners.map(p => (
+          <div key={p.id} className="card-lab p-4 flex items-center gap-3">
+            <div className="w-10 h-10 rounded-full bg-[#CC0066]/15 flex items-center justify-center flex-shrink-0">
+              <span className="text-[#CC0066] font-bold text-sm">{p.name[0]}</span>
+            </div>
+            <div className="flex-1 min-w-0">
+              <div className="font-semibold text-white text-sm">{p.name}</div>
+              {p.role && <div className="text-xs text-white/40 mt-0.5">{p.role}</div>}
+            </div>
+            <button
+              onClick={() => handleDelete(p.id)}
+              disabled={deletingId === p.id}
+              className="w-8 h-8 rounded-xl bg-[#FF4B4B]/10 flex items-center justify-center text-[#FF4B4B]/70 hover:text-[#FF4B4B] transition-colors disabled:opacity-40 flex-shrink-0"
+            >
+              <X size={14} />
+            </button>
+          </div>
+        ))}
+      </div>
+    </div>
+  )
+}
 
 // ─── PIN view ─────────────────────────────────────────────────────────────────
 
