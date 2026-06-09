@@ -9,10 +9,10 @@ import { SERVICES } from '../data'
 import type { Booking } from '../types'
 
 const STATUS_LABELS: Record<Booking['status'], { label: string; color: string; dot: string }> = {
-  pending:   { label: 'Ожидает',      color: 'text-yellow-400',   dot: 'bg-yellow-400' },
-  confirmed: { label: 'Подтверждена', color: 'text-green-400',    dot: 'bg-green-400' },
-  completed: { label: 'Завершена',    color: 'text-white/30',     dot: 'bg-white/20' },
-  cancelled: { label: 'Отменена',     color: 'text-[#FF4B4B]',   dot: 'bg-[#FF4B4B]' },
+  pending:   { label: 'ожидает',      color: 'text-yellow-400',   dot: 'bg-yellow-400' },
+  confirmed: { label: 'подтверждена', color: 'text-green-400',    dot: 'bg-green-400' },
+  completed: { label: 'завершена',    color: 'text-white/30',     dot: 'bg-white/20' },
+  cancelled: { label: 'отменена',     color: 'text-[#FF4B4B]',   dot: 'bg-[#FF4B4B]' },
 }
 
 export function Profile() {
@@ -69,8 +69,7 @@ export function Profile() {
 
       {/* Header */}
       <div className="px-4 pt-6 pb-2">
-        <p className="text-xs font-medium text-white/40 mb-1">Личный кабинет</p>
-        <h1 className="font-display text-2xl font-black text-white tracking-tight">Профиль</h1>
+        <h1 className="font-bold text-2xl text-white tracking-tight">профиль</h1>
       </div>
 
       {/* User card */}
@@ -125,8 +124,8 @@ export function Profile() {
                   : 'text-white/30'}`}
             >
               {t === 'upcoming'
-                ? `Предстоящие${upcoming.length > 0 ? ` · ${upcoming.length}` : ''}`
-                : `Прошлые${past.length > 0 ? ` · ${past.length}` : ''}`}
+                ? `предстоящие${upcoming.length > 0 ? ` · ${upcoming.length}` : ''}`
+                : `прошлые${past.length > 0 ? ` · ${past.length}` : ''}`}
             </button>
           ))}
         </div>
@@ -235,12 +234,12 @@ function BookingCard({ booking, onCancel }: { booking: Booking; onCancel?: (id: 
       {isActive && (
         <div className="mt-3 pt-3 border-t border-[#2A2A2A] flex items-center justify-between">
           <span className="text-xs text-white/30">
-            Предоплата: {Number(booking.prepayAmount).toLocaleString()} ₽
+            предоплата: {Number(booking.prepayAmount).toLocaleString()} ₽
           </span>
           {onCancel && (
             <button onClick={() => onCancel(booking.id)}
               className="text-xs text-[#FF4B4B]/70 hover:text-[#FF4B4B] transition-colors">
-              Отменить
+              отменить
             </button>
           )}
         </div>

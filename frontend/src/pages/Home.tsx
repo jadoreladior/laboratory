@@ -16,24 +16,32 @@ const HERO_IMAGES = [
   '/photos/studio/8.jpg',
 ]
 
-const CAT_ICONS: Record<string, React.ReactNode> = {
-  record:  <Mic2 size={18} strokeWidth={1.5} />,
-  studio:  <Sliders size={18} strokeWidth={1.5} />,
-  rent:    <Key size={18} strokeWidth={1.5} />,
-  package: <Package size={18} strokeWidth={1.5} />,
+const CAT_EMOJI: Record<string, string> = {
+  record:  '🎙',
+  studio:  '🎚',
+  rent:    '🏠',
+  package: '📦',
 }
 const CAT_RATES: Record<string, string> = {
-  record:  '1 690 ₽/ч',
-  studio:  '2 690 ₽/ч',
-  rent:    '1 360 ₽/ч',
+  record:  'от 1 690 ₽/ч',
+  studio:  'от 2 690 ₽/ч',
+  rent:    'от 1 360 ₽/ч',
   package: 'от 7 970 ₽',
 }
 const CAT_DESC: Record<string, string> = {
-  record:  'Вокал · речитатив · живые инструменты',
-  studio:  'На месте или дистанционно по исходникам',
-  rent:    'Самостоятельная работа без инженера',
-  package: 'Уходишь с готовым финальным треком',
+  record:  'вокал, речитатив, живые инструменты',
+  studio:  'на месте или по исходникам',
+  rent:    'самостоятельная работа без инженера',
+  package: 'уходишь с готовым финальным треком',
 }
+
+const WHY_LIST = [
+  { emoji: '🎛', title: 'оборудование под санкциями', desc: 'то самое, которое нельзя ввезти официально' },
+  { emoji: '🎓', title: 'инженеры со специальностью', desc: 'звукорежиссёрское образование, не самоучки' },
+  { emoji: '🕐', title: 'круглосуточно каждый день', desc: 'запись в 3 ночи — без проблем' },
+  { emoji: '🌬', title: 'приточная вентиляция', desc: 'нет духоты, можно работать часами' },
+  { emoji: '💳', title: 'предоплата 50%, остаток после', desc: 'возврат если что-то пойдёт не так' },
+]
 
 // Координаты: Большой Сампсониевский пр., 60Н
 const MAP_URL   = 'https://yandex.ru/map-widget/v1/?ll=30.329416%2C59.964355&z=16&pt=30.329416%2C59.964355%2Cpm2rdm&l=map&lang=ru_RU'
@@ -98,14 +106,14 @@ export function Home() {
         {/* Заголовок + CTA */}
         <div className="absolute bottom-0 left-0 right-0 z-20 px-4 pb-5">
           <h1 className="font-display font-black text-3xl text-white leading-none tracking-tight mb-1">
-            ЛАБОРАТОРИЯ
+            Лаборатория
           </h1>
-          <p className="text-white/50 text-sm tracking-widest uppercase mb-4">Санкт-Петербург</p>
+          <p className="text-white/50 text-sm mb-4">Санкт-Петербург</p>
           <button
             onClick={() => go()}
-            className="btn-lily px-6 py-3 rounded-2xl font-bold text-white text-sm"
+            className="btn-lily px-6 py-3 rounded-2xl font-semibold text-white text-sm"
           >
-            Записаться в студию
+            записаться в студию
           </button>
         </div>
 
@@ -136,9 +144,9 @@ export function Home() {
         {/* ── УСЛУГИ ── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-white/40">Услуги</p>
+            <p className="text-xs font-medium text-white/40">услуги</p>
             <button onClick={() => go()} className="flex items-center gap-1 text-[11px] text-[#CC0066] font-semibold">
-              Все <ChevronRight size={12} />
+              все <ChevronRight size={12} />
             </button>
           </div>
           <div className="flex gap-3 overflow-x-auto pb-1 no-scrollbar -mx-4 px-4">
@@ -149,12 +157,10 @@ export function Home() {
                 className="flex-shrink-0 card-lab p-4 rounded-2xl text-left active:scale-95 transition-transform"
                 style={{ minWidth: 156 }}
               >
-                <div className="w-9 h-9 rounded-xl bg-[#CC0066]/10 flex items-center justify-center text-[#CC0066] mb-3">
-                  {CAT_ICONS[cat.id]}
-                </div>
+                <div className="text-2xl mb-3">{CAT_EMOJI[cat.id]}</div>
                 <div className="font-bold text-white text-sm mb-1">{cat.label}</div>
-                <div className="text-[10px] text-white/35 mb-3 leading-snug">{CAT_DESC[cat.id]}</div>
-                <div className="font-bold text-[#CC0066] text-sm">{CAT_RATES[cat.id]}</div>
+                <div className="text-[11px] text-white/40 mb-3 leading-snug">{CAT_DESC[cat.id]}</div>
+                <div className="font-semibold text-[#CC0066] text-sm">{CAT_RATES[cat.id]}</div>
               </button>
             ))}
           </div>
@@ -163,9 +169,9 @@ export function Home() {
         {/* ── ФОТО-ГАЛЕРЕЯ ── */}
         <div>
           <div className="flex items-center justify-between mb-3">
-            <p className="text-xs font-medium text-white/40">Студия</p>
+            <p className="text-xs font-medium text-white/40">студия</p>
             <button onClick={() => navigate('/studios')} className="flex items-center gap-1 text-[11px] text-[#CC0066] font-semibold">
-              Все фото <ChevronRight size={12} />
+              все фото <ChevronRight size={12} />
             </button>
           </div>
           <div className="flex gap-2" style={{ height: 180 }}>
@@ -197,7 +203,7 @@ export function Home() {
 
         {/* ── О СТУДИИ ── */}
         <div>
-          <p className="text-xs font-medium text-white/40 mb-3">О студии</p>
+          <p className="text-xs font-medium text-white/40 mb-3">о студии</p>
 
           {/* Статы: 4 плитки */}
           <div className="grid grid-cols-2 gap-2 mb-3 stagger">
@@ -210,7 +216,7 @@ export function Home() {
               <div className="text-sm font-bold text-white leading-tight">
                 <CountUp to={140} suffix=" м²" />
               </div>
-              <div className="text-[11px] text-white/40 mt-1 leading-snug">Площадь студии</div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">площадь студии</div>
             </div>
 
             <div className="card-lab p-4 rounded-2xl">
@@ -219,8 +225,8 @@ export function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-sm font-bold text-white leading-tight">Круглосуточно</div>
-              <div className="text-[11px] text-white/40 mt-1 leading-snug">Ежедневно</div>
+              <div className="text-sm font-bold text-white leading-tight">круглосуточно</div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">ежедневно</div>
             </div>
 
             <div className="card-lab p-4 rounded-2xl">
@@ -232,7 +238,7 @@ export function Home() {
               <div className="text-sm font-bold text-white leading-tight">
                 <CountUp to={2500000} suffix=" ₽" duration={1400} />
               </div>
-              <div className="text-[11px] text-white/40 mt-1 leading-snug">Парк оборудования</div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">парк оборудования</div>
             </div>
 
             <div className="card-lab p-4 rounded-2xl">
@@ -241,8 +247,8 @@ export function Home() {
                   <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
                 </svg>
               </div>
-              <div className="text-sm font-bold text-white leading-tight">Предоплата 50%</div>
-              <div className="text-[11px] text-white/40 mt-1 leading-snug">Возврат при отмене</div>
+              <div className="text-sm font-bold text-white leading-tight">предоплата 50%</div>
+              <div className="text-[11px] text-white/40 mt-1 leading-snug">возврат при отмене</div>
             </div>
           </div>
 
@@ -254,9 +260,25 @@ export function Home() {
           </div>
         </div>
 
+        {/* ── ПОЧЕМУ МЫ ── */}
+        <div>
+          <p className="text-xs font-medium text-white/40 mb-3">почему мы</p>
+          <div className="space-y-2">
+            {WHY_LIST.map((item, i) => (
+              <div key={i} className="card-lab px-4 py-3 flex items-start gap-3">
+                <span className="text-xl flex-shrink-0 mt-0.5">{item.emoji}</span>
+                <div className="min-w-0">
+                  <div className="font-bold text-white text-sm leading-snug">{item.title}</div>
+                  <div className="text-xs text-white/40 mt-0.5 leading-snug">{item.desc}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+
         {/* ── ЯНДЕКС КАРТА ── */}
         <div>
-          <p className="text-xs font-medium text-white/40 mb-3">Как добраться</p>
+          <p className="text-xs font-medium text-white/40 mb-3">как добраться</p>
 
           {/* Карта */}
           <div className="rounded-2xl overflow-hidden" style={{ height: 200 }}>
@@ -285,7 +307,7 @@ export function Home() {
               </div>
               <div>
                 <div className="text-sm font-semibold text-white">Большой Сампсониевский, 60Н</div>
-                <div className="text-[11px] text-white/40 mt-0.5">м. Выборгская · Круглосуточно</div>
+                <div className="text-[11px] text-white/40 mt-0.5">м. Выборгская · круглосуточно</div>
               </div>
             </div>
             <svg className="w-4 h-4 text-white/25 flex-shrink-0" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
@@ -300,13 +322,9 @@ export function Home() {
       <div className="px-4 mt-8 mb-2">
         <button
           onClick={() => { haptic?.impactOccurred('medium'); navigate('/studios') }}
-          className="w-full btn-lily py-4 rounded-2xl font-bold text-white text-base flex items-center justify-center gap-2"
-          style={{ boxShadow: '0 8px 32px rgba(204,0,102,0.4), 0 2px 8px rgba(0,0,0,0.5)' }}
+          className="w-full btn-lily py-4 rounded-2xl font-semibold text-white text-base"
         >
-          <svg className="w-5 h-5" fill="none" stroke="currentColor" strokeWidth={2} viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"/>
-          </svg>
-          Записаться в студию
+          записаться в студию
         </button>
       </div>
 

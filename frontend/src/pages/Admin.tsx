@@ -22,10 +22,10 @@ type FilterStatus = 'pending' | 'confirmed' | 'cancelled'
 type SheetType = null | 'detail' | 'book-form' | 'block-form' | 'time-pick'
 
 const SL: Record<string, { label: string; color: string; bg: string }> = {
-  pending:   { label: 'Ожидает',      color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
-  confirmed: { label: 'Подтверждена', color: 'text-green-400',  bg: 'bg-green-400/10' },
-  completed: { label: 'Завершена',    color: 'text-white/30',   bg: 'bg-white/5' },
-  cancelled: { label: 'Отменена',     color: 'text-[#FF4B4B]',  bg: 'bg-[#FF4B4B]/10' },
+  pending:   { label: 'ожидает',      color: 'text-yellow-400', bg: 'bg-yellow-400/10' },
+  confirmed: { label: 'подтверждена', color: 'text-green-400',  bg: 'bg-green-400/10' },
+  completed: { label: 'завершена',    color: 'text-white/30',   bg: 'bg-white/5' },
+  cancelled: { label: 'отменена',     color: 'text-[#FF4B4B]',  bg: 'bg-[#FF4B4B]/10' },
 }
 
 const today = format(new Date(), 'yyyy-MM-dd')
@@ -270,8 +270,7 @@ export function Admin() {
   return (
     <div className="pb-nav animate-fade-in bg-[#0E0E0E] min-h-screen">
       <div className="px-4 pt-6 pb-5">
-        <p className="text-xs font-medium text-white/40 mb-1">Лаборатория</p>
-        <h1 className="font-display text-2xl font-black text-white tracking-tight">CRM</h1>
+        <h1 className="font-bold text-2xl text-white tracking-tight">CRM</h1>
       </div>
 
       {/* Stats row */}
